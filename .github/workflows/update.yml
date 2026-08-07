@@ -19,5 +19,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Esegui updater
-        run: python updater.py
+      - name: Installa dipendenze
+        run: pip install -r requirements.txt
+
+      - name: Test collegamento Ministero
+        run: python ministry_fetcher.py
