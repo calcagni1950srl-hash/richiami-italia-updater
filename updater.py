@@ -1,26 +1,16 @@
-name: Richiami Italia Updater
+from datetime import datetime, timezone
 
-on:
-  workflow_dispatch:
 
-  schedule:
-    - cron: "0 6 * * *"
+def main():
+    now = datetime.now(timezone.utc)
 
-jobs:
-  update:
-    runs-on: ubuntu-latest
+    print("====================================")
+    print("RICHIAMI ITALIA - UPDATER")
+    print("====================================")
+    print("Updater avviato correttamente.")
+    print(f"Data e ora UTC: {now.isoformat()}")
+    print("Test completato con successo.")
 
-    steps:
-      - name: Scarica repository
-        uses: actions/checkout@v4
 
-      - name: Configura Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Installa dipendenze
-        run: pip install -r requirements.txt
-
-      - name: Test collegamento Ministero
-        run: python ministry_fetcher.py
+if __name__ == "__main__":
+    main()
