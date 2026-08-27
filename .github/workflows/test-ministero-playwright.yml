@@ -1,4 +1,4 @@
-name: Test Ministero Multi Richiamo
+name: Test Ministero Multi Richiamo OCR
 
 on:
   workflow_dispatch:
@@ -21,14 +21,17 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Installa Playwright Chromium e PDF tools
+      - name: Installa Playwright Chromium PDF e OCR
         run: |
           npm init -y
           npm install playwright
           npx playwright install --with-deps chromium
 
           sudo apt-get update
-          sudo apt-get install -y poppler-utils
+          sudo apt-get install -y \
+            poppler-utils \
+            tesseract-ocr \
+            tesseract-ocr-ita
 
           mkdir -p risultati
 
@@ -88,7 +91,8 @@ jobs:
                   }
                 );
 
-                const buffer = await response.arrayBuffer();
+                const buffer =
+                  await response.arrayBuffer();
 
                 return {
                   ok: response.ok,
@@ -106,7 +110,9 @@ jobs:
 
             const firma = risultato.bytes
               .slice(0, 5)
-              .map(numero => String.fromCharCode(numero))
+              .map(numero =>
+                String.fromCharCode(numero)
+              )
               .join("");
 
             return {
@@ -116,45 +122,58 @@ jobs:
           }
 
           async function main() {
-            const browser = await chromium.launch({
-              headless: true
-            });
+            const browser =
+              await chromium.launch({
+                headless: true
+              });
 
-            const context = await browser.newContext({
-              locale: "it-IT",
+            const context =
+              await browser.newContext({
+                locale: "it-IT",
 
-              viewport: {
-                width: 1280,
-                height: 900
-              },
+                viewport: {
+                  width: 1280,
+                  height: 900
+                },
 
-              userAgent:
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-                "AppleWebKit/537.36 (KHTML, like Gecko) " +
-                "Chrome/131.0.0.0 Safari/537.36"
-            });
+                userAgent:
+                  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+                  "AppleWebKit/537.36 (KHTML, like Gecko) " +
+                  "Chrome/131.0.0.0 Safari/537.36"
+              });
 
             const riepilogo = [];
 
             try {
               for (const richiamo of richiami) {
                 console.log("");
-                console.log("======================================");
-                console.log("TEST:", richiamo.id);
-                console.log("======================================");
+                console.log(
+                  "======================================"
+                );
+                console.log(
+                  "TEST:",
+                  richiamo.id
+                );
+                console.log(
+                  "======================================"
+                );
 
-                const page = await context.newPage();
+                const page =
+                  await context.newPage();
 
                 try {
                   await page.goto(
                     richiamo.url,
                     {
-                      waitUntil: "domcontentloaded",
+                      waitUntil:
+                        "domcontentloaded",
                       timeout: 90000
                     }
                   );
 
-                  await page.waitForTimeout(12000);
+                  await page.waitForTimeout(
+                    12000
+                  );
 
                   const testoPagina =
                     await page
@@ -174,36 +193,56 @@ jobs:
                     riepilogo.push({
                       id: richiamo.id,
                       paginaOk: false,
-                      errore: "Browser Validation"
+                      errore:
+                        "Browser Validation"
                     });
 
                     continue;
                   }
 
-                  const marca = estraiCampo(
-                    testoPagina,
-                    "Marca"
+                  const marca =
+                    estraiCampo(
+                      testoPagina,
+                      "Marca"
+                    );
+
+                  const prodotto =
+                    estraiCampo(
+                      testoPagina,
+                      "Denominazione"
+                    );
+
+                  const motivo =
+                    estraiCampo(
+                      testoPagina,
+                      "Motivo della segnalazione"
+                    );
+
+                  const dataPubblicazione =
+                    estraiCampo(
+                      testoPagina,
+                      "Data pubblicazione"
+                    );
+
+                  console.log(
+                    "Marca:",
+                    marca
                   );
 
-                  const prodotto = estraiCampo(
-                    testoPagina,
-                    "Denominazione"
+                  console.log(
+                    "Prodotto:",
+                    prodotto
                   );
 
-                  const motivo = estraiCampo(
-                    testoPagina,
-                    "Motivo della segnalazione"
+                  console.log(
+                    "Motivo:",
+                    motivo
                   );
 
-                  const dataPubblicazione = estraiCampo(
-                    testoPagina,
-                    "Data pubblicazione"
+                  console.log(
+                    "Data:",
+                    dataPubblicazione
                   );
-
-                  console.log("Marca:", marca);
-                  console.log("Prodotto:", prodotto);
-                  console.log("Motivo:", motivo);
-                  console.log("Data:", dataPubblicazione);
 
                   const links =
                     await page
@@ -212,29 +251,41 @@ jobs:
                         elementi =>
                           elementi.map(
                             a => ({
-                              href: a.href || "",
+                              href:
+                                a.href || "",
                               text:
-                                (a.innerText || "")
-                                  .trim()
+                                (
+                                  a.innerText ||
+                                  ""
+                                ).trim()
                             })
                           )
                       );
 
-                  const pdf = links.find(
-                    link =>
-                      /\.pdf($|\?)/i.test(link.href) ||
-                      /pdf/i.test(link.text)
-                  );
+                  const pdf =
+                    links.find(
+                      link =>
+                        /\.pdf($|\?)/i
+                          .test(link.href) ||
+                        /pdf/i
+                          .test(link.text)
+                    );
 
-                  if (!pdf || !pdf.href) {
+                  if (
+                    !pdf ||
+                    !pdf.href
+                  ) {
                     console.log(
                       "❌ Nessun PDF trovato"
                     );
 
                     riepilogo.push({
-                      id: richiamo.id,
-                      paginaOk: true,
-                      pdfOk: false,
+                      id:
+                        richiamo.id,
+                      paginaOk:
+                        true,
+                      pdfOk:
+                        false,
                       marca,
                       prodotto,
                       motivo
@@ -243,7 +294,10 @@ jobs:
                     continue;
                   }
 
-                  console.log("PDF:", pdf.href);
+                  console.log(
+                    "PDF:",
+                    pdf.href
+                  );
 
                   const download =
                     await scaricaPDF(
@@ -283,9 +337,12 @@ jobs:
                     );
 
                     riepilogo.push({
-                      id: richiamo.id,
-                      paginaOk: true,
-                      pdfOk: false,
+                      id:
+                        richiamo.id,
+                      paginaOk:
+                        true,
+                      pdfOk:
+                        false,
                       marca,
                       prodotto,
                       motivo
@@ -294,12 +351,11 @@ jobs:
                     continue;
                   }
 
-                  const pdfPath =
-                    `risultati/${richiamo.id}.pdf`;
-
                   fs.writeFileSync(
-                    pdfPath,
-                    Buffer.from(download.bytes)
+                    `risultati/${richiamo.id}.pdf`,
+                    Buffer.from(
+                      download.bytes
+                    )
                   );
 
                   fs.writeFileSync(
@@ -312,12 +368,21 @@ jobs:
                     `risultati/${richiamo.id}-meta.json`,
                     JSON.stringify(
                       {
-                        id: richiamo.id,
-                        pagina: richiamo.url,
-                        pdf: pdf.href,
+                        id:
+                          richiamo.id,
+
+                        pagina:
+                          richiamo.url,
+
+                        pdf:
+                          pdf.href,
+
                         marca,
+
                         prodotto,
+
                         motivo,
+
                         dataPubblicazione
                       },
                       null,
@@ -327,14 +392,18 @@ jobs:
                   );
 
                   riepilogo.push({
-                    id: richiamo.id,
-                    paginaOk: true,
-                    pdfOk: true,
+                    id:
+                      richiamo.id,
+                    paginaOk:
+                      true,
+                    pdfOk:
+                      true,
                     marca,
                     prodotto,
                     motivo,
                     dataPubblicazione,
-                    pdf: pdf.href
+                    pdf:
+                      pdf.href
                   });
 
                   console.log(
@@ -348,9 +417,12 @@ jobs:
                   );
 
                   riepilogo.push({
-                    id: richiamo.id,
-                    paginaOk: false,
-                    errore: String(error)
+                    id:
+                      richiamo.id,
+                    paginaOk:
+                      false,
+                    errore:
+                      String(error)
                   });
 
                 } finally {
@@ -380,27 +452,85 @@ jobs:
       - name: Scarica quattro richiami reali
         run: node scarica-richiami.mjs
 
-      - name: Estrai testo da tutti i PDF
+      - name: Estrai testo PDF con fallback OCR
         run: |
           set -e
 
           for pdf in risultati/*.pdf
           do
-            txt="${pdf%.pdf}.txt"
+            base="${pdf%.pdf}"
+            txt="${base}.txt"
 
-            echo "--------------------------------------"
-            echo "ESTRAZIONE: $pdf"
-            echo "--------------------------------------"
+            echo ""
+            echo "======================================"
+            echo "ANALISI: $pdf"
+            echo "======================================"
 
-            pdftotext -layout "$pdf" "$txt"
+            pdftotext -layout "$pdf" "$txt" || true
 
-            if [ ! -s "$txt" ]; then
-              echo "ERRORE: testo PDF vuoto"
-              exit 1
+            DIMENSIONE=0
+
+            if [ -f "$txt" ]; then
+              DIMENSIONE=$(wc -c < "$txt")
             fi
 
-            echo "Testo estratto:"
-            wc -c "$txt"
+            echo "Testo digitale trovato: $DIMENSIONE byte"
+
+            if [ "$DIMENSIONE" -lt 40 ]; then
+              echo ""
+              echo "⚠️ PDF senza testo digitale sufficiente."
+              echo "Avvio OCR automatico..."
+
+              rm -f "$txt"
+
+              OCRDIR="${base}-ocr"
+              mkdir -p "$OCRDIR"
+
+              pdftoppm \
+                -r 300 \
+                -png \
+                "$pdf" \
+                "$OCRDIR/pagina"
+
+              > "$txt"
+
+              for img in "$OCRDIR"/*.png
+              do
+                echo "OCR: $img"
+
+                tesseract \
+                  "$img" \
+                  stdout \
+                  -l ita \
+                  --psm 6 \
+                  >> "$txt" \
+                  2>/dev/null || true
+
+                echo "" >> "$txt"
+              done
+
+              DIMENSIONE=$(wc -c < "$txt")
+
+              echo ""
+              echo "Testo ottenuto con OCR: $DIMENSIONE byte"
+
+              if [ "$DIMENSIONE" -lt 40 ]; then
+                echo "❌ OCR insufficiente"
+              else
+                echo "✅ OCR completato"
+              fi
+
+            else
+              echo "✅ PDF con testo digitale: OCR non necessario"
+            fi
+
+            echo ""
+            echo "Prime 80 righe:"
+            echo "--------------------------------------"
+
+            head -n 80 "$txt" || true
+
+            echo "--------------------------------------"
           done
 
       - name: Crea estrattore robusto
@@ -412,6 +542,7 @@ jobs:
 
 
           CARTELLA = Path("risultati")
+
 
           STOP_LOTTI = {
               "DI",
@@ -453,16 +584,21 @@ jobs:
               risultato = []
 
               for riga in testo.splitlines():
-                  riga = pulisci_spazi(riga)
+                  riga = pulisci_spazi(
+                      riga
+                  )
 
                   if riga:
-                      risultato.append(riga)
+                      risultato.append(
+                          riga
+                      )
 
               return risultato
 
 
           def normalizza_lotto(valore):
-              valore = valore.strip()
+              valore =
+                  valore.strip()
 
               valore = re.sub(
                   r"^[\s:;\-–—]+",
@@ -480,7 +616,10 @@ jobs:
 
 
           def lotto_plausibile(valore):
-              valore = normalizza_lotto(valore)
+              valore =
+                  normalizza_lotto(
+                      valore
+                  )
 
               if not valore:
                   return False
@@ -494,7 +633,10 @@ jobs:
               if valore.upper() in STOP_LOTTI:
                   return False
 
-              if not re.search(r"\d", valore):
+              if not re.search(
+                  r"\d",
+                  valore
+              ):
                   return False
 
               if not re.fullmatch(
@@ -507,50 +649,88 @@ jobs:
 
 
           def estrai_lotti(testo):
-              righe = righe_non_vuote(testo)
+              righe =
+                  righe_non_vuote(
+                      testo
+                  )
 
               candidati = []
 
-              pattern_stessa_riga = re.compile(
-                  r"""
-                  (?:
-                      numero\s+di\s+lotto
-                    | n[°º.]?\s*lotto
-                    | lotto\s+di\s+produzione
-                    | lotto
-                    | lotti
-                  )
-                  \s*
-                  [:;\-–—]?
-                  \s*
-                  ([A-Za-z0-9./_\-]+)
-                  """,
-                  re.I | re.X
-              )
-
-              for indice, riga in enumerate(righe):
-
-                  for match in pattern_stessa_riga.finditer(riga):
-                      valore = normalizza_lotto(
-                          match.group(1)
+              patterns = [
+                  re.compile(
+                      r"""
+                      (?:
+                          numero\s+di\s+lotto
+                        | numero\s+lotto
+                        | n[°º.]?\s*lotto
+                        | lotto\s+di\s+produzione
+                        | lotto
+                        | lotti
                       )
+                      \s*
+                      [:;\-–—]?
+                      \s*
+                      ([A-Za-z0-9./_\-]+)
+                      """,
+                      re.I | re.X
+                  ),
 
-                      if lotto_plausibile(valore):
-                          candidati.append(valore)
+                  re.compile(
+                      r"""
+                      \bL\.?
+                      \s*
+                      ([A-Za-z0-9][A-Za-z0-9./_\-]{2,30})
+                      \b
+                      """,
+                      re.I | re.X
+                  )
+              ]
+
+
+              for indice, riga in enumerate(
+                  righe
+              ):
+
+                  for pattern in patterns:
+
+                      for match in pattern.finditer(
+                          riga
+                      ):
+
+                          valore =
+                              normalizza_lotto(
+                                  match.group(1)
+                              )
+
+                          if lotto_plausibile(
+                              valore
+                          ):
+                              candidati.append(
+                                  valore
+                              )
+
 
                   if re.search(
                       r"\b(?:lotto|lotti)\b",
                       riga,
                       re.I
                   ):
-                      for offset in range(1, 4):
 
-                          posizione = indice + offset
+                      for offset in range(
+                          1,
+                          5
+                      ):
 
-                          if posizione >= len(righe):
+                          posizione =
+                              indice + offset
+
+                          if posizione >= len(
+                              righe
+                          ):
                               break
 
-                          successiva = righe[posizione]
+                          successiva =
+                              righe[posizione]
 
                           if re.search(
                               r"""
@@ -572,28 +752,41 @@ jobs:
                           ):
                               break
 
-                          tokens = re.findall(
-                              r"\b[A-Za-z0-9][A-Za-z0-9./_\-]{1,30}\b",
-                              successiva
-                          )
+                          tokens =
+                              re.findall(
+                                  r"\b[A-Za-z0-9][A-Za-z0-9./_\-]{1,30}\b",
+                                  successiva
+                              )
 
                           for token in tokens:
-                              if lotto_plausibile(token):
+
+                              if lotto_plausibile(
+                                  token
+                              ):
                                   candidati.append(
-                                      normalizza_lotto(token)
+                                      normalizza_lotto(
+                                          token
+                                      )
                                   )
+
 
               unici = []
 
               for valore in candidati:
+
                   if valore not in unici:
-                      unici.append(valore)
+                      unici.append(
+                          valore
+                      )
 
               return unici
 
 
           def estrai_scadenze(testo):
-              righe = righe_non_vuote(testo)
+              righe =
+                  righe_non_vuote(
+                      testo
+                  )
 
               risultati = []
 
@@ -603,7 +796,10 @@ jobs:
                   r"\b\d{1,2}[.]\d{1,2}[.]\d{2,4}\b"
               ]
 
-              for indice, riga in enumerate(righe):
+
+              for indice, riga in enumerate(
+                  righe
+              ):
 
                   if not re.search(
                       r"""
@@ -619,36 +815,52 @@ jobs:
 
                   blocco_righe = []
 
-                  for offset in range(0, 5):
+                  for offset in range(
+                      0,
+                      6
+                  ):
 
-                      posizione = indice + offset
+                      posizione =
+                          indice + offset
 
-                      if posizione >= len(righe):
+                      if posizione >= len(
+                          righe
+                      ):
                           break
 
                       blocco_righe.append(
                           righe[posizione]
                       )
 
-                  blocco = " ".join(blocco_righe)
+                  blocco =
+                      " ".join(
+                          blocco_righe
+                      )
 
                   for pattern in patterns_date:
 
-                      valori = re.findall(
-                          pattern,
-                          blocco,
-                          flags=re.I
-                      )
+                      valori =
+                          re.findall(
+                              pattern,
+                              blocco,
+                              flags=re.I
+                          )
 
                       for valore in valori:
+
                           if valore not in risultati:
-                              risultati.append(valore)
+                              risultati.append(
+                                  valore
+                              )
 
               return risultati
 
 
           def estrai_produttore(testo):
-              righe = righe_non_vuote(testo)
+              righe =
+                  righe_non_vuote(
+                      testo
+                  )
 
               parole = [
                   "nome del produttore",
@@ -657,9 +869,13 @@ jobs:
                   "operatore del settore alimentare"
               ]
 
-              for indice, riga in enumerate(righe):
 
-                  riga_lower = riga.lower()
+              for indice, riga in enumerate(
+                  righe
+              ):
+
+                  riga_lower =
+                      riga.lower()
 
                   if not any(
                       parola in riga_lower
@@ -667,32 +883,47 @@ jobs:
                   ):
                       continue
 
-                  parti = re.split(
-                      r"[:\-–—]",
-                      riga,
-                      maxsplit=1
-                  )
+                  parti =
+                      re.split(
+                          r"[:\-–—]",
+                          riga,
+                          maxsplit=1
+                      )
 
                   if len(parti) == 2:
-                      valore = pulisci_spazi(
-                          parti[1]
-                      )
+
+                      valore =
+                          pulisci_spazi(
+                              parti[1]
+                          )
 
                       if (
                           len(valore) >= 3
-                          and "produttore"
+                          and
+                          "produttore"
+                          not in valore.lower()
+                          and
+                          "nome del quale"
                           not in valore.lower()
                       ):
                           return valore
 
-                  for offset in range(1, 4):
 
-                      posizione = indice + offset
+                  for offset in range(
+                      1,
+                      4
+                  ):
 
-                      if posizione >= len(righe):
+                      posizione =
+                          indice + offset
+
+                      if posizione >= len(
+                          righe
+                      ):
                           break
 
-                      valore = righe[posizione]
+                      valore =
+                          righe[posizione]
 
                       if re.search(
                           r"""
@@ -717,6 +948,7 @@ jobs:
                       if len(valore) >= 3:
                           return valore
 
+
               return ""
 
 
@@ -724,66 +956,100 @@ jobs:
 
 
           for meta_path in sorted(
-              CARTELLA.glob("*-meta.json")
+              CARTELLA.glob(
+                  "*-meta.json"
+              )
           ):
 
-              id_richiamo = meta_path.name.replace(
-                  "-meta.json",
-                  ""
-              )
-
-              txt_path = CARTELLA / (
-                  id_richiamo + ".txt"
-              )
-
-              meta = json.loads(
-                  meta_path.read_text(
-                      encoding="utf-8"
+              id_richiamo =
+                  meta_path.name.replace(
+                      "-meta.json",
+                      ""
                   )
-              )
+
+              txt_path =
+                  CARTELLA / (
+                      id_richiamo +
+                      ".txt"
+                  )
+
+              meta =
+                  json.loads(
+                      meta_path.read_text(
+                          encoding="utf-8"
+                      )
+                  )
 
               if not txt_path.exists():
 
                   risultati.append(
                       {
                           **meta,
-                          "lotti": [],
-                          "scadenze": [],
-                          "produttore": "",
-                          "validazione": "FAIL",
-                          "problemi": [
-                              "PDF senza testo estratto"
-                          ]
+
+                          "lotti":
+                              [],
+
+                          "scadenze":
+                              [],
+
+                          "produttore":
+                              "",
+
+                          "validazione":
+                              "FAIL",
+
+                          "problemi":
+                              [
+                                  "PDF senza testo estratto"
+                              ]
                       }
                   )
 
                   continue
 
-              testo = txt_path.read_text(
-                  encoding="utf-8",
-                  errors="ignore"
-              )
 
-              lotti = estrai_lotti(testo)
-              scadenze = estrai_scadenze(testo)
-              produttore = estrai_produttore(testo)
+              testo =
+                  txt_path.read_text(
+                      encoding="utf-8",
+                      errors="ignore"
+                  )
+
+              lotti =
+                  estrai_lotti(
+                      testo
+                  )
+
+              scadenze =
+                  estrai_scadenze(
+                      testo
+                  )
+
+              produttore =
+                  estrai_produttore(
+                      testo
+                  )
 
               problemi = []
 
-              marca = meta.get(
-                  "marca",
-                  ""
-              ).strip()
 
-              prodotto = meta.get(
-                  "prodotto",
-                  ""
-              ).strip()
+              marca =
+                  meta.get(
+                      "marca",
+                      ""
+                  ).strip()
 
-              motivo = meta.get(
-                  "motivo",
-                  ""
-              ).strip()
+              prodotto =
+                  meta.get(
+                      "prodotto",
+                      ""
+                  ).strip()
+
+              motivo =
+                  meta.get(
+                      "motivo",
+                      ""
+                  ).strip()
+
 
               if not marca:
                   problemi.append(
@@ -805,15 +1071,10 @@ jobs:
                       "nessun lotto affidabile trovato"
                   )
 
-              for lotto in lotti:
-
-                  if not lotto_plausibile(lotto):
-                      problemi.append(
-                          "lotto sospetto: " + lotto
-                      )
 
               risultato = {
-                  "id": id_richiamo,
+                  "id":
+                      id_richiamo,
 
                   "data_pubblicazione":
                       meta.get(
@@ -821,11 +1082,14 @@ jobs:
                           ""
                       ),
 
-                  "marca": marca,
+                  "marca":
+                      marca,
 
-                  "prodotto": prodotto,
+                  "prodotto":
+                      prodotto,
 
-                  "motivo": motivo,
+                  "motivo":
+                      motivo,
 
                   "produttore":
                       produttore,
@@ -859,17 +1123,22 @@ jobs:
                       problemi
               }
 
-              risultati.append(risultato)
+              risultati.append(
+                  risultato
+              )
 
 
           output = {
               "totale":
-                  len(risultati),
+                  len(
+                      risultati
+                  ),
 
               "pass":
                   sum(
                       1
-                      for risultato in risultati
+                      for risultato
+                      in risultati
                       if risultato.get(
                           "validazione"
                       ) == "PASS"
@@ -878,7 +1147,8 @@ jobs:
               "da_verificare":
                   sum(
                       1
-                      for risultato in risultati
+                      for risultato
+                      in risultati
                       if risultato.get(
                           "validazione"
                       ) != "PASS"
@@ -889,10 +1159,10 @@ jobs:
           }
 
 
-          output_path = (
-              CARTELLA /
-              "risultato-multiplo.json"
-          )
+          output_path =
+              CARTELLA / (
+                  "risultato-multiplo.json"
+              )
 
           output_path.write_text(
               json.dumps(
@@ -905,21 +1175,34 @@ jobs:
 
 
           print("")
-          print("======================================")
-          print("RISULTATO TEST MULTIPLO")
-          print("======================================")
+          print(
+              "======================================"
+          )
+          print(
+              "RISULTATO TEST MULTIPLO CON OCR"
+          )
+          print(
+              "======================================"
+          )
+
 
           for risultato in risultati:
 
               print("")
-              print("--------------------------------------")
+              print(
+                  "--------------------------------------"
+              )
+
               print(
                   risultato.get(
                       "id",
                       ""
                   )
               )
-              print("--------------------------------------")
+
+              print(
+                  "--------------------------------------"
+              )
 
               print(
                   "Marca:",
@@ -977,10 +1260,11 @@ jobs:
                   )
               )
 
-              problemi = risultato.get(
-                  "problemi",
-                  []
-              )
+              problemi =
+                  risultato.get(
+                      "problemi",
+                      []
+                  )
 
               if problemi:
                   print(
@@ -990,9 +1274,15 @@ jobs:
 
 
           print("")
-          print("======================================")
-          print("RIEPILOGO")
-          print("======================================")
+          print(
+              "======================================"
+          )
+          print(
+              "RIEPILOGO"
+          )
+          print(
+              "======================================"
+          )
 
           print(
               "Totale:",
@@ -1006,34 +1296,10 @@ jobs:
 
           print(
               "Da verificare:",
-              output["da_verificare"]
+              output[
+                  "da_verificare"
+              ]
           )
-
-          print("")
-
-          if (
-              output["totale"] > 0
-              and output["pass"]
-              == output["totale"]
-          ):
-
-              print(
-                  "✅ TEST MULTIPLO SUPERATO"
-              )
-
-              print(
-                  "Tutti i richiami hanno prodotto dati plausibili."
-              )
-
-          else:
-
-              print(
-                  "⚠️ TEST NON ANCORA CONCLUSIVO"
-              )
-
-              print(
-                  "Uno o più richiami richiedono verifica."
-              )
 
           PYEOF
 
@@ -1052,7 +1318,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-multiplo-richiami
+          name: test-multiplo-richiami-ocr
           path: |
             risultati/
           if-no-files-found: ignore
