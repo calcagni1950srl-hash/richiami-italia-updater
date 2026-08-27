@@ -28,275 +28,279 @@ jobs:
           import { chromium } from "playwright";
           import fs from "fs";
 
-          const paginaRichiamo =
-            "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/filetti-di-tonno-allolio-di-oliva/";
+          async function main() {
+            const paginaRichiamo =
+              "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/filetti-di-tonno-allolio-di-oliva/";
 
-          console.log("======================================");
-          console.log("TEST RICHIAMI ITALIA");
-          console.log("Browser reale Chromium + Playwright");
-          console.log("======================================");
+            console.log("======================================");
+            console.log("TEST RICHIAMI ITALIA");
+            console.log("Browser reale Chromium + Playwright");
+            console.log("======================================");
 
-          const browser = await chromium.launch({
-            headless: true
-          });
+            const browser = await chromium.launch({
+              headless: true
+            });
 
-          const context = await browser.newContext({
-            viewport: {
-              width: 1280,
-              height: 900
-            },
-            locale: "it-IT",
-            userAgent:
-              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-              "AppleWebKit/537.36 (KHTML, like Gecko) " +
-              "Chrome/131.0.0.0 Safari/537.36"
-          });
+            const context = await browser.newContext({
+              viewport: {
+                width: 1280,
+                height: 900
+              },
+              locale: "it-IT",
+              userAgent:
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+                "AppleWebKit/537.36 (KHTML, like Gecko) " +
+                "Chrome/131.0.0.0 Safari/537.36"
+            });
 
-          const page = await context.newPage();
+            const page = await context.newPage();
 
-          try {
-            console.log("");
-            console.log("1. Apro la scheda del richiamo...");
-            console.log(paginaRichiamo);
+            try {
+              console.log("");
+              console.log("1. Apro la scheda del richiamo...");
+              console.log(paginaRichiamo);
 
-            await page.goto(
-              paginaRichiamo,
-              {
-                waitUntil: "domcontentloaded",
-                timeout: 90000
+              await page.goto(
+                paginaRichiamo,
+                {
+                  waitUntil: "domcontentloaded",
+                  timeout: 90000
+                }
+              );
+
+              console.log("Pagina caricata.");
+
+              console.log("");
+              console.log(
+                "2. Attendo eventuale Browser Validation..."
+              );
+
+              await page.waitForTimeout(12000);
+
+              console.log("URL attuale:");
+              console.log(page.url());
+
+              console.log("");
+              console.log("Titolo pagina:");
+              console.log(await page.title());
+
+              const testoPagina =
+                await page.locator("body").innerText()
+                  .catch(() => "");
+
+              console.log("");
+              console.log("Prime informazioni visibili:");
+              console.log(
+                testoPagina.substring(0, 1500)
+              );
+
+              const challenge =
+                /please enable javascript|please enable cookies|browser validation/i
+                  .test(testoPagina);
+
+              if (challenge) {
+                console.log("");
+                console.log(
+                  "❌ Browser Validation ancora presente."
+                );
+
+                await page.screenshot({
+                  path: "ministero-bloccato.png",
+                  fullPage: true
+                });
+
+                process.exitCode = 2;
+                return;
               }
-            );
 
-            console.log("Pagina caricata.");
-
-            console.log("");
-            console.log(
-              "2. Attendo eventuale Browser Validation..."
-            );
-
-            await page.waitForTimeout(12000);
-
-            console.log("URL attuale:");
-            console.log(page.url());
-
-            console.log("");
-            console.log("Titolo pagina:");
-            console.log(await page.title());
-
-            const testoPagina =
-              await page.locator("body").innerText()
-                .catch(() => "");
-
-            console.log("");
-            console.log("Prime informazioni visibili:");
-            console.log(
-              testoPagina.substring(0, 1500)
-            );
-
-            const challenge =
-              /please enable javascript|please enable cookies|browser validation/i
-                .test(testoPagina);
-
-            if (challenge) {
               console.log("");
               console.log(
-                "❌ Browser Validation ancora presente."
+                "✅ Browser Validation superata oppure non presente."
               );
 
-              await page.screenshot({
-                path: "ministero-bloccato.png",
-                fullPage: true
-              });
-
-              process.exitCode = 2;
-              return;
-            }
-
-            console.log("");
-            console.log(
-              "✅ Browser Validation superata oppure non presente."
-            );
-
-            console.log("");
-            console.log(
-              "3. Cerco automaticamente il PDF del richiamo..."
-            );
-
-            const links =
-              await page.locator("a").evaluateAll(
-                elementi =>
-                  elementi.map(a => ({
-                    href: a.href || "",
-                    text:
-                      (a.innerText || "")
-                        .trim()
-                  }))
-              );
-
-            const pdf =
-              links.find(
-                link =>
-                  /\.pdf($|\?)/i.test(link.href) ||
-                  /pdf/i.test(link.text)
-              );
-
-            if (!pdf || !pdf.href) {
               console.log("");
               console.log(
-                "❌ Nessun collegamento PDF trovato."
+                "3. Cerco automaticamente il PDF del richiamo..."
               );
 
-              console.log(
-                JSON.stringify(
-                  links.slice(0, 50),
-                  null,
-                  2
-                )
-              );
+              const links =
+                await page.locator("a").evaluateAll(
+                  elementi =>
+                    elementi.map(a => ({
+                      href: a.href || "",
+                      text:
+                        (a.innerText || "")
+                          .trim()
+                    }))
+                );
 
-              await page.screenshot({
-                path: "ministero-senza-pdf.png",
-                fullPage: true
-              });
+              const pdf =
+                links.find(
+                  link =>
+                    /\.pdf($|\?)/i.test(link.href) ||
+                    /pdf/i.test(link.text)
+                );
 
-              process.exitCode = 3;
-              return;
-            }
+              if (!pdf || !pdf.href) {
+                console.log("");
+                console.log(
+                  "❌ Nessun collegamento PDF trovato."
+                );
 
-            console.log("");
-            console.log("PDF trovato:");
-            console.log(pdf.href);
+                console.log(
+                  JSON.stringify(
+                    links.slice(0, 50),
+                    null,
+                    2
+                  )
+                );
 
-            console.log("");
-            console.log(
-              "4. Recupero il PDF usando la stessa sessione del browser..."
-            );
+                await page.screenshot({
+                  path: "ministero-senza-pdf.png",
+                  fullPage: true
+                });
 
-            const risultato =
-              await page.evaluate(
-                async (pdfUrl) => {
-                  const response =
-                    await fetch(
-                      pdfUrl,
-                      {
-                        credentials: "include"
-                      }
-                    );
+                process.exitCode = 3;
+                return;
+              }
 
-                  const buffer =
-                    await response.arrayBuffer();
+              console.log("");
+              console.log("PDF trovato:");
+              console.log(pdf.href);
 
-                  const bytes =
-                    Array.from(
-                      new Uint8Array(buffer)
-                    );
-
-                  return {
-                    ok: response.ok,
-                    status: response.status,
-                    contentType:
-                      response.headers.get(
-                        "content-type"
-                      ) || "",
-                    bytes
-                  };
-                },
-                pdf.href
-              );
-
-            console.log(
-              "HTTP status:",
-              risultato.status
-            );
-
-            console.log(
-              "Content-Type:",
-              risultato.contentType
-            );
-
-            console.log(
-              "Dimensione:",
-              risultato.bytes.length,
-              "bytes"
-            );
-
-            const primiByte =
-              risultato.bytes
-                .slice(0, 5)
-                .map(
-                  n =>
-                    String.fromCharCode(n)
-                )
-                .join("");
-
-            console.log(
-              "Firma iniziale:",
-              JSON.stringify(primiByte)
-            );
-
-            const veroPdf =
-              risultato.ok &&
-              risultato.bytes.length > 1000 &&
-              primiByte === "%PDF-";
-
-            if (!veroPdf) {
               console.log("");
               console.log(
-                "❌ Il server non ha consegnato un vero PDF."
+                "4. Recupero il PDF usando la stessa sessione del browser..."
               );
+
+              const risultato =
+                await page.evaluate(
+                  async (pdfUrl) => {
+                    const response =
+                      await fetch(
+                        pdfUrl,
+                        {
+                          credentials: "include"
+                        }
+                      );
+
+                    const buffer =
+                      await response.arrayBuffer();
+
+                    const bytes =
+                      Array.from(
+                        new Uint8Array(buffer)
+                      );
+
+                    return {
+                      ok: response.ok,
+                      status: response.status,
+                      contentType:
+                        response.headers.get(
+                          "content-type"
+                        ) || "",
+                      bytes
+                    };
+                  },
+                  pdf.href
+                );
+
+              console.log(
+                "HTTP status:",
+                risultato.status
+              );
+
+              console.log(
+                "Content-Type:",
+                risultato.contentType
+              );
+
+              console.log(
+                "Dimensione:",
+                risultato.bytes.length,
+                "bytes"
+              );
+
+              const primiByte =
+                risultato.bytes
+                  .slice(0, 5)
+                  .map(
+                    n =>
+                      String.fromCharCode(n)
+                  )
+                  .join("");
+
+              console.log(
+                "Firma iniziale:",
+                JSON.stringify(primiByte)
+              );
+
+              const veroPdf =
+                risultato.ok &&
+                risultato.bytes.length > 1000 &&
+                primiByte === "%PDF-";
+
+              if (!veroPdf) {
+                console.log("");
+                console.log(
+                  "❌ Il server non ha consegnato un vero PDF."
+                );
+
+                fs.writeFileSync(
+                  "risposta-non-pdf.bin",
+                  Buffer.from(
+                    risultato.bytes
+                  )
+                );
+
+                process.exitCode = 4;
+                return;
+              }
 
               fs.writeFileSync(
-                "risposta-non-pdf.bin",
+                "richiamo-ministero.pdf",
                 Buffer.from(
                   risultato.bytes
                 )
               );
 
-              process.exitCode = 4;
-              return;
+              console.log("");
+              console.log(
+                "======================================"
+              );
+              console.log(
+                "✅ TEST SUPERATO"
+              );
+              console.log(
+                "Il browser ha raggiunto il richiamo"
+              );
+              console.log(
+                "e ha scaricato un vero PDF ufficiale."
+              );
+              console.log(
+                "======================================"
+              );
+
+            } catch (error) {
+              console.error("");
+              console.error(
+                "❌ ERRORE DURANTE IL TEST"
+              );
+              console.error(error);
+
+              await page.screenshot({
+                path: "ministero-errore.png",
+                fullPage: true
+              }).catch(() => {});
+
+              process.exitCode = 1;
+
+            } finally {
+              await browser.close();
             }
-
-            fs.writeFileSync(
-              "richiamo-ministero.pdf",
-              Buffer.from(
-                risultato.bytes
-              )
-            );
-
-            console.log("");
-            console.log(
-              "======================================"
-            );
-            console.log(
-              "✅ TEST SUPERATO"
-            );
-            console.log(
-              "Il browser ha raggiunto il richiamo"
-            );
-            console.log(
-              "e ha scaricato un vero PDF ufficiale."
-            );
-            console.log(
-              "======================================"
-            );
-
-          } catch (error) {
-            console.error("");
-            console.error(
-              "❌ ERRORE DURANTE IL TEST"
-            );
-            console.error(error);
-
-            await page.screenshot({
-              path: "ministero-errore.png",
-              fullPage: true
-            }).catch(() => {});
-
-            process.exitCode = 1;
-
-          } finally {
-            await browser.close();
           }
+
+          main();
           EOF
 
       - name: Esegui test decisivo
