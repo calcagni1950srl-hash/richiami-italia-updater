@@ -64,11 +64,10 @@ jobs:
           }
 
           function estraiCampo(testo, etichetta) {
-            const regex =
-              new RegExp(
-                etichetta + "\\s*:\\s*([^\\n\\r]+)",
-                "i"
-              );
+            const regex = new RegExp(
+              etichetta + "\\s*:\\s*([^\\n\\r]+)",
+              "i"
+            );
 
             const match = testo.match(regex);
 
@@ -80,46 +79,35 @@ jobs:
           }
 
           async function scaricaPDF(page, pdfUrl) {
+            const risultato = await page.evaluate(
+              async (url) => {
+                const response = await fetch(
+                  url,
+                  {
+                    credentials: "include"
+                  }
+                );
 
-            const risultato =
-              await page.evaluate(
-                async (url) => {
+                const buffer = await response.arrayBuffer();
 
-                  const response =
-                    await fetch(
-                      url,
-                      {
-                        credentials: "include"
-                      }
-                    );
+                return {
+                  ok: response.ok,
+                  status: response.status,
+                  contentType:
+                    response.headers.get("content-type") || "",
+                  bytes:
+                    Array.from(
+                      new Uint8Array(buffer)
+                    )
+                };
+              },
+              pdfUrl
+            );
 
-                  const buffer =
-                    await response.arrayBuffer();
-
-                  return {
-                    ok: response.ok,
-                    status: response.status,
-                    contentType:
-                      response.headers.get(
-                        "content-type"
-                      ) || "",
-                    bytes:
-                      Array.from(
-                        new Uint8Array(buffer)
-                      )
-                  };
-                },
-                pdfUrl
-              );
-
-            const firma =
-              risultato.bytes
-                .slice(0, 5)
-                .map(
-                  numero =>
-                    String.fromCharCode(numero)
-                )
-                .join("");
+            const firma = risultato.bytes
+              .slice(0, 5)
+              .map(numero => String.fromCharCode(numero))
+              .join("");
 
             return {
               ...risultato,
@@ -128,62 +116,45 @@ jobs:
           }
 
           async function main() {
+            const browser = await chromium.launch({
+              headless: true
+            });
 
-            const browser =
-              await chromium.launch({
-                headless: true
-              });
+            const context = await browser.newContext({
+              locale: "it-IT",
 
-            const context =
-              await browser.newContext({
-                locale: "it-IT",
+              viewport: {
+                width: 1280,
+                height: 900
+              },
 
-                viewport: {
-                  width: 1280,
-                  height: 900
-                },
-
-                userAgent:
-                  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-                  "AppleWebKit/537.36 (KHTML, like Gecko) " +
-                  "Chrome/131.0.0.0 Safari/537.36"
-              });
+              userAgent:
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+                "AppleWebKit/537.36 (KHTML, like Gecko) " +
+                "Chrome/131.0.0.0 Safari/537.36"
+            });
 
             const riepilogo = [];
 
             try {
-
               for (const richiamo of richiami) {
-
                 console.log("");
-                console.log(
-                  "======================================"
-                );
-                console.log(
-                  "TEST:",
-                  richiamo.id
-                );
-                console.log(
-                  "======================================"
-                );
+                console.log("======================================");
+                console.log("TEST:", richiamo.id);
+                console.log("======================================");
 
-                const page =
-                  await context.newPage();
+                const page = await context.newPage();
 
                 try {
-
                   await page.goto(
                     richiamo.url,
                     {
-                      waitUntil:
-                        "domcontentloaded",
+                      waitUntil: "domcontentloaded",
                       timeout: 90000
                     }
                   );
 
-                  await page.waitForTimeout(
-                    12000
-                  );
+                  await page.waitForTimeout(12000);
 
                   const testoPagina =
                     await page
@@ -196,7 +167,6 @@ jobs:
                       .test(testoPagina);
 
                   if (challenge) {
-
                     console.log(
                       "❌ Browser Validation non superata"
                     );
@@ -204,57 +174,36 @@ jobs:
                     riepilogo.push({
                       id: richiamo.id,
                       paginaOk: false,
-                      errore:
-                        "Browser Validation"
+                      errore: "Browser Validation"
                     });
 
-                    await page.close();
                     continue;
                   }
 
-                  const marca =
-                    estraiCampo(
-                      testoPagina,
-                      "Marca"
-                    );
-
-                  const prodotto =
-                    estraiCampo(
-                      testoPagina,
-                      "Denominazione"
-                    );
-
-                  const motivo =
-                    estraiCampo(
-                      testoPagina,
-                      "Motivo della segnalazione"
-                    );
-
-                  const dataPubblicazione =
-                    estraiCampo(
-                      testoPagina,
-                      "Data pubblicazione"
-                    );
-
-                  console.log(
-                    "Marca:",
-                    marca
+                  const marca = estraiCampo(
+                    testoPagina,
+                    "Marca"
                   );
 
-                  console.log(
-                    "Prodotto:",
-                    prodotto
+                  const prodotto = estraiCampo(
+                    testoPagina,
+                    "Denominazione"
                   );
 
-                  console.log(
-                    "Motivo:",
-                    motivo
+                  const motivo = estraiCampo(
+                    testoPagina,
+                    "Motivo della segnalazione"
                   );
 
-                  console.log(
-                    "Data:",
-                    dataPubblicazione
+                  const dataPubblicazione = estraiCampo(
+                    testoPagina,
+                    "Data pubblicazione"
                   );
+
+                  console.log("Marca:", marca);
+                  console.log("Prodotto:", prodotto);
+                  console.log("Motivo:", motivo);
+                  console.log("Data:", dataPubblicazione);
 
                   const links =
                     await page
@@ -263,55 +212,38 @@ jobs:
                         elementi =>
                           elementi.map(
                             a => ({
-                              href:
-                                a.href || "",
+                              href: a.href || "",
                               text:
-                                (
-                                  a.innerText ||
-                                  ""
-                                ).trim()
+                                (a.innerText || "")
+                                  .trim()
                             })
                           )
                       );
 
-                  const pdf =
-                    links.find(
-                      link =>
-                        /\.pdf($|\?)/i
-                          .test(link.href) ||
-                        /pdf/i
-                          .test(link.text)
-                    );
+                  const pdf = links.find(
+                    link =>
+                      /\.pdf($|\?)/i.test(link.href) ||
+                      /pdf/i.test(link.text)
+                  );
 
-                  if (
-                    !pdf ||
-                    !pdf.href
-                  ) {
-
+                  if (!pdf || !pdf.href) {
                     console.log(
                       "❌ Nessun PDF trovato"
                     );
 
                     riepilogo.push({
-                      id:
-                        richiamo.id,
-                      paginaOk:
-                        true,
-                      pdfOk:
-                        false,
+                      id: richiamo.id,
+                      paginaOk: true,
+                      pdfOk: false,
                       marca,
                       prodotto,
                       motivo
                     });
 
-                    await page.close();
                     continue;
                   }
 
-                  console.log(
-                    "PDF:",
-                    pdf.href
-                  );
+                  console.log("PDF:", pdf.href);
 
                   const download =
                     await scaricaPDF(
@@ -346,24 +278,19 @@ jobs:
                   );
 
                   if (!pdfValido) {
-
                     console.log(
                       "❌ PDF non valido"
                     );
 
                     riepilogo.push({
-                      id:
-                        richiamo.id,
-                      paginaOk:
-                        true,
-                      pdfOk:
-                        false,
+                      id: richiamo.id,
+                      paginaOk: true,
+                      pdfOk: false,
                       marca,
                       prodotto,
                       motivo
                     });
 
-                    await page.close();
                     continue;
                   }
 
@@ -372,9 +299,7 @@ jobs:
 
                   fs.writeFileSync(
                     pdfPath,
-                    Buffer.from(
-                      download.bytes
-                    )
+                    Buffer.from(download.bytes)
                   );
 
                   fs.writeFileSync(
@@ -387,21 +312,12 @@ jobs:
                     `risultati/${richiamo.id}-meta.json`,
                     JSON.stringify(
                       {
-                        id:
-                          richiamo.id,
-
-                        pagina:
-                          richiamo.url,
-
-                        pdf:
-                          pdf.href,
-
+                        id: richiamo.id,
+                        pagina: richiamo.url,
+                        pdf: pdf.href,
                         marca,
-
                         prodotto,
-
                         motivo,
-
                         dataPubblicazione
                       },
                       null,
@@ -411,25 +327,14 @@ jobs:
                   );
 
                   riepilogo.push({
-                    id:
-                      richiamo.id,
-
-                    paginaOk:
-                      true,
-
-                    pdfOk:
-                      true,
-
+                    id: richiamo.id,
+                    paginaOk: true,
+                    pdfOk: true,
                     marca,
-
                     prodotto,
-
                     motivo,
-
                     dataPubblicazione,
-
-                    pdf:
-                      pdf.href
+                    pdf: pdf.href
                   });
 
                   console.log(
@@ -437,28 +342,21 @@ jobs:
                   );
 
                 } catch (error) {
-
                   console.log(
                     "❌ Errore:",
                     String(error)
                   );
 
                   riepilogo.push({
-                    id:
-                      richiamo.id,
-                    paginaOk:
-                      false,
-                    errore:
-                      String(error)
+                    id: richiamo.id,
+                    paginaOk: false,
+                    errore: String(error)
                   });
 
                 } finally {
-
                   await page
                     .close()
-                    .catch(
-                      () => {}
-                    );
+                    .catch(() => {});
                 }
               }
 
@@ -472,7 +370,6 @@ jobs:
               );
 
             } finally {
-
               await browser.close();
             }
           }
@@ -516,7 +413,6 @@ jobs:
 
           CARTELLA = Path("risultati")
 
-
           STOP_LOTTI = {
               "DI",
               "DEL",
@@ -543,28 +439,6 @@ jobs:
               "CONSERVAZIONE",
               "CONAD"
           }
-
-
-          LABEL_SUCCESSIVA = re.compile(
-              r"""
-              (?:
-                  data\s+di\s+scadenza
-                | termine\s+minimo
-                | motivo
-                | avverten
-                | produttore
-                | stabilimento
-                | marchio
-                | marca
-                | denominazione
-                | peso
-                | confezione
-                | lotto
-                | lotti
-              )
-              """,
-              re.I | re.X
-          )
 
 
           def pulisci_spazi(testo):
@@ -606,9 +480,7 @@ jobs:
 
 
           def lotto_plausibile(valore):
-              valore = normalizza_lotto(
-                  valore
-              )
+              valore = normalizza_lotto(valore)
 
               if not valore:
                   return False
@@ -622,20 +494,11 @@ jobs:
               if valore.upper() in STOP_LOTTI:
                   return False
 
-              if re.fullmatch(
-                  r"[A-Za-zÀ-ÿ]+",
-                  valore
-              ):
-                  return False
-
-              if not re.search(
-                  r"\d",
-                  valore
-              ):
+              if not re.search(r"\d", valore):
                   return False
 
               if not re.fullmatch(
-                  r"[A-Za-z0-9./_\- ]+",
+                  r"[A-Za-z0-9./_\-]+",
                   valore
               ):
                   return False
@@ -643,281 +506,211 @@ jobs:
               return True
 
 
-          def trova_contesti(
-              righe,
-              parole,
-              ampiezza=3
-          ):
-              contesti = []
-
-              for indice, riga in enumerate(righe):
-
-                  basso = riga.lower()
-
-                  if any(
-                      parola in basso
-                      for parola in parole
-                  ):
-                      inizio = max(
-                          0,
-                          indice - 1
-                      )
-
-                      fine = min(
-                          len(righe),
-                          indice + ampiezza + 1
-                      )
-
-                      contesti.append(
-                          {
-                              "indice":
-                                  indice,
-                              "righe":
-                                  righe[
-                                      inizio:fine
-                                  ]
-                          }
-                      )
-
-              return contesti
-
-
-          def estrai_lotti(
-              testo
-          ):
-              righe =
-                  righe_non_vuote(
-                      testo
-                  )
+          def estrai_lotti(testo):
+              righe = righe_non_vuote(testo)
 
               candidati = []
 
-              patterns = [
-                  re.compile(
-                      r"""
-                      (?:
-                          numero\s+di\s+lotto
-                        | n[°º.]?\s*lotto
-                        | lotto\s+di\s+produzione
-                        | lotto
-                        | lotti
+              pattern_stessa_riga = re.compile(
+                  r"""
+                  (?:
+                      numero\s+di\s+lotto
+                    | n[°º.]?\s*lotto
+                    | lotto\s+di\s+produzione
+                    | lotto
+                    | lotti
+                  )
+                  \s*
+                  [:;\-–—]?
+                  \s*
+                  ([A-Za-z0-9./_\-]+)
+                  """,
+                  re.I | re.X
+              )
+
+              for indice, riga in enumerate(righe):
+
+                  for match in pattern_stessa_riga.finditer(riga):
+                      valore = normalizza_lotto(
+                          match.group(1)
                       )
-                      \s*
-                      [:;\-–—]?
-                      \s*
-                      ([A-Za-z0-9./_\-]+)
-                      """,
-                      re.I | re.X
-                  )
-              ]
 
-              for riga in righe:
+                      if lotto_plausibile(valore):
+                          candidati.append(valore)
 
-                  for pattern in patterns:
-
-                      for match in pattern.finditer(
-                          riga
-                      ):
-
-                          valore =
-                              normalizza_lotto(
-                                  match.group(1)
-                              )
-
-                          if lotto_plausibile(
-                              valore
-                          ):
-                              candidati.append(
-                                  valore
-                              )
-
-              contesti =
-                  trova_contesti(
-                      righe,
-                      [
-                          "lotto",
-                          "lotti"
-                      ],
-                      ampiezza=4
-                  )
-
-              for contesto in contesti:
-
-                  indice =
-                      contesto["indice"]
-
-                  riga =
-                      righe[indice]
-
-                  for offset in range(
-                      1,
-                      4
+                  if re.search(
+                      r"\b(?:lotto|lotti)\b",
+                      riga,
+                      re.I
                   ):
+                      for offset in range(1, 4):
 
-                      pos =
-                          indice + offset
+                          posizione = indice + offset
 
-                      if pos >= len(righe):
-                          break
+                          if posizione >= len(righe):
+                              break
 
-                      successiva =
-                          righe[pos]
+                          successiva = righe[posizione]
 
-                      if LABEL_SUCCESSIVA.search(
-                          successiva
-                      ):
-                          break
+                          if re.search(
+                              r"""
+                              ^(?:
+                                  data\s+di\s+scadenza
+                                | scadenza
+                                | termine\s+minimo
+                                | motivo
+                                | avverten
+                                | produttore
+                                | stabilimento
+                                | marchio
+                                | marca
+                                | denominazione
+                              )
+                              """,
+                              successiva,
+                              re.I | re.X
+                          ):
+                              break
 
-                      tokens =
-                          re.findall(
+                          tokens = re.findall(
                               r"\b[A-Za-z0-9][A-Za-z0-9./_\-]{1,30}\b",
                               successiva
                           )
 
-                      for token in tokens:
-
-                          if lotto_plausibile(
-                              token
-                          ):
-                              candidati.append(
-                                  token
-                              )
+                          for token in tokens:
+                              if lotto_plausibile(token):
+                                  candidati.append(
+                                      normalizza_lotto(token)
+                                  )
 
               unici = []
 
               for valore in candidati:
+                  if valore not in unici:
+                      unici.append(valore)
 
-                  valore =
-                      normalizza_lotto(
-                          valore
-                      )
-
-                  if (
-                      valore and
-                      valore not in unici
-                  ):
-                      unici.append(
-                          valore
-                      )
-
-              return unici, contesti
+              return unici
 
 
-          def estrai_scadenze(
-              testo
-          ):
-              patterns = [
-                  r"\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b",
-                  r"\b\d{1,2}[/-]\d{4}\b",
-                  r"\b\d{2}[.]\d{2}[.]\d{2,4}\b"
-              ]
+          def estrai_scadenze(testo):
+              righe = righe_non_vuote(testo)
 
               risultati = []
 
-              righe =
-                  righe_non_vuote(
-                      testo
-                  )
+              patterns_date = [
+                  r"\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b",
+                  r"\b\d{1,2}[/-]\d{4}\b",
+                  r"\b\d{1,2}[.]\d{1,2}[.]\d{2,4}\b"
+              ]
 
-              contesti =
-                  trova_contesti(
-                      righe,
-                      [
-                          "scaden",
-                          "termine minimo",
-                          "tmc",
-                          "preferibilmente"
-                      ],
-                      ampiezza=4
-                  )
+              for indice, riga in enumerate(righe):
 
-              for contesto in contesti:
+                  if not re.search(
+                      r"""
+                      scaden
+                      |termine\s+minimo
+                      |tmc
+                      |preferibilmente
+                      """,
+                      riga,
+                      re.I | re.X
+                  ):
+                      continue
 
-                  blocco =
-                      " ".join(
-                          contesto["righe"]
+                  blocco_righe = []
+
+                  for offset in range(0, 5):
+
+                      posizione = indice + offset
+
+                      if posizione >= len(righe):
+                          break
+
+                      blocco_righe.append(
+                          righe[posizione]
                       )
 
-                  for pattern in patterns:
+                  blocco = " ".join(blocco_righe)
 
-                      for valore in re.findall(
+                  for pattern in patterns_date:
+
+                      valori = re.findall(
                           pattern,
                           blocco,
                           flags=re.I
-                      ):
+                      )
 
+                      for valore in valori:
                           if valore not in risultati:
-                              risultati.append(
-                                  valore
-                              )
+                              risultati.append(valore)
 
-              return risultati, contesti
+              return risultati
 
 
-          def estrai_produttore(
-              testo
-          ):
-              righe =
-                  righe_non_vuote(
-                      testo
-                  )
+          def estrai_produttore(testo):
+              righe = righe_non_vuote(testo)
 
-              etichette = [
+              parole = [
                   "nome del produttore",
                   "produttore",
                   "nome o ragione sociale",
-                  "osa",
                   "operatore del settore alimentare"
               ]
 
               for indice, riga in enumerate(righe):
 
-                  basso =
-                      riga.lower()
+                  riga_lower = riga.lower()
 
                   if not any(
-                      e in basso
-                      for e in etichette
+                      parola in riga_lower
+                      for parola in parole
                   ):
                       continue
 
-                  dopo =
-                      re.split(
-                          r"[:\-–—]",
-                          riga,
-                          maxsplit=1
+                  parti = re.split(
+                      r"[:\-–—]",
+                      riga,
+                      maxsplit=1
+                  )
+
+                  if len(parti) == 2:
+                      valore = pulisci_spazi(
+                          parti[1]
                       )
 
-                  if len(dopo) == 2:
-
-                      valore =
-                          pulisci_spazi(
-                              dopo[1]
-                          )
-
                       if (
-                          len(valore) >= 3 and
-                          "produttore" not in
-                          valore.lower()
+                          len(valore) >= 3
+                          and "produttore"
+                          not in valore.lower()
                       ):
                           return valore
 
-                  for offset in range(
-                      1,
-                      4
-                  ):
+                  for offset in range(1, 4):
 
-                      pos =
-                          indice + offset
+                      posizione = indice + offset
 
-                      if pos >= len(righe):
+                      if posizione >= len(righe):
                           break
 
-                      valore =
-                          righe[pos]
+                      valore = righe[posizione]
 
-                      if LABEL_SUCCESSIVA.search(
-                          valore
+                      if re.search(
+                          r"""
+                          ^(?:
+                              lotto
+                            | lotti
+                            | data\s+di\s+scadenza
+                            | scadenza
+                            | motivo
+                            | avverten
+                            | stabilimento
+                            | marchio
+                            | marca
+                            | denominazione
+                          )
+                          """,
+                          valore,
+                          re.I | re.X
                       ):
                           break
 
@@ -927,104 +720,82 @@ jobs:
               return ""
 
 
-          def crea_diagnostica_contesti(
-              contesti
-          ):
-              risultato = []
-
-              for elemento in contesti:
-
-                  risultato.append(
-                      " | ".join(
-                          elemento["righe"]
-                      )
-                  )
-
-              return risultato
-
-
           risultati = []
 
 
           for meta_path in sorted(
-              CARTELLA.glob(
-                  "*-meta.json"
-              )
+              CARTELLA.glob("*-meta.json")
           ):
 
-              id_richiamo =
-                  meta_path.name.replace(
-                      "-meta.json",
-                      ""
-                  )
+              id_richiamo = meta_path.name.replace(
+                  "-meta.json",
+                  ""
+              )
 
-              txt_path =
-                  CARTELLA / (
-                      id_richiamo +
-                      ".txt"
-                  )
+              txt_path = CARTELLA / (
+                  id_richiamo + ".txt"
+              )
 
-              meta =
-                  json.loads(
-                      meta_path.read_text(
-                          encoding="utf-8"
-                      )
+              meta = json.loads(
+                  meta_path.read_text(
+                      encoding="utf-8"
                   )
+              )
 
               if not txt_path.exists():
 
                   risultati.append(
                       {
                           **meta,
-                          "errore":
-                              "PDF senza testo estratto",
-                          "validazione":
-                              "FAIL"
+                          "lotti": [],
+                          "scadenze": [],
+                          "produttore": "",
+                          "validazione": "FAIL",
+                          "problemi": [
+                              "PDF senza testo estratto"
+                          ]
                       }
                   )
 
                   continue
 
-              testo =
-                  txt_path.read_text(
-                      encoding="utf-8",
-                      errors="ignore"
-                  )
+              testo = txt_path.read_text(
+                  encoding="utf-8",
+                  errors="ignore"
+              )
 
-              lotti, contesti_lotto =
-                  estrai_lotti(
-                      testo
-                  )
-
-              scadenze, contesti_scadenza =
-                  estrai_scadenze(
-                      testo
-                  )
-
-              produttore =
-                  estrai_produttore(
-                      testo
-                  )
+              lotti = estrai_lotti(testo)
+              scadenze = estrai_scadenze(testo)
+              produttore = estrai_produttore(testo)
 
               problemi = []
 
-              if not meta.get(
-                  "marca"
-              ):
+              marca = meta.get(
+                  "marca",
+                  ""
+              ).strip()
+
+              prodotto = meta.get(
+                  "prodotto",
+                  ""
+              ).strip()
+
+              motivo = meta.get(
+                  "motivo",
+                  ""
+              ).strip()
+
+              if not marca:
                   problemi.append(
                       "marca pagina mancante"
                   )
 
-              if not meta.get(
-                  "prodotto"
-              ):
+              if not prodotto:
                   problemi.append(
                       "prodotto pagina mancante"
                   )
 
-              if not meta.get(
-                  "motivo"
-              ):
+              if not motivo:
                   problemi.append(
                       "motivo pagina mancante"
                   )
@@ -1034,23 +805,15 @@ jobs:
                       "nessun lotto affidabile trovato"
                   )
 
-              lotti_sospetti = [
-                  x
-                  for x in lotti
-                  if not lotto_plausibile(x)
-              ]
+              for lotto in lotti:
 
-              if lotti_sospetti:
-                  problemi.append(
-                      "lotti sospetti: " +
-                      ", ".join(
-                          lotti_sospetti
+                  if not lotto_plausibile(lotto):
+                      problemi.append(
+                          "lotto sospetto: " + lotto
                       )
-                  )
 
               risultato = {
-                  "id":
-                      id_richiamo,
+                  "id": id_richiamo,
 
                   "data_pubblicazione":
                       meta.get(
@@ -1058,23 +821,11 @@ jobs:
                           ""
                       ),
 
-                  "marca":
-                      meta.get(
-                          "marca",
-                          ""
-                      ),
+                  "marca": marca,
 
-                  "prodotto":
-                      meta.get(
-                          "prodotto",
-                          ""
-                      ),
+                  "prodotto": prodotto,
 
-                  "motivo":
-                      meta.get(
-                          "motivo",
-                          ""
-                      ),
+                  "motivo": motivo,
 
                   "produttore":
                       produttore,
@@ -1105,24 +856,10 @@ jobs:
                       ),
 
                   "problemi":
-                      problemi,
-
-                  "diagnostica": {
-                      "contesti_lotto":
-                          crea_diagnostica_contesti(
-                              contesti_lotto
-                          ),
-
-                      "contesti_scadenza":
-                          crea_diagnostica_contesti(
-                              contesti_scadenza
-                          )
-                  }
+                      problemi
               }
 
-              risultati.append(
-                  risultato
-              )
+              risultati.append(risultato)
 
 
           output = {
@@ -1132,8 +869,8 @@ jobs:
               "pass":
                   sum(
                       1
-                      for r in risultati
-                      if r.get(
+                      for risultato in risultati
+                      if risultato.get(
                           "validazione"
                       ) == "PASS"
                   ),
@@ -1141,8 +878,8 @@ jobs:
               "da_verificare":
                   sum(
                       1
-                      for r in risultati
-                      if r.get(
+                      for risultato in risultati
+                      if risultato.get(
                           "validazione"
                       ) != "PASS"
                   ),
@@ -1152,9 +889,12 @@ jobs:
           }
 
 
-          Path(
-              "risultati/risultato-multiplo.json"
-          ).write_text(
+          output_path = (
+              CARTELLA /
+              "risultato-multiplo.json"
+          )
+
+          output_path.write_text(
               json.dumps(
                   output,
                   ensure_ascii=False,
@@ -1165,35 +905,25 @@ jobs:
 
 
           print("")
-          print(
-              "======================================"
-          )
-          print(
-              "RISULTATO TEST MULTIPLO"
-          )
-          print(
-              "======================================"
-          )
+          print("======================================")
+          print("RISULTATO TEST MULTIPLO")
+          print("======================================")
 
-          for r in risultati:
+          for risultato in risultati:
 
               print("")
+              print("--------------------------------------")
               print(
-                  "--------------------------------------"
-              )
-              print(
-                  r.get(
+                  risultato.get(
                       "id",
                       ""
                   )
               )
-              print(
-                  "--------------------------------------"
-              )
+              print("--------------------------------------")
 
               print(
                   "Marca:",
-                  r.get(
+                  risultato.get(
                       "marca",
                       ""
                   )
@@ -1201,7 +931,7 @@ jobs:
 
               print(
                   "Prodotto:",
-                  r.get(
+                  risultato.get(
                       "prodotto",
                       ""
                   )
@@ -1209,7 +939,7 @@ jobs:
 
               print(
                   "Motivo:",
-                  r.get(
+                  risultato.get(
                       "motivo",
                       ""
                   )
@@ -1217,7 +947,7 @@ jobs:
 
               print(
                   "Produttore:",
-                  r.get(
+                  risultato.get(
                       "produttore",
                       ""
                   )
@@ -1225,7 +955,7 @@ jobs:
 
               print(
                   "Lotti:",
-                  r.get(
+                  risultato.get(
                       "lotti",
                       []
                   )
@@ -1233,7 +963,7 @@ jobs:
 
               print(
                   "Scadenze:",
-                  r.get(
+                  risultato.get(
                       "scadenze",
                       []
                   )
@@ -1241,32 +971,28 @@ jobs:
 
               print(
                   "VALIDAZIONE:",
-                  r.get(
+                  risultato.get(
                       "validazione",
                       ""
                   )
               )
 
-              if r.get(
-                  "problemi"
-              ):
+              problemi = risultato.get(
+                  "problemi",
+                  []
+              )
 
+              if problemi:
                   print(
                       "Problemi:",
-                      r["problemi"]
+                      problemi
                   )
 
 
           print("")
-          print(
-              "======================================"
-          )
-          print(
-              "RIEPILOGO"
-          )
-          print(
-              "======================================"
-          )
+          print("======================================")
+          print("RIEPILOGO")
+          print("======================================")
 
           print(
               "Totale:",
@@ -1280,32 +1006,31 @@ jobs:
 
           print(
               "Da verificare:",
-              output[
-                  "da_verificare"
-              ]
+              output["da_verificare"]
           )
 
+          print("")
 
           if (
-              output["totale"] > 0 and
-              output["pass"] ==
-              output["totale"]
+              output["totale"] > 0
+              and output["pass"]
+              == output["totale"]
           ):
 
-              print("")
               print(
                   "✅ TEST MULTIPLO SUPERATO"
               )
+
               print(
                   "Tutti i richiami hanno prodotto dati plausibili."
               )
 
           else:
 
-              print("")
               print(
                   "⚠️ TEST NON ANCORA CONCLUSIVO"
               )
+
               print(
                   "Uno o più richiami richiedono verifica."
               )
