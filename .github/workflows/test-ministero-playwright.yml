@@ -1,4 +1,4 @@
-name: Test Ministero Estrazione PDF
+name: Test Ministero Multi Richiamo
 
 on:
   workflow_dispatch:
@@ -16,29 +16,118 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Installa Playwright Chromium e strumenti PDF
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installa Playwright Chromium e PDF tools
         run: |
           npm init -y
           npm install playwright
           npx playwright install --with-deps chromium
+
           sudo apt-get update
           sudo apt-get install -y poppler-utils
 
-      - name: Crea script download Ministero
+          mkdir -p risultati
+
+      - name: Crea downloader multiplo
         run: |
-          cat > scarica-ministero.mjs <<'EOF'
+          cat > scarica-richiami.mjs <<'EOF'
           import { chromium } from "playwright";
           import fs from "fs";
 
+          const richiami = [
+            {
+              id: "tonno-conad",
+              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/filetti-di-tonno-allolio-di-oliva/"
+            },
+            {
+              id: "atio-capriss",
+              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/atio/"
+            },
+            {
+              id: "pesto-rosso",
+              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pesto-rosso/"
+            },
+            {
+              id: "focaccina-conad",
+              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/focaccina-con-prosciutto-crudo-e-formaggio-edamer/"
+            }
+          ];
+
+          function pulisci(valore) {
+            return String(valore || "")
+              .replace(/\s+/g, " ")
+              .trim();
+          }
+
+          function estraiCampo(testo, etichetta) {
+            const regex =
+              new RegExp(
+                etichetta + "\\s*:\\s*([^\\n\\r]+)",
+                "i"
+              );
+
+            const match = testo.match(regex);
+
+            if (!match || !match[1]) {
+              return "";
+            }
+
+            return pulisci(match[1]);
+          }
+
+          async function scaricaPDF(page, pdfUrl) {
+
+            const risultato =
+              await page.evaluate(
+                async (url) => {
+
+                  const response =
+                    await fetch(
+                      url,
+                      {
+                        credentials: "include"
+                      }
+                    );
+
+                  const buffer =
+                    await response.arrayBuffer();
+
+                  return {
+                    ok: response.ok,
+                    status: response.status,
+                    contentType:
+                      response.headers.get(
+                        "content-type"
+                      ) || "",
+                    bytes:
+                      Array.from(
+                        new Uint8Array(buffer)
+                      )
+                  };
+                },
+                pdfUrl
+              );
+
+            const firma =
+              risultato.bytes
+                .slice(0, 5)
+                .map(
+                  numero =>
+                    String.fromCharCode(numero)
+                )
+                .join("");
+
+            return {
+              ...risultato,
+              firma
+            };
+          }
+
           async function main() {
-
-            const paginaRichiamo =
-              "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/filetti-di-tonno-allolio-di-oliva/";
-
-            console.log("======================================");
-            console.log("RICHIAMI ITALIA - TEST COMPLETO");
-            console.log("Ministero -> PDF");
-            console.log("======================================");
 
             const browser =
               await chromium.launch({
@@ -47,248 +136,340 @@ jobs:
 
             const context =
               await browser.newContext({
+                locale: "it-IT",
+
                 viewport: {
                   width: 1280,
                   height: 900
                 },
-                locale: "it-IT",
+
                 userAgent:
                   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
                   "AppleWebKit/537.36 (KHTML, like Gecko) " +
                   "Chrome/131.0.0.0 Safari/537.36"
               });
 
-            const page =
-              await context.newPage();
+            const riepilogo = [];
 
             try {
 
-              console.log("");
-              console.log(
-                "1. Apro la pagina ufficiale..."
-              );
+              for (const richiamo of richiami) {
 
-              await page.goto(
-                paginaRichiamo,
-                {
-                  waitUntil:
-                    "domcontentloaded",
-                  timeout: 90000
-                }
-              );
-
-              await page.waitForTimeout(
-                12000
-              );
-
-              const testoPagina =
-                await page
-                  .locator("body")
-                  .innerText()
-                  .catch(() => "");
-
-              const challenge =
-                /please enable javascript|please enable cookies|browser validation/i
-                  .test(testoPagina);
-
-              if (challenge) {
-
+                console.log("");
                 console.log(
-                  "❌ Browser Validation non superata."
+                  "======================================"
+                );
+                console.log(
+                  "TEST:",
+                  richiamo.id
+                );
+                console.log(
+                  "======================================"
                 );
 
-                process.exitCode = 2;
-                return;
-              }
+                const page =
+                  await context.newPage();
 
-              console.log(
-                "✅ Browser Validation superata."
-              );
+                try {
 
-              const links =
-                await page
-                  .locator("a")
-                  .evaluateAll(
-                    elementi =>
-                      elementi.map(
-                        a => ({
-                          href:
-                            a.href || "",
-                          text:
-                            (
-                              a.innerText ||
-                              ""
-                            ).trim()
-                        })
-                      )
+                  await page.goto(
+                    richiamo.url,
+                    {
+                      waitUntil:
+                        "domcontentloaded",
+                      timeout: 90000
+                    }
                   );
 
-              const pdf =
-                links.find(
-                  link =>
-                    /\.pdf($|\?)/i
-                      .test(
-                        link.href
-                      ) ||
-                    /pdf/i
-                      .test(
-                        link.text
-                      )
-                );
+                  await page.waitForTimeout(
+                    12000
+                  );
 
-              if (
-                !pdf ||
-                !pdf.href
-              ) {
+                  const testoPagina =
+                    await page
+                      .locator("body")
+                      .innerText()
+                      .catch(() => "");
 
-                console.log(
-                  "❌ PDF non trovato."
-                );
+                  const challenge =
+                    /please enable javascript|please enable cookies|browser validation/i
+                      .test(testoPagina);
 
-                process.exitCode = 3;
-                return;
-              }
+                  if (challenge) {
 
-              console.log("");
-              console.log(
-                "2. PDF trovato:"
-              );
-              console.log(
-                pdf.href
-              );
+                    console.log(
+                      "❌ Browser Validation non superata"
+                    );
 
-              const risultato =
-                await page.evaluate(
-                  async (pdfUrl) => {
+                    riepilogo.push({
+                      id: richiamo.id,
+                      paginaOk: false,
+                      errore:
+                        "Browser Validation"
+                    });
 
-                    const response =
-                      await fetch(
-                        pdfUrl,
-                        {
-                          credentials:
-                            "include"
-                        }
+                    await page.close();
+                    continue;
+                  }
+
+                  const marca =
+                    estraiCampo(
+                      testoPagina,
+                      "Marca"
+                    );
+
+                  const prodotto =
+                    estraiCampo(
+                      testoPagina,
+                      "Denominazione"
+                    );
+
+                  const motivo =
+                    estraiCampo(
+                      testoPagina,
+                      "Motivo della segnalazione"
+                    );
+
+                  const dataPubblicazione =
+                    estraiCampo(
+                      testoPagina,
+                      "Data pubblicazione"
+                    );
+
+                  console.log(
+                    "Marca:",
+                    marca
+                  );
+
+                  console.log(
+                    "Prodotto:",
+                    prodotto
+                  );
+
+                  console.log(
+                    "Motivo:",
+                    motivo
+                  );
+
+                  console.log(
+                    "Data:",
+                    dataPubblicazione
+                  );
+
+                  const links =
+                    await page
+                      .locator("a")
+                      .evaluateAll(
+                        elementi =>
+                          elementi.map(
+                            a => ({
+                              href:
+                                a.href || "",
+                              text:
+                                (
+                                  a.innerText ||
+                                  ""
+                                ).trim()
+                            })
+                          )
                       );
 
-                    const buffer =
-                      await response
-                        .arrayBuffer();
+                  const pdf =
+                    links.find(
+                      link =>
+                        /\.pdf($|\?)/i
+                          .test(link.href) ||
+                        /pdf/i
+                          .test(link.text)
+                    );
 
-                    return {
-                      ok:
-                        response.ok,
+                  if (
+                    !pdf ||
+                    !pdf.href
+                  ) {
 
-                      status:
-                        response.status,
+                    console.log(
+                      "❌ Nessun PDF trovato"
+                    );
 
-                      contentType:
-                        response.headers
-                          .get(
-                            "content-type"
-                          ) || "",
+                    riepilogo.push({
+                      id:
+                        richiamo.id,
+                      paginaOk:
+                        true,
+                      pdfOk:
+                        false,
+                      marca,
+                      prodotto,
+                      motivo
+                    });
 
-                      bytes:
-                        Array.from(
-                          new Uint8Array(
-                            buffer
-                          )
-                        )
-                    };
-                  },
-                  pdf.href
-                );
+                    await page.close();
+                    continue;
+                  }
 
-              const primiByte =
-                risultato.bytes
-                  .slice(0, 5)
-                  .map(
-                    numero =>
-                      String
-                        .fromCharCode(
-                          numero
-                        )
-                  )
-                  .join("");
+                  console.log(
+                    "PDF:",
+                    pdf.href
+                  );
 
-              const veroPdf =
-                risultato.ok &&
-                risultato.bytes
-                  .length > 1000 &&
-                primiByte === "%PDF-";
+                  const download =
+                    await scaricaPDF(
+                      page,
+                      pdf.href
+                    );
 
-              console.log(
-                "HTTP:",
-                risultato.status
-              );
+                  const pdfValido =
+                    download.ok &&
+                    download.status === 200 &&
+                    download.bytes.length > 1000 &&
+                    download.firma === "%PDF-";
 
-              console.log(
-                "Content-Type:",
-                risultato.contentType
-              );
+                  console.log(
+                    "HTTP:",
+                    download.status
+                  );
 
-              console.log(
-                "Dimensione:",
-                risultato.bytes.length
-              );
+                  console.log(
+                    "Content-Type:",
+                    download.contentType
+                  );
 
-              console.log(
-                "Firma:",
-                primiByte
-              );
+                  console.log(
+                    "Dimensione:",
+                    download.bytes.length
+                  );
 
-              if (!veroPdf) {
+                  console.log(
+                    "Firma:",
+                    download.firma
+                  );
 
-                console.log(
-                  "❌ Il file ricevuto non è un PDF valido."
-                );
+                  if (!pdfValido) {
 
-                process.exitCode = 4;
-                return;
-              }
+                    console.log(
+                      "❌ PDF non valido"
+                    );
 
-              fs.writeFileSync(
-                "richiamo-ministero.pdf",
-                Buffer.from(
-                  risultato.bytes
-                )
-              );
+                    riepilogo.push({
+                      id:
+                        richiamo.id,
+                      paginaOk:
+                        true,
+                      pdfOk:
+                        false,
+                      marca,
+                      prodotto,
+                      motivo
+                    });
 
-              fs.writeFileSync(
-                "pagina-richiamo.txt",
-                testoPagina,
-                "utf8"
-              );
+                    await page.close();
+                    continue;
+                  }
 
-              fs.writeFileSync(
-                "origine.json",
-                JSON.stringify(
-                  {
-                    pagina:
-                      paginaRichiamo,
+                  const pdfPath =
+                    `risultati/${richiamo.id}.pdf`;
+
+                  fs.writeFileSync(
+                    pdfPath,
+                    Buffer.from(
+                      download.bytes
+                    )
+                  );
+
+                  fs.writeFileSync(
+                    `risultati/${richiamo.id}-pagina.txt`,
+                    testoPagina,
+                    "utf8"
+                  );
+
+                  fs.writeFileSync(
+                    `risultati/${richiamo.id}-meta.json`,
+                    JSON.stringify(
+                      {
+                        id:
+                          richiamo.id,
+
+                        pagina:
+                          richiamo.url,
+
+                        pdf:
+                          pdf.href,
+
+                        marca,
+
+                        prodotto,
+
+                        motivo,
+
+                        dataPubblicazione
+                      },
+                      null,
+                      2
+                    ),
+                    "utf8"
+                  );
+
+                  riepilogo.push({
+                    id:
+                      richiamo.id,
+
+                    paginaOk:
+                      true,
+
+                    pdfOk:
+                      true,
+
+                    marca,
+
+                    prodotto,
+
+                    motivo,
+
+                    dataPubblicazione,
 
                     pdf:
                       pdf.href
-                  },
+                  });
+
+                  console.log(
+                    "✅ Pagina e PDF acquisiti"
+                  );
+
+                } catch (error) {
+
+                  console.log(
+                    "❌ Errore:",
+                    String(error)
+                  );
+
+                  riepilogo.push({
+                    id:
+                      richiamo.id,
+                    paginaOk:
+                      false,
+                    errore:
+                      String(error)
+                  });
+
+                } finally {
+
+                  await page
+                    .close()
+                    .catch(
+                      () => {}
+                    );
+                }
+              }
+
+              fs.writeFileSync(
+                "risultati/download-riepilogo.json",
+                JSON.stringify(
+                  riepilogo,
                   null,
                   2
                 )
               );
-
-              console.log(
-                "✅ PDF ufficiale scaricato."
-              );
-
-            } catch (error) {
-
-              console.error(
-                "❌ Errore:"
-              );
-
-              console.error(
-                error
-              );
-
-              process.exitCode = 1;
 
             } finally {
 
@@ -299,264 +480,854 @@ jobs:
           main();
           EOF
 
-      - name: Scarica PDF ufficiale
-        run: node scarica-ministero.mjs
+      - name: Scarica quattro richiami reali
+        run: node scarica-richiami.mjs
 
-      - name: Estrai testo dal PDF
+      - name: Estrai testo da tutti i PDF
         run: |
-          pdftotext -layout richiamo-ministero.pdf richiamo-ministero.txt
+          set -e
 
-          echo "======================================"
-          echo "TESTO ESTRATTO DAL PDF"
-          echo "======================================"
+          for pdf in risultati/*.pdf
+          do
+            txt="${pdf%.pdf}.txt"
 
-          head -n 120 richiamo-ministero.txt
+            echo "--------------------------------------"
+            echo "ESTRAZIONE: $pdf"
+            echo "--------------------------------------"
 
-      - name: Crea estrattore dati
+            pdftotext -layout "$pdf" "$txt"
+
+            if [ ! -s "$txt" ]; then
+              echo "ERRORE: testo PDF vuoto"
+              exit 1
+            fi
+
+            echo "Testo estratto:"
+            wc -c "$txt"
+          done
+
+      - name: Crea estrattore robusto
         run: |
-          cat > estrai-dati.mjs <<'EOF'
-          import fs from "fs";
+          cat > estrai_richiami.py <<'PYEOF'
+          import json
+          import re
+          from pathlib import Path
 
-          const testo =
-            fs.readFileSync(
-              "richiamo-ministero.txt",
-              "utf8"
-            );
 
-          const pagina =
-            fs.readFileSync(
-              "pagina-richiamo.txt",
-              "utf8"
-            );
+          CARTELLA = Path("risultati")
 
-          function pulisci(
-            valore
-          ) {
 
-            if (!valore) {
-              return "";
-            }
-
-            return valore
-              .replace(
-                /\s+/g,
-                " "
-              )
-              .trim();
+          STOP_LOTTI = {
+              "DI",
+              "DEL",
+              "DELLA",
+              "DELLO",
+              "DEI",
+              "DEGLI",
+              "DELLE",
+              "IL",
+              "LO",
+              "LA",
+              "I",
+              "GLI",
+              "LE",
+              "LOTTO",
+              "LOTTI",
+              "PRODOTTO",
+              "PRODUZIONE",
+              "DATA",
+              "SCADENZA",
+              "TMC",
+              "TERMINE",
+              "MINIMO",
+              "CONSERVAZIONE",
+              "CONAD"
           }
 
-          function trova(
-            patterns,
-            sorgente = testo
-          ) {
 
-            for (
-              const pattern
-              of patterns
-            ) {
+          LABEL_SUCCESSIVA = re.compile(
+              r"""
+              (?:
+                  data\s+di\s+scadenza
+                | termine\s+minimo
+                | motivo
+                | avverten
+                | produttore
+                | stabilimento
+                | marchio
+                | marca
+                | denominazione
+                | peso
+                | confezione
+                | lotto
+                | lotti
+              )
+              """,
+              re.I | re.X
+          )
 
-              const match =
-                sorgente.match(
-                  pattern
-                );
 
-              if (
-                match &&
-                match[1]
-              ) {
+          def pulisci_spazi(testo):
+              return re.sub(
+                  r"[ \t]+",
+                  " ",
+                  testo
+              ).strip()
 
-                return pulisci(
-                  match[1]
-                );
+
+          def righe_non_vuote(testo):
+              risultato = []
+
+              for riga in testo.splitlines():
+                  riga = pulisci_spazi(riga)
+
+                  if riga:
+                      risultato.append(riga)
+
+              return risultato
+
+
+          def normalizza_lotto(valore):
+              valore = valore.strip()
+
+              valore = re.sub(
+                  r"^[\s:;\-–—]+",
+                  "",
+                  valore
+              )
+
+              valore = re.sub(
+                  r"[\s,;:.]+$",
+                  "",
+                  valore
+              )
+
+              return valore
+
+
+          def lotto_plausibile(valore):
+              valore = normalizza_lotto(
+                  valore
+              )
+
+              if not valore:
+                  return False
+
+              if len(valore) < 2:
+                  return False
+
+              if len(valore) > 40:
+                  return False
+
+              if valore.upper() in STOP_LOTTI:
+                  return False
+
+              if re.fullmatch(
+                  r"[A-Za-zÀ-ÿ]+",
+                  valore
+              ):
+                  return False
+
+              if not re.search(
+                  r"\d",
+                  valore
+              ):
+                  return False
+
+              if not re.fullmatch(
+                  r"[A-Za-z0-9./_\- ]+",
+                  valore
+              ):
+                  return False
+
+              return True
+
+
+          def trova_contesti(
+              righe,
+              parole,
+              ampiezza=3
+          ):
+              contesti = []
+
+              for indice, riga in enumerate(righe):
+
+                  basso = riga.lower()
+
+                  if any(
+                      parola in basso
+                      for parola in parole
+                  ):
+                      inizio = max(
+                          0,
+                          indice - 1
+                      )
+
+                      fine = min(
+                          len(righe),
+                          indice + ampiezza + 1
+                      )
+
+                      contesti.append(
+                          {
+                              "indice":
+                                  indice,
+                              "righe":
+                                  righe[
+                                      inizio:fine
+                                  ]
+                          }
+                      )
+
+              return contesti
+
+
+          def estrai_lotti(
+              testo
+          ):
+              righe =
+                  righe_non_vuote(
+                      testo
+                  )
+
+              candidati = []
+
+              patterns = [
+                  re.compile(
+                      r"""
+                      (?:
+                          numero\s+di\s+lotto
+                        | n[°º.]?\s*lotto
+                        | lotto\s+di\s+produzione
+                        | lotto
+                        | lotti
+                      )
+                      \s*
+                      [:;\-–—]?
+                      \s*
+                      ([A-Za-z0-9./_\-]+)
+                      """,
+                      re.I | re.X
+                  )
+              ]
+
+              for riga in righe:
+
+                  for pattern in patterns:
+
+                      for match in pattern.finditer(
+                          riga
+                      ):
+
+                          valore =
+                              normalizza_lotto(
+                                  match.group(1)
+                              )
+
+                          if lotto_plausibile(
+                              valore
+                          ):
+                              candidati.append(
+                                  valore
+                              )
+
+              contesti =
+                  trova_contesti(
+                      righe,
+                      [
+                          "lotto",
+                          "lotti"
+                      ],
+                      ampiezza=4
+                  )
+
+              for contesto in contesti:
+
+                  indice =
+                      contesto["indice"]
+
+                  riga =
+                      righe[indice]
+
+                  for offset in range(
+                      1,
+                      4
+                  ):
+
+                      pos =
+                          indice + offset
+
+                      if pos >= len(righe):
+                          break
+
+                      successiva =
+                          righe[pos]
+
+                      if LABEL_SUCCESSIVA.search(
+                          successiva
+                      ):
+                          break
+
+                      tokens =
+                          re.findall(
+                              r"\b[A-Za-z0-9][A-Za-z0-9./_\-]{1,30}\b",
+                              successiva
+                          )
+
+                      for token in tokens:
+
+                          if lotto_plausibile(
+                              token
+                          ):
+                              candidati.append(
+                                  token
+                              )
+
+              unici = []
+
+              for valore in candidati:
+
+                  valore =
+                      normalizza_lotto(
+                          valore
+                      )
+
+                  if (
+                      valore and
+                      valore not in unici
+                  ):
+                      unici.append(
+                          valore
+                      )
+
+              return unici, contesti
+
+
+          def estrai_scadenze(
+              testo
+          ):
+              patterns = [
+                  r"\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b",
+                  r"\b\d{1,2}[/-]\d{4}\b",
+                  r"\b\d{2}[.]\d{2}[.]\d{2,4}\b"
+              ]
+
+              risultati = []
+
+              righe =
+                  righe_non_vuote(
+                      testo
+                  )
+
+              contesti =
+                  trova_contesti(
+                      righe,
+                      [
+                          "scaden",
+                          "termine minimo",
+                          "tmc",
+                          "preferibilmente"
+                      ],
+                      ampiezza=4
+                  )
+
+              for contesto in contesti:
+
+                  blocco =
+                      " ".join(
+                          contesto["righe"]
+                      )
+
+                  for pattern in patterns:
+
+                      for valore in re.findall(
+                          pattern,
+                          blocco,
+                          flags=re.I
+                      ):
+
+                          if valore not in risultati:
+                              risultati.append(
+                                  valore
+                              )
+
+              return risultati, contesti
+
+
+          def estrai_produttore(
+              testo
+          ):
+              righe =
+                  righe_non_vuote(
+                      testo
+                  )
+
+              etichette = [
+                  "nome del produttore",
+                  "produttore",
+                  "nome o ragione sociale",
+                  "osa",
+                  "operatore del settore alimentare"
+              ]
+
+              for indice, riga in enumerate(righe):
+
+                  basso =
+                      riga.lower()
+
+                  if not any(
+                      e in basso
+                      for e in etichette
+                  ):
+                      continue
+
+                  dopo =
+                      re.split(
+                          r"[:\-–—]",
+                          riga,
+                          maxsplit=1
+                      )
+
+                  if len(dopo) == 2:
+
+                      valore =
+                          pulisci_spazi(
+                              dopo[1]
+                          )
+
+                      if (
+                          len(valore) >= 3 and
+                          "produttore" not in
+                          valore.lower()
+                      ):
+                          return valore
+
+                  for offset in range(
+                      1,
+                      4
+                  ):
+
+                      pos =
+                          indice + offset
+
+                      if pos >= len(righe):
+                          break
+
+                      valore =
+                          righe[pos]
+
+                      if LABEL_SUCCESSIVA.search(
+                          valore
+                      ):
+                          break
+
+                      if len(valore) >= 3:
+                          return valore
+
+              return ""
+
+
+          def crea_diagnostica_contesti(
+              contesti
+          ):
+              risultato = []
+
+              for elemento in contesti:
+
+                  risultato.append(
+                      " | ".join(
+                          elemento["righe"]
+                      )
+                  )
+
+              return risultato
+
+
+          risultati = []
+
+
+          for meta_path in sorted(
+              CARTELLA.glob(
+                  "*-meta.json"
+              )
+          ):
+
+              id_richiamo =
+                  meta_path.name.replace(
+                      "-meta.json",
+                      ""
+                  )
+
+              txt_path =
+                  CARTELLA / (
+                      id_richiamo +
+                      ".txt"
+                  )
+
+              meta =
+                  json.loads(
+                      meta_path.read_text(
+                          encoding="utf-8"
+                      )
+                  )
+
+              if not txt_path.exists():
+
+                  risultati.append(
+                      {
+                          **meta,
+                          "errore":
+                              "PDF senza testo estratto",
+                          "validazione":
+                              "FAIL"
+                      }
+                  )
+
+                  continue
+
+              testo =
+                  txt_path.read_text(
+                      encoding="utf-8",
+                      errors="ignore"
+                  )
+
+              lotti, contesti_lotto =
+                  estrai_lotti(
+                      testo
+                  )
+
+              scadenze, contesti_scadenza =
+                  estrai_scadenze(
+                      testo
+                  )
+
+              produttore =
+                  estrai_produttore(
+                      testo
+                  )
+
+              problemi = []
+
+              if not meta.get(
+                  "marca"
+              ):
+                  problemi.append(
+                      "marca pagina mancante"
+                  )
+
+              if not meta.get(
+                  "prodotto"
+              ):
+                  problemi.append(
+                      "prodotto pagina mancante"
+                  )
+
+              if not meta.get(
+                  "motivo"
+              ):
+                  problemi.append(
+                      "motivo pagina mancante"
+                  )
+
+              if not lotti:
+                  problemi.append(
+                      "nessun lotto affidabile trovato"
+                  )
+
+              lotti_sospetti = [
+                  x
+                  for x in lotti
+                  if not lotto_plausibile(x)
+              ]
+
+              if lotti_sospetti:
+                  problemi.append(
+                      "lotti sospetti: " +
+                      ", ".join(
+                          lotti_sospetti
+                      )
+                  )
+
+              risultato = {
+                  "id":
+                      id_richiamo,
+
+                  "data_pubblicazione":
+                      meta.get(
+                          "dataPubblicazione",
+                          ""
+                      ),
+
+                  "marca":
+                      meta.get(
+                          "marca",
+                          ""
+                      ),
+
+                  "prodotto":
+                      meta.get(
+                          "prodotto",
+                          ""
+                      ),
+
+                  "motivo":
+                      meta.get(
+                          "motivo",
+                          ""
+                      ),
+
+                  "produttore":
+                      produttore,
+
+                  "lotti":
+                      lotti,
+
+                  "scadenze":
+                      scadenze,
+
+                  "pagina":
+                      meta.get(
+                          "pagina",
+                          ""
+                      ),
+
+                  "pdf":
+                      meta.get(
+                          "pdf",
+                          ""
+                      ),
+
+                  "validazione":
+                      (
+                          "PASS"
+                          if not problemi
+                          else "DA_VERIFICARE"
+                      ),
+
+                  "problemi":
+                      problemi,
+
+                  "diagnostica": {
+                      "contesti_lotto":
+                          crea_diagnostica_contesti(
+                              contesti_lotto
+                          ),
+
+                      "contesti_scadenza":
+                          crea_diagnostica_contesti(
+                              contesti_scadenza
+                          )
+                  }
               }
-            }
 
-            return "";
+              risultati.append(
+                  risultato
+              )
+
+
+          output = {
+              "totale":
+                  len(risultati),
+
+              "pass":
+                  sum(
+                      1
+                      for r in risultati
+                      if r.get(
+                          "validazione"
+                      ) == "PASS"
+                  ),
+
+              "da_verificare":
+                  sum(
+                      1
+                      for r in risultati
+                      if r.get(
+                          "validazione"
+                      ) != "PASS"
+                  ),
+
+              "richiami":
+                  risultati
           }
 
-          const marcaPagina =
-            trova(
-              [
-                /Marca:\s*([^\n\r]+)/i
-              ],
-              pagina
-            );
 
-          const prodottoPagina =
-            trova(
-              [
-                /Denominazione:\s*([^\n\r]+)/i
-              ],
-              pagina
-            );
+          Path(
+              "risultati/risultato-multiplo.json"
+          ).write_text(
+              json.dumps(
+                  output,
+                  ensure_ascii=False,
+                  indent=2
+              ),
+              encoding="utf-8"
+          )
 
-          const motivoPagina =
-            trova(
-              [
-                /Motivo della segnalazione:\s*([^\n\r]+)/i
-              ],
-              pagina
-            );
 
-          const marcaPDF =
-            trova([
-              /(?:Marchio|Marca|Marchio di identificazione)\s*[:\-]?\s*([^\n\r]+)/i,
-              /Nome commerciale\s*[:\-]?\s*([^\n\r]+)/i
-            ]);
+          print("")
+          print(
+              "======================================"
+          )
+          print(
+              "RISULTATO TEST MULTIPLO"
+          )
+          print(
+              "======================================"
+          )
 
-          const prodottoPDF =
-            trova([
-              /(?:Denominazione di vendita|Denominazione del prodotto|Prodotto)\s*[:\-]?\s*([^\n\r]+)/i
-            ]);
+          for r in risultati:
 
-          const lotto =
-            trova([
-              /(?:Lotto|Numero di lotto|N[°º.]?\s*lotto)\s*[:\-]?\s*([A-Z0-9\/._\-]+)/i,
-              /\bLotto\s+([A-Z0-9\/._\-]+)/i
-            ]);
-
-          const scadenza =
-            trova([
-              /(?:Data di scadenza|Scadenza|Termine minimo di conservazione)\s*[:\-]?\s*([0-9]{1,2}[\/.\-][0-9]{1,2}[\/.\-][0-9]{2,4})/i,
-              /(?:Data di scadenza|Scadenza|Termine minimo di conservazione)\s*[:\-]?\s*([0-9]{1,2}[\/.\-][0-9]{4})/i
-            ]);
-
-          const produttore =
-            trova([
-              /(?:Nome del produttore|Produttore|Nome o ragione sociale dell'OSA)\s*[:\-]?\s*([^\n\r]+)/i
-            ]);
-
-          const motivoPDF =
-            trova([
-              /(?:Motivo del richiamo|Motivo della segnalazione|Motivo)\s*[:\-]?\s*([^\n\r]+)/i
-            ]);
-
-          const risultato = {
-
-            marca:
-              marcaPDF ||
-              marcaPagina,
-
-            prodotto:
-              prodottoPDF ||
-              prodottoPagina,
-
-            lotto:
-              lotto,
-
-            scadenza:
-              scadenza,
-
-            produttore:
-              produttore,
-
-            motivo:
-              motivoPDF ||
-              motivoPagina
-          };
-
-          fs.writeFileSync(
-            "risultato.json",
-            JSON.stringify(
-              risultato,
-              null,
-              2
-            )
-          );
-
-          console.log("");
-          console.log(
-            "======================================"
-          );
-
-          console.log(
-            "RISULTATO JSON"
-          );
-
-          console.log(
-            "======================================"
-          );
-
-          console.log(
-            JSON.stringify(
-              risultato,
-              null,
-              2
-            )
-          );
-
-          const campiEssenziali = [
-            risultato.marca,
-            risultato.prodotto,
-            risultato.lotto,
-            risultato.scadenza,
-            risultato.motivo
-          ];
-
-          const completi =
-            campiEssenziali
-              .filter(
-                valore =>
-                  valore &&
-                  valore.trim()
+              print("")
+              print(
+                  "--------------------------------------"
               )
-              .length;
+              print(
+                  r.get(
+                      "id",
+                      ""
+                  )
+              )
+              print(
+                  "--------------------------------------"
+              )
 
-          console.log("");
-          console.log(
-            "Campi essenziali trovati:",
-            completi,
-            "/ 5"
-          );
+              print(
+                  "Marca:",
+                  r.get(
+                      "marca",
+                      ""
+                  )
+              )
+
+              print(
+                  "Prodotto:",
+                  r.get(
+                      "prodotto",
+                      ""
+                  )
+              )
+
+              print(
+                  "Motivo:",
+                  r.get(
+                      "motivo",
+                      ""
+                  )
+              )
+
+              print(
+                  "Produttore:",
+                  r.get(
+                      "produttore",
+                      ""
+                  )
+              )
+
+              print(
+                  "Lotti:",
+                  r.get(
+                      "lotti",
+                      []
+                  )
+              )
+
+              print(
+                  "Scadenze:",
+                  r.get(
+                      "scadenze",
+                      []
+                  )
+              )
+
+              print(
+                  "VALIDAZIONE:",
+                  r.get(
+                      "validazione",
+                      ""
+                  )
+              )
+
+              if r.get(
+                  "problemi"
+              ):
+
+                  print(
+                      "Problemi:",
+                      r["problemi"]
+                  )
+
+
+          print("")
+          print(
+              "======================================"
+          )
+          print(
+              "RIEPILOGO"
+          )
+          print(
+              "======================================"
+          )
+
+          print(
+              "Totale:",
+              output["totale"]
+          )
+
+          print(
+              "PASS:",
+              output["pass"]
+          )
+
+          print(
+              "Da verificare:",
+              output[
+                  "da_verificare"
+              ]
+          )
+
 
           if (
-            completi >= 4 &&
-            risultato.lotto &&
-            risultato.motivo
-          ) {
+              output["totale"] > 0 and
+              output["pass"] ==
+              output["totale"]
+          ):
 
-            console.log("");
-            console.log(
-              "======================================"
-            );
+              print("")
+              print(
+                  "✅ TEST MULTIPLO SUPERATO"
+              )
+              print(
+                  "Tutti i richiami hanno prodotto dati plausibili."
+              )
 
-            console.log(
-              "✅ ESTRAZIONE SUPERATA"
-            );
+          else:
 
-            console.log(
-              "Il PDF è stato trasformato automaticamente in dati strutturati."
-            );
+              print("")
+              print(
+                  "⚠️ TEST NON ANCORA CONCLUSIVO"
+              )
+              print(
+                  "Uno o più richiami richiedono verifica."
+              )
 
-            console.log(
-              "======================================"
-            );
+          PYEOF
 
-          } else {
+      - name: Analizza quattro PDF
+        run: python estrai_richiami.py
 
-            console.log("");
-            console.log(
-              "⚠️ ESTRAZIONE PARZIALE"
-            );
+      - name: Mostra JSON finale
+        run: |
+          echo "======================================"
+          echo "JSON COMPLETO"
+          echo "======================================"
 
-            console.log(
-              "Il PDF è leggibile ma alcuni campi richiedono un estrattore più evoluto."
-            );
-          }
-          EOF
+          cat risultati/risultato-multiplo.json
 
-      - name: Estrai dati strutturati
-        run: node estrai-dati.mjs
-
-      - name: Salva risultati
+      - name: Salva tutti i risultati
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: risultato-estrazione-ministero
+          name: test-multiplo-richiami
           path: |
-            richiamo-ministero.pdf
-            richiamo-ministero.txt
-            pagina-richiamo.txt
-            origine.json
-            risultato.json
+            risultati/
           if-no-files-found: ignore
