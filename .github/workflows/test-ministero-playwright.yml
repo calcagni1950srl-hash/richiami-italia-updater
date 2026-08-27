@@ -1,4 +1,4 @@
-name: Test Ministero Playwright
+name: Test Ministero Estrazione PDF
 
 on:
   workflow_dispatch:
@@ -16,197 +16,208 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Installa Playwright
+      - name: Installa Playwright Chromium e strumenti PDF
         run: |
           npm init -y
           npm install playwright
           npx playwright install --with-deps chromium
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
 
-      - name: Crea script di test
+      - name: Crea script download Ministero
         run: |
-          cat > test-ministero.mjs <<'EOF'
+          cat > scarica-ministero.mjs <<'EOF'
           import { chromium } from "playwright";
           import fs from "fs";
 
           async function main() {
+
             const paginaRichiamo =
               "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/filetti-di-tonno-allolio-di-oliva/";
 
             console.log("======================================");
-            console.log("TEST RICHIAMI ITALIA");
-            console.log("Browser reale Chromium + Playwright");
+            console.log("RICHIAMI ITALIA - TEST COMPLETO");
+            console.log("Ministero -> PDF");
             console.log("======================================");
 
-            const browser = await chromium.launch({
-              headless: true
-            });
+            const browser =
+              await chromium.launch({
+                headless: true
+              });
 
-            const context = await browser.newContext({
-              viewport: {
-                width: 1280,
-                height: 900
-              },
-              locale: "it-IT",
-              userAgent:
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-                "AppleWebKit/537.36 (KHTML, like Gecko) " +
-                "Chrome/131.0.0.0 Safari/537.36"
-            });
+            const context =
+              await browser.newContext({
+                viewport: {
+                  width: 1280,
+                  height: 900
+                },
+                locale: "it-IT",
+                userAgent:
+                  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+                  "AppleWebKit/537.36 (KHTML, like Gecko) " +
+                  "Chrome/131.0.0.0 Safari/537.36"
+              });
 
-            const page = await context.newPage();
+            const page =
+              await context.newPage();
 
             try {
+
               console.log("");
-              console.log("1. Apro la scheda del richiamo...");
-              console.log(paginaRichiamo);
+              console.log(
+                "1. Apro la pagina ufficiale..."
+              );
 
               await page.goto(
                 paginaRichiamo,
                 {
-                  waitUntil: "domcontentloaded",
+                  waitUntil:
+                    "domcontentloaded",
                   timeout: 90000
                 }
               );
 
-              console.log("Pagina caricata.");
-
-              console.log("");
-              console.log(
-                "2. Attendo eventuale Browser Validation..."
+              await page.waitForTimeout(
+                12000
               );
-
-              await page.waitForTimeout(12000);
-
-              console.log("URL attuale:");
-              console.log(page.url());
-
-              console.log("");
-              console.log("Titolo pagina:");
-              console.log(await page.title());
 
               const testoPagina =
-                await page.locator("body").innerText()
+                await page
+                  .locator("body")
+                  .innerText()
                   .catch(() => "");
-
-              console.log("");
-              console.log("Prime informazioni visibili:");
-              console.log(
-                testoPagina.substring(0, 1500)
-              );
 
               const challenge =
                 /please enable javascript|please enable cookies|browser validation/i
                   .test(testoPagina);
 
               if (challenge) {
-                console.log("");
-                console.log(
-                  "❌ Browser Validation ancora presente."
-                );
 
-                await page.screenshot({
-                  path: "ministero-bloccato.png",
-                  fullPage: true
-                });
+                console.log(
+                  "❌ Browser Validation non superata."
+                );
 
                 process.exitCode = 2;
                 return;
               }
 
-              console.log("");
               console.log(
-                "✅ Browser Validation superata oppure non presente."
-              );
-
-              console.log("");
-              console.log(
-                "3. Cerco automaticamente il PDF del richiamo..."
+                "✅ Browser Validation superata."
               );
 
               const links =
-                await page.locator("a").evaluateAll(
-                  elementi =>
-                    elementi.map(a => ({
-                      href: a.href || "",
-                      text:
-                        (a.innerText || "")
-                          .trim()
-                    }))
-                );
+                await page
+                  .locator("a")
+                  .evaluateAll(
+                    elementi =>
+                      elementi.map(
+                        a => ({
+                          href:
+                            a.href || "",
+                          text:
+                            (
+                              a.innerText ||
+                              ""
+                            ).trim()
+                        })
+                      )
+                  );
 
               const pdf =
                 links.find(
                   link =>
-                    /\.pdf($|\?)/i.test(link.href) ||
-                    /pdf/i.test(link.text)
+                    /\.pdf($|\?)/i
+                      .test(
+                        link.href
+                      ) ||
+                    /pdf/i
+                      .test(
+                        link.text
+                      )
                 );
 
-              if (!pdf || !pdf.href) {
-                console.log("");
+              if (
+                !pdf ||
+                !pdf.href
+              ) {
+
                 console.log(
-                  "❌ Nessun collegamento PDF trovato."
+                  "❌ PDF non trovato."
                 );
-
-                console.log(
-                  JSON.stringify(
-                    links.slice(0, 50),
-                    null,
-                    2
-                  )
-                );
-
-                await page.screenshot({
-                  path: "ministero-senza-pdf.png",
-                  fullPage: true
-                });
 
                 process.exitCode = 3;
                 return;
               }
 
               console.log("");
-              console.log("PDF trovato:");
-              console.log(pdf.href);
-
-              console.log("");
               console.log(
-                "4. Recupero il PDF usando la stessa sessione del browser..."
+                "2. PDF trovato:"
+              );
+              console.log(
+                pdf.href
               );
 
               const risultato =
                 await page.evaluate(
                   async (pdfUrl) => {
+
                     const response =
                       await fetch(
                         pdfUrl,
                         {
-                          credentials: "include"
+                          credentials:
+                            "include"
                         }
                       );
 
                     const buffer =
-                      await response.arrayBuffer();
-
-                    const bytes =
-                      Array.from(
-                        new Uint8Array(buffer)
-                      );
+                      await response
+                        .arrayBuffer();
 
                     return {
-                      ok: response.ok,
-                      status: response.status,
+                      ok:
+                        response.ok,
+
+                      status:
+                        response.status,
+
                       contentType:
-                        response.headers.get(
-                          "content-type"
-                        ) || "",
-                      bytes
+                        response.headers
+                          .get(
+                            "content-type"
+                          ) || "",
+
+                      bytes:
+                        Array.from(
+                          new Uint8Array(
+                            buffer
+                          )
+                        )
                     };
                   },
                   pdf.href
                 );
 
+              const primiByte =
+                risultato.bytes
+                  .slice(0, 5)
+                  .map(
+                    numero =>
+                      String
+                        .fromCharCode(
+                          numero
+                        )
+                  )
+                  .join("");
+
+              const veroPdf =
+                risultato.ok &&
+                risultato.bytes
+                  .length > 1000 &&
+                primiByte === "%PDF-";
+
               console.log(
-                "HTTP status:",
+                "HTTP:",
                 risultato.status
               );
 
@@ -217,40 +228,18 @@ jobs:
 
               console.log(
                 "Dimensione:",
-                risultato.bytes.length,
-                "bytes"
+                risultato.bytes.length
               );
-
-              const primiByte =
-                risultato.bytes
-                  .slice(0, 5)
-                  .map(
-                    n =>
-                      String.fromCharCode(n)
-                  )
-                  .join("");
 
               console.log(
-                "Firma iniziale:",
-                JSON.stringify(primiByte)
+                "Firma:",
+                primiByte
               );
 
-              const veroPdf =
-                risultato.ok &&
-                risultato.bytes.length > 1000 &&
-                primiByte === "%PDF-";
-
               if (!veroPdf) {
-                console.log("");
-                console.log(
-                  "❌ Il server non ha consegnato un vero PDF."
-                );
 
-                fs.writeFileSync(
-                  "risposta-non-pdf.bin",
-                  Buffer.from(
-                    risultato.bytes
-                  )
+                console.log(
+                  "❌ Il file ricevuto non è un PDF valido."
                 );
 
                 process.exitCode = 4;
@@ -264,38 +253,45 @@ jobs:
                 )
               );
 
-              console.log("");
-              console.log(
-                "======================================"
+              fs.writeFileSync(
+                "pagina-richiamo.txt",
+                testoPagina,
+                "utf8"
               );
-              console.log(
-                "✅ TEST SUPERATO"
+
+              fs.writeFileSync(
+                "origine.json",
+                JSON.stringify(
+                  {
+                    pagina:
+                      paginaRichiamo,
+
+                    pdf:
+                      pdf.href
+                  },
+                  null,
+                  2
+                )
               );
+
               console.log(
-                "Il browser ha raggiunto il richiamo"
-              );
-              console.log(
-                "e ha scaricato un vero PDF ufficiale."
-              );
-              console.log(
-                "======================================"
+                "✅ PDF ufficiale scaricato."
               );
 
             } catch (error) {
-              console.error("");
-              console.error(
-                "❌ ERRORE DURANTE IL TEST"
-              );
-              console.error(error);
 
-              await page.screenshot({
-                path: "ministero-errore.png",
-                fullPage: true
-              }).catch(() => {});
+              console.error(
+                "❌ Errore:"
+              );
+
+              console.error(
+                error
+              );
 
               process.exitCode = 1;
 
             } finally {
+
               await browser.close();
             }
           }
@@ -303,18 +299,264 @@ jobs:
           main();
           EOF
 
-      - name: Esegui test decisivo
-        run: node test-ministero.mjs
+      - name: Scarica PDF ufficiale
+        run: node scarica-ministero.mjs
 
-      - name: Salva risultati diagnostici
+      - name: Estrai testo dal PDF
+        run: |
+          pdftotext -layout richiamo-ministero.pdf richiamo-ministero.txt
+
+          echo "======================================"
+          echo "TESTO ESTRATTO DAL PDF"
+          echo "======================================"
+
+          head -n 120 richiamo-ministero.txt
+
+      - name: Crea estrattore dati
+        run: |
+          cat > estrai-dati.mjs <<'EOF'
+          import fs from "fs";
+
+          const testo =
+            fs.readFileSync(
+              "richiamo-ministero.txt",
+              "utf8"
+            );
+
+          const pagina =
+            fs.readFileSync(
+              "pagina-richiamo.txt",
+              "utf8"
+            );
+
+          function pulisci(
+            valore
+          ) {
+
+            if (!valore) {
+              return "";
+            }
+
+            return valore
+              .replace(
+                /\s+/g,
+                " "
+              )
+              .trim();
+          }
+
+          function trova(
+            patterns,
+            sorgente = testo
+          ) {
+
+            for (
+              const pattern
+              of patterns
+            ) {
+
+              const match =
+                sorgente.match(
+                  pattern
+                );
+
+              if (
+                match &&
+                match[1]
+              ) {
+
+                return pulisci(
+                  match[1]
+                );
+              }
+            }
+
+            return "";
+          }
+
+          const marcaPagina =
+            trova(
+              [
+                /Marca:\s*([^\n\r]+)/i
+              ],
+              pagina
+            );
+
+          const prodottoPagina =
+            trova(
+              [
+                /Denominazione:\s*([^\n\r]+)/i
+              ],
+              pagina
+            );
+
+          const motivoPagina =
+            trova(
+              [
+                /Motivo della segnalazione:\s*([^\n\r]+)/i
+              ],
+              pagina
+            );
+
+          const marcaPDF =
+            trova([
+              /(?:Marchio|Marca|Marchio di identificazione)\s*[:\-]?\s*([^\n\r]+)/i,
+              /Nome commerciale\s*[:\-]?\s*([^\n\r]+)/i
+            ]);
+
+          const prodottoPDF =
+            trova([
+              /(?:Denominazione di vendita|Denominazione del prodotto|Prodotto)\s*[:\-]?\s*([^\n\r]+)/i
+            ]);
+
+          const lotto =
+            trova([
+              /(?:Lotto|Numero di lotto|N[°º.]?\s*lotto)\s*[:\-]?\s*([A-Z0-9\/._\-]+)/i,
+              /\bLotto\s+([A-Z0-9\/._\-]+)/i
+            ]);
+
+          const scadenza =
+            trova([
+              /(?:Data di scadenza|Scadenza|Termine minimo di conservazione)\s*[:\-]?\s*([0-9]{1,2}[\/.\-][0-9]{1,2}[\/.\-][0-9]{2,4})/i,
+              /(?:Data di scadenza|Scadenza|Termine minimo di conservazione)\s*[:\-]?\s*([0-9]{1,2}[\/.\-][0-9]{4})/i
+            ]);
+
+          const produttore =
+            trova([
+              /(?:Nome del produttore|Produttore|Nome o ragione sociale dell'OSA)\s*[:\-]?\s*([^\n\r]+)/i
+            ]);
+
+          const motivoPDF =
+            trova([
+              /(?:Motivo del richiamo|Motivo della segnalazione|Motivo)\s*[:\-]?\s*([^\n\r]+)/i
+            ]);
+
+          const risultato = {
+
+            marca:
+              marcaPDF ||
+              marcaPagina,
+
+            prodotto:
+              prodottoPDF ||
+              prodottoPagina,
+
+            lotto:
+              lotto,
+
+            scadenza:
+              scadenza,
+
+            produttore:
+              produttore,
+
+            motivo:
+              motivoPDF ||
+              motivoPagina
+          };
+
+          fs.writeFileSync(
+            "risultato.json",
+            JSON.stringify(
+              risultato,
+              null,
+              2
+            )
+          );
+
+          console.log("");
+          console.log(
+            "======================================"
+          );
+
+          console.log(
+            "RISULTATO JSON"
+          );
+
+          console.log(
+            "======================================"
+          );
+
+          console.log(
+            JSON.stringify(
+              risultato,
+              null,
+              2
+            )
+          );
+
+          const campiEssenziali = [
+            risultato.marca,
+            risultato.prodotto,
+            risultato.lotto,
+            risultato.scadenza,
+            risultato.motivo
+          ];
+
+          const completi =
+            campiEssenziali
+              .filter(
+                valore =>
+                  valore &&
+                  valore.trim()
+              )
+              .length;
+
+          console.log("");
+          console.log(
+            "Campi essenziali trovati:",
+            completi,
+            "/ 5"
+          );
+
+          if (
+            completi >= 4 &&
+            risultato.lotto &&
+            risultato.motivo
+          ) {
+
+            console.log("");
+            console.log(
+              "======================================"
+            );
+
+            console.log(
+              "✅ ESTRAZIONE SUPERATA"
+            );
+
+            console.log(
+              "Il PDF è stato trasformato automaticamente in dati strutturati."
+            );
+
+            console.log(
+              "======================================"
+            );
+
+          } else {
+
+            console.log("");
+            console.log(
+              "⚠️ ESTRAZIONE PARZIALE"
+            );
+
+            console.log(
+              "Il PDF è leggibile ma alcuni campi richiedono un estrattore più evoluto."
+            );
+          }
+          EOF
+
+      - name: Estrai dati strutturati
+        run: node estrai-dati.mjs
+
+      - name: Salva risultati
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: risultato-test-ministero
+          name: risultato-estrazione-ministero
           path: |
             richiamo-ministero.pdf
-            ministero-bloccato.png
-            ministero-senza-pdf.png
-            ministero-errore.png
-            risposta-non-pdf.bin
+            richiamo-ministero.txt
+            pagina-richiamo.txt
+            origine.json
+            risultato.json
           if-no-files-found: ignore
