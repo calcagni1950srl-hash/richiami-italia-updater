@@ -1,10 +1,10 @@
-name: Test Reale 20 Richiami Ministero
+name: Test Severo 20 Richiami Ministero
 
 on:
   workflow_dispatch:
 
 jobs:
-  test-20-richiami:
+  test-severo:
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -38,139 +38,119 @@ jobs:
           mkdir -p risultati/testi
           mkdir -p risultati/ocr
 
-      - name: Crea programma download 20 richiami
+      - name: Crea downloader
         run: |
           cat > download20.mjs <<'EOF'
           import { chromium } from "playwright";
           import fs from "fs";
 
           const RICHIAMI = [
-            {
-              id: "01-atio",
-              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/atio/"
-            },
-            {
-              id: "02-duble",
-              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/duble/"
-            },
-            {
-              id: "03-formaggella",
-              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/formaggella-1/"
-            },
-            {
-              id: "04-capreggio",
-              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/capreggio/"
-            },
-            {
-              id: "05-pesto-rosso",
-              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pesto-rosso/"
-            },
-            {
-              id: "06-tonno-conad",
-              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/filetti-di-tonno-allolio-di-oliva/"
-            },
-            {
-              id: "07-focaccina-conad",
-              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/focaccina-con-prosciutto-crudo-e-formaggio-edamer/"
-            },
-            {
-              id: "08-pate-olive-nere",
-              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pate-di-olive-nere/"
-            },
-            {
-              id: "09-wurstel-suillo",
-              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/wurstel-suillo-250g/"
-            },
-            {
-              id: "10-senape-allegri-sapori",
-              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/senape-300ml/"
-            },
-            {
-              id: "11-senape-tusce",
-              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/senape-300-ml/"
-            },
-            {
-              id: "12-le-gusto",
-              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/le-gusto/"
-            },
-            {
-              id: "13-riso-maiale",
-              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/riso-maiale/"
-            },
-            {
-              id: "14-cat-monocolore",
-              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/cat-monocolore/"
-            },
-            {
-              id: "15-mozzarella-mugello-bio",
-              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mozzarella-da-latte-del-mugello-bio/"
-            },
-            {
-              id: "16-uova-consumo",
-              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/uova-da-consumo/"
-            },
-            {
-              id: "17-cartellate-vincotto",
-              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/cartellate-al-vincotto/"
-            },
-            {
-              id: "18-mozzarella-conad",
-              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mozzarella-conad/"
-            },
-            {
-              id: "19-emmental-land",
-              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/emmental-fette/"
-            },
-            {
-              id: "20-contorno-delicato",
-              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/contorno-delicato/"
-            }
+            ["01-atio",
+             "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/atio/"],
+
+            ["02-duble",
+             "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/duble/"],
+
+            ["03-formaggella",
+             "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/formaggella-1/"],
+
+            ["04-capreggio",
+             "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/capreggio/"],
+
+            ["05-pesto-rosso",
+             "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pesto-rosso/"],
+
+            ["06-tonno-conad",
+             "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/filetti-di-tonno-allolio-di-oliva/"],
+
+            ["07-focaccina-conad",
+             "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/focaccina-con-prosciutto-crudo-e-formaggio-edamer/"],
+
+            ["08-pate-olive-nere",
+             "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pate-di-olive-nere/"],
+
+            ["09-wurstel-suillo",
+             "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/wurstel-suillo-250g/"],
+
+            ["10-senape-allegri-sapori",
+             "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/senape-300ml/"],
+
+            ["11-senape-tusce",
+             "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/senape-300-ml/"],
+
+            ["12-le-gusto",
+             "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/le-gusto/"],
+
+            ["13-riso-maiale",
+             "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/riso-maiale/"],
+
+            ["14-cat-monocolore",
+             "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/cat-monocolore/"],
+
+            ["15-mozzarella-mugello-bio",
+             "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mozzarella-da-latte-del-mugello-bio/"],
+
+            ["16-uova-consumo",
+             "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/uova-da-consumo/"],
+
+            ["17-cartellate-vincotto",
+             "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/cartellate-al-vincotto/"],
+
+            ["18-mozzarella-conad",
+             "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mozzarella-conad/"],
+
+            ["19-emmental-land",
+             "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/emmental-fette/"],
+
+            ["20-contorno-delicato",
+             "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/contorno-delicato/"]
           ];
 
-          function clean(value) {
-            return String(value || "")
+          function clean(v) {
+            return String(v || "")
               .replace(/\u00a0/g, " ")
               .replace(/[ \t]+/g, " ")
               .trim();
           }
 
-          function fieldFromBody(body, labels) {
+          function field(body, labels) {
             for (const label of labels) {
-              const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+              const escaped =
+                label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-              const re = new RegExp(
-                escaped + "\\s*:?\\s*([^\\n\\r]+)",
-                "i"
-              );
+              const re =
+                new RegExp(
+                  escaped + "\\s*:?\\s*([^\\n\\r]+)",
+                  "i"
+                );
 
               const m = body.match(re);
 
               if (m && m[1]) {
                 const value = clean(m[1]);
 
-                if (value && value.length < 500) {
+                if (value && value.length < 500)
                   return value;
-                }
               }
             }
 
             return "";
           }
 
-          async function waitChallenge(page) {
+          async function challenge(page) {
             for (let i = 0; i < 4; i++) {
               await page.waitForTimeout(4000);
 
-              const body = await page
-                .locator("body")
-                .innerText()
-                .catch(() => "");
+              const body =
+                await page.locator("body")
+                  .innerText()
+                  .catch(() => "");
 
               if (
-                !/browser validation|please enable javascript|please enable cookies/i.test(body)
-              ) {
+                !/browser validation|please enable javascript|please enable cookies/i
+                  .test(body)
+              )
                 return true;
-              }
 
               await page.reload({
                 waitUntil: "domcontentloaded",
@@ -181,57 +161,63 @@ jobs:
             return false;
           }
 
-          async function downloadPdf(page, url) {
-            return await page.evaluate(async (pdfUrl) => {
-              const response = await fetch(pdfUrl, {
-                credentials: "include"
-              });
+          async function getPdf(page, url) {
+            return await page.evaluate(
+              async pdfUrl => {
+                const r =
+                  await fetch(pdfUrl, {
+                    credentials: "include"
+                  });
 
-              const data = new Uint8Array(await response.arrayBuffer());
+                const bytes =
+                  new Uint8Array(
+                    await r.arrayBuffer()
+                  );
 
-              return {
-                status: response.status,
-                ok: response.ok,
-                contentType: response.headers.get("content-type") || "",
-                bytes: Array.from(data)
-              };
-            }, url);
+                return {
+                  status: r.status,
+                  ok: r.ok,
+                  bytes: Array.from(bytes)
+                };
+              },
+              url
+            );
           }
 
-          const browser = await chromium.launch({
-            headless: true
-          });
+          const browser =
+            await chromium.launch({
+              headless: true
+            });
 
-          const context = await browser.newContext({
-            locale: "it-IT",
-            viewport: {
-              width: 1400,
-              height: 1000
-            },
-            userAgent:
-              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-              "AppleWebKit/537.36 (KHTML, like Gecko) " +
-              "Chrome/131.0.0.0 Safari/537.36"
-          });
+          const context =
+            await browser.newContext({
+              locale: "it-IT",
+              userAgent:
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+                "AppleWebKit/537.36 (KHTML, like Gecko) " +
+                "Chrome/131.0.0.0 Safari/537.36"
+            });
 
           const risultati = [];
 
           try {
+
             for (let i = 0; i < RICHIAMI.length; i++) {
-              const item = RICHIAMI[i];
+
+              const [id, url] =
+                RICHIAMI[i];
 
               console.log("");
-              console.log("==============================================");
-              console.log(`${i + 1}/20 - ${item.id}`);
-              console.log(item.url);
-              console.log("==============================================");
+              console.log(
+                `========== ${i + 1}/20 ${id} ==========`
+              );
 
-              const page = await context.newPage();
+              const page =
+                await context.newPage();
 
               const result = {
-                id: item.id,
-                url: item.url,
-                paginaOk: false,
+                id,
+                url,
                 marca: "",
                 prodotto: "",
                 motivo: "",
@@ -242,122 +228,140 @@ jobs:
               };
 
               try {
-                await page.goto(item.url, {
+
+                await page.goto(url, {
                   waitUntil: "domcontentloaded",
                   timeout: 90000
                 });
 
-                const challengeOk = await waitChallenge(page);
-
-                if (!challengeOk) {
-                  throw new Error("Browser validation non superata");
-                }
+                if (!(await challenge(page)))
+                  throw new Error(
+                    "Browser validation non superata"
+                  );
 
                 await page.waitForTimeout(3000);
 
-                const body = await page.locator("body").innerText();
+                const body =
+                  await page.locator("body")
+                    .innerText();
 
-                result.paginaOk = true;
+                result.marca =
+                  field(body, [
+                    "Marca",
+                    "Marchio"
+                  ]);
 
-                result.marca = fieldFromBody(body, [
-                  "Marca",
-                  "Marchio"
-                ]);
+                result.prodotto =
+                  field(body, [
+                    "Denominazione"
+                  ]);
 
-                result.prodotto = fieldFromBody(body, [
-                  "Denominazione"
-                ]);
+                result.motivo =
+                  field(body, [
+                    "Motivo della segnalazione"
+                  ]);
 
-                result.motivo = fieldFromBody(body, [
-                  "Motivo della segnalazione"
-                ]);
+                result.dataPubblicazione =
+                  field(body, [
+                    "Data pubblicazione"
+                  ]);
 
-                result.dataPubblicazione = fieldFromBody(body, [
-                  "Data pubblicazione"
-                ]);
+                const links =
+                  await page.locator("a")
+                    .evaluateAll(
+                      els => els.map(a => ({
+                        href: a.href || "",
+                        text:
+                          (a.innerText || "").trim()
+                      }))
+                    );
 
-                const links = await page.locator("a").evaluateAll((els) =>
-                  els.map((a) => ({
-                    href: a.href || "",
-                    text: (a.innerText || "").trim()
-                  }))
-                );
+                const pdf =
+                  links.find(
+                    x =>
+                      /\.pdf(?:$|\?)/i.test(x.href) ||
+                      /modello di richiamo/i.test(x.text)
+                  );
 
-                const pdfLink = links.find(
-                  (l) =>
-                    /\.pdf(?:$|\?)/i.test(l.href) ||
-                    /modello di richiamo/i.test(l.text)
-                );
+                if (!pdf)
+                  throw new Error(
+                    "PDF non trovato"
+                  );
 
-                if (!pdfLink || !pdfLink.href) {
-                  throw new Error("PDF ufficiale non trovato");
-                }
+                result.pdfUrl = pdf.href;
 
-                result.pdfUrl = pdfLink.href;
+                const downloaded =
+                  await getPdf(
+                    page,
+                    pdf.href
+                  );
 
-                const pdf = await downloadPdf(page, pdfLink.href);
-
-                const buffer = Buffer.from(pdf.bytes);
+                const buffer =
+                  Buffer.from(
+                    downloaded.bytes
+                  );
 
                 if (
-                  !pdf.ok ||
-                  pdf.status !== 200 ||
+                  !downloaded.ok ||
                   buffer.length < 1000 ||
-                  buffer.subarray(0, 5).toString() !== "%PDF-"
-                ) {
+                  buffer.subarray(0, 5)
+                    .toString() !== "%PDF-"
+                )
                   throw new Error(
-                    `Download PDF non valido - HTTP ${pdf.status} - ${buffer.length} byte`
+                    "PDF non valido"
                   );
-                }
 
                 fs.writeFileSync(
-                  `risultati/pdf/${item.id}.pdf`,
+                  `risultati/pdf/${id}.pdf`,
                   buffer
                 );
 
                 result.pdfScaricato = true;
 
-                console.log("Marca:", result.marca || "NON LETTA");
-                console.log("Prodotto:", result.prodotto || "NON LETTO");
-                console.log("Motivo:", result.motivo || "NON LETTO");
-                console.log("PDF:", buffer.length, "byte");
-                console.log("✅ SCHEDA E PDF ACQUISITI");
-              } catch (err) {
-                result.errore = String(err?.message || err);
-                console.log("❌ ERRORE:", result.errore);
+                console.log("✅ PDF acquisito");
+
+              } catch (e) {
+
+                result.errore =
+                  String(e?.message || e);
+
+                console.log(
+                  "❌",
+                  result.errore
+                );
+
               } finally {
-                await page.close().catch(() => {});
+
+                await page.close()
+                  .catch(() => {});
+
               }
 
               risultati.push(result);
             }
+
           } finally {
+
             await browser.close();
+
           }
 
           fs.writeFileSync(
             "risultati/schede.json",
-            JSON.stringify(risultati, null, 2),
-            "utf8"
+            JSON.stringify(
+              risultati,
+              null,
+              2
+            )
           );
-
-          console.log("");
-          console.log("==============================================");
-          console.log("DOWNLOAD TERMINATO");
-          console.log("Schede previste:", RICHIAMI.length);
-          console.log(
-            "PDF scaricati:",
-            risultati.filter((x) => x.pdfScaricato).length
-          );
-          console.log("==============================================");
           EOF
 
-      - name: Scarica i 20 richiami ufficiali
+      - name: Scarica PDF
         run: node download20.mjs
 
-      - name: Crea analizzatore intelligente
+      - name: Crea validatore severo
         run: |
-          cat > analizza20.py <<'PYEOF'
+          cat > validatore.py <<'PYEOF'
           import json
           import re
           import shutil
@@ -366,12 +370,28 @@ jobs:
 
 
           ROOT = Path("risultati")
-          PDF_DIR = ROOT / "pdf"
-          TEXT_DIR = ROOT / "testi"
-          OCR_DIR = ROOT / "ocr"
+          PDF = ROOT / "pdf"
+          TXT = ROOT / "testi"
+          OCR = ROOT / "ocr"
 
-          TEXT_DIR.mkdir(parents=True, exist_ok=True)
-          OCR_DIR.mkdir(parents=True, exist_ok=True)
+          TXT.mkdir(exist_ok=True)
+          OCR.mkdir(exist_ok=True)
+
+
+          LABELS = [
+              "marchio di identificazione",
+              "nome del produttore",
+              "nome e sede del produttore",
+              "sede dello stabilimento",
+              "descrizione peso",
+              "peso/volume",
+              "data di scadenza",
+              "termine minimo",
+              "motivo del richiamo",
+              "avvertenze",
+              "fotografia del prodotto",
+              "denominazione di vendita"
+          ]
 
 
           def run(cmd):
@@ -384,93 +404,107 @@ jobs:
               )
 
 
-          def clean(value):
-              value = value or ""
-              value = value.replace("\x0c", " ")
-              value = value.replace("\u00a0", " ")
-              value = re.sub(r"[ \t]+", " ", value)
-              value = re.sub(r"\s+\n", "\n", value)
-              return value.strip()
+          def clean(s):
+              s = s or ""
+
+              s = s.replace("\x0c", " ")
+              s = s.replace("\u00a0", " ")
+
+              s = re.sub(
+                  r"[ \t]+",
+                  " ",
+                  s
+              )
+
+              return s.strip(
+                  " \t\r\n:;-–—|[]"
+              )
 
 
-          def clean_field(value):
-              value = clean(value)
-              value = value.strip(" :-–—|[]()")
-              return value.strip()
-
-
-          def digital_text(pdf_path):
-              out = TEXT_DIR / f"{pdf_path.stem}-digitale.txt"
+          def digital(pdf):
+              target =
+                  TXT / (
+                      pdf.stem +
+                      "-digitale.txt"
+                  )
 
               run([
                   "pdftotext",
                   "-layout",
-                  str(pdf_path),
-                  str(out)
+                  str(pdf),
+                  str(target)
               ])
 
-              if not out.exists():
+              if not target.exists():
                   return ""
 
-              return out.read_text(
+              return target.read_text(
                   encoding="utf-8",
                   errors="ignore"
               )
 
 
-          def text_quality(text):
-              if not text or len(text.strip()) < 120:
+          def good_text(text):
+              if len(text.strip()) < 120:
                   return False
 
               low = text.lower()
 
               keys = [
                   "lotto",
-                  "produzione",
                   "scadenza",
                   "conservazione",
                   "produttore",
                   "stabilimento",
-                  "richiamo",
-                  "marchio"
+                  "richiamo"
               ]
 
-              score = sum(1 for k in keys if k in low)
+              return (
+                  sum(
+                      x in low
+                      for x in keys
+                  ) >= 3
+              )
 
-              letters = len(re.findall(r"[A-Za-zÀ-ÿ]", text))
-              total = max(len(text), 1)
 
-              return score >= 3 and letters / total > 0.35
-
-
-          def ocr_pdf(pdf_path):
-              folder = OCR_DIR / pdf_path.stem
+          def ocr(pdf):
+              folder =
+                  OCR / pdf.stem
 
               if folder.exists():
                   shutil.rmtree(folder)
 
-              folder.mkdir(parents=True, exist_ok=True)
+              folder.mkdir()
 
-              prefix = folder / "page"
+              prefix =
+                  folder / "page"
 
               run([
                   "pdftoppm",
                   "-r",
                   "400",
                   "-png",
-                  str(pdf_path),
+                  str(pdf),
                   str(prefix)
               ])
 
-              all_text = []
+              pages = []
 
-              images = sorted(folder.glob("page-*.png"))
+              for image in sorted(
+                  folder.glob(
+                      "page-*.png"
+                  )
+              ):
 
-              for image in images:
-                  candidates = []
+                  versions = []
 
-                  for psm in ("6", "11", "4"):
-                      result = run([
+                  for psm in [
+                      "6",
+                      "11",
+                      "4"
+                  ]:
+
+                      r = run([
                           "tesseract",
                           str(image),
                           "stdout",
@@ -482,389 +516,646 @@ jobs:
                           "preserve_interword_spaces=1"
                       ])
 
-                      if result.stdout:
-                          candidates.append(result.stdout)
-
-                  if candidates:
-                      best = max(
-                          candidates,
-                          key=lambda t: (
-                              sum(
-                                  1
-                                  for k in [
-                                      "lotto",
-                                      "scadenza",
-                                      "conservazione",
-                                      "produttore",
-                                      "richiamo"
-                                  ]
-                                  if k in t.lower()
-                              ),
-                              len(t)
-                          )
+                      versions.append(
+                          r.stdout
                       )
 
-                      all_text.append(best)
+                  best = max(
+                      versions,
+                      key=lambda t: (
+                          sum(
+                              x in t.lower()
+                              for x in [
+                                  "lotto",
+                                  "scadenza",
+                                  "produttore",
+                                  "richiamo"
+                              ]
+                          ),
+                          len(t)
+                      )
+                  )
 
-              return "\n".join(all_text)
+                  pages.append(best)
+
+              return "\n".join(pages)
 
 
-          def lines(text):
+          def get_lines(text):
               return [
-                  clean_field(x)
+                  clean(x)
                   for x in text.splitlines()
-                  if clean_field(x)
+                  if clean(x)
               ]
 
 
-          def find_after_label(text, labels, max_next_lines=2):
-              ls = lines(text)
+          def stop_at_label(value):
+              low = value.lower()
 
-              for i, line in enumerate(ls):
-                  low = line.lower()
+              positions = []
+
+              for label in LABELS:
+
+                  pos =
+                      low.find(label)
+
+                  if pos > 0:
+                      positions.append(pos)
+
+              if positions:
+                  value =
+                      value[
+                          :min(positions)
+                      ]
+
+              return clean(value)
+
+
+          def after_label(
+              text,
+              labels,
+              next_lines=2
+          ):
+
+              lines =
+                  get_lines(text)
+
+              for i, line in enumerate(lines):
+
+                  low =
+                      line.lower()
 
                   for label in labels:
-                      label_low = label.lower()
 
-                      if label_low not in low:
+                      pos =
+                          low.find(
+                              label.lower()
+                          )
+
+                      if pos < 0:
                           continue
 
-                      pos = low.find(label_low)
+                      value =
+                          clean(
+                              line[
+                                  pos +
+                                  len(label):
+                              ]
+                          )
 
-                      tail = line[pos + len(label):]
-                      tail = clean_field(tail)
+                      value =
+                          stop_at_label(
+                              value
+                          )
 
-                      tail = re.sub(
-                          r"^[\s:;\-–—]+",
-                          "",
-                          tail
-                      ).strip()
+                      if value:
+                          return value
 
-                      if tail and len(tail) >= 2:
-                          return tail
+                      for n in range(
+                          1,
+                          next_lines + 1
+                      ):
 
-                      for offset in range(1, max_next_lines + 1):
-                          if i + offset >= len(ls):
+                          if i+n >= len(lines):
                               break
 
-                          candidate = clean_field(ls[i + offset])
+                          candidate =
+                              stop_at_label(
+                                  lines[i+n]
+                              )
 
-                          if candidate and len(candidate) >= 2:
+                          if candidate:
                               return candidate
 
               return ""
 
 
-          def find_regex(text, patterns):
-              for pattern in patterns:
-                  match = re.search(
-                      pattern,
-                      text,
-                      re.I | re.M
-                  )
-
-                  if match:
-                      value = clean_field(match.group(1))
-
-                      if value:
-                          return value
-
-              return ""
-
-
-          def invalid_lot(value):
-              if not value:
-                  return True
-
-              low = value.lower()
-
-              bad = [
-                  "marchio di identificazione",
-                  "nome del produttore",
-                  "sede dello stabilimento",
-                  "descrizione peso",
-                  "motivo del richiamo",
-                  "avvertenze",
-                  "fotografia",
-                  "inserire immagine"
-              ]
-
-              if any(x in low for x in bad):
-                  return True
-
-              if len(value) > 180:
-                  return True
-
-              return False
-
-
           def extract_lot(text):
-              special = re.search(
+
+              m = re.search(
                   r"\btutti\s+i\s+lotti\b[^\n\r]*",
                   text,
                   re.I
               )
 
-              if special:
-                  return clean_field(special.group(0))
+              if m:
+                  return stop_at_label(
+                      m.group(0)
+                  )
 
-              value = find_after_label(
+              return after_label(
                   text,
                   [
                       "Lotto di produzione",
                       "Numero di lotto",
                       "Lotto"
                   ],
-                  max_next_lines=2
+                  3
               )
 
-              if value and not invalid_lot(value):
-                  return value
 
-              value = find_regex(
-                  text,
-                  [
-                      r"Lotto\s+di\s+produzione\s*[:\-]?\s*([A-Za-z0-9][A-Za-z0-9 .,/+_\-]{0,100})",
-                      r"Numero\s+di\s+lotto\s*[:\-]?\s*([A-Za-z0-9][A-Za-z0-9 .,/+_\-]{0,100})"
-                  ]
-              )
+          def extract_tmc(text):
 
-              if invalid_lot(value):
-                  return ""
-
-              return value
-
-
-          def extract_expiry(text):
-              special = re.search(
-                  r"\btutti\s+(?:i\s+)?TMC\b[^\n\r]*",
+              m = re.search(
+                  r"\btutti\s+(?:i\s+)?tmc\b[^\n\r]*",
                   text,
                   re.I
               )
 
-              if special:
-                  return clean_field(special.group(0))
+              if m:
+                  return stop_at_label(
+                      m.group(0)
+                  )
 
-              value = find_after_label(
+              return after_label(
                   text,
                   [
                       "Data di scadenza o termine minimo di conservazione",
-                      "Data di scadenza",
                       "Termine minimo di conservazione",
+                      "Data di scadenza",
                       "TMC"
                   ],
-                  max_next_lines=2
-              )
-
-              if value:
-                  return value
-
-              return find_regex(
-                  text,
-                  [
-                      r"(?:Data\s+di\s+scadenza|TMC)\s*[:\-]?\s*([^\n\r]{2,120})"
-                  ]
+                  3
               )
 
 
           def extract_producer(text):
-              value = find_after_label(
+
+              return after_label(
                   text,
                   [
-                      "Nome del produttore",
                       "Nome e sede del produttore",
+                      "Nome del produttore",
                       "Produttore"
                   ],
-                  max_next_lines=2
-              )
-
-              if value:
-                  return value
-
-              return find_regex(
-                  text,
-                  [
-                      r"Nome\s+del\s+produttore\s*[:\-]?\s*([^\n\r]{2,180})"
-                  ]
+                  3
               )
 
 
-          def plausible(value):
+          def suspicious_lot(value):
+
               if not value:
-                  return False
+                  return True, "lotto assente"
 
-              if len(value.strip()) < 2:
-                  return False
+              low =
+                  value.lower()
 
-              garbage = [
-                  "fotografia del prodotto",
-                  "inserire immagine",
-                  "avvertenze",
-                  "motivo del richiamo"
+              if len(value) > 120:
+                  return True, "lotto troppo lungo"
+
+              if any(
+                  x in low
+                  for x in LABELS
+              ):
+                  return True, "lotto contaminato"
+
+              endings = [
+                  "fino alla data di",
+                  "fino al",
+                  "dal",
+                  "compresi tra",
+                  "da lotto",
+                  "dal lotto",
+                  "con tmc"
               ]
 
-              low = value.lower()
+              for x in endings:
+                  if low.rstrip().endswith(x):
+                      return (
+                          True,
+                          "lotto troncato/incompleto"
+                      )
 
-              return not any(g in low for g in garbage)
+              if re.search(
+                  r"[\[\{]$",
+                  value
+              ):
+                  return (
+                      True,
+                      "lotto troncato"
+                  )
+
+              if len(
+                  re.findall(
+                      r"[A-Za-z0-9]",
+                      value
+                  )
+              ) < 2:
+                  return (
+                      True,
+                      "lotto non plausibile"
+                  )
+
+              return False, ""
 
 
-          schede_file = ROOT / "schede.json"
+          def suspicious_tmc(value):
 
-          if not schede_file.exists():
-              raise SystemExit("schede.json non trovato")
+              if not value:
+                  return (
+                      True,
+                      "TMC/scadenza assente"
+                  )
 
-          schede = json.loads(
-              schede_file.read_text(encoding="utf-8")
-          )
+              low =
+                  value.lower()
+
+              if len(value) > 150:
+                  return (
+                      True,
+                      "TMC troppo lungo"
+                  )
+
+              if any(
+                  x in low
+                  for x in [
+                      "nome del produttore",
+                      "sede dello stabilimento",
+                      "motivo del richiamo",
+                      "avvertenze"
+                  ]
+              ):
+                  return (
+                      True,
+                      "TMC contaminato"
+                  )
+
+              incomplete = [
+                  "fino alla data di",
+                  "fino al",
+                  "dal",
+                  "compresi tra",
+                  "tutti i lotti fin"
+              ]
+
+              if any(
+                  low.rstrip().endswith(x)
+                  for x in incomplete
+              ):
+                  return (
+                      True,
+                      "TMC troncato/incompleto"
+                  )
+
+              if (
+                  "tutti i tmc" in low or
+                  "tutti tmc" in low
+              ):
+                  return False, ""
+
+              date_like =
+                  re.search(
+                      r"\b(?:"
+                      r"\d{1,2}[./-]\d{1,2}[./-]\d{2,4}"
+                      r"|"
+                      r"\d{1,2}[./-]\d{2,4}"
+                      r"|"
+                      r"\d{2}/\d{4}"
+                      r")\b",
+                      value
+                  )
+
+              if not date_like:
+                  return (
+                      True,
+                      "TMC senza data riconoscibile"
+                  )
+
+              return False, ""
+
+
+          def suspicious_producer(value):
+
+              if not value:
+                  return (
+                      True,
+                      "produttore assente"
+                  )
+
+              if len(value) < 3:
+                  return (
+                      True,
+                      "produttore non plausibile"
+                  )
+
+              if len(value) > 200:
+                  return (
+                      True,
+                      "produttore troppo lungo"
+                  )
+
+              low =
+                  value.lower()
+
+              if any(
+                  x in low
+                  for x in [
+                      "motivo del richiamo",
+                      "avvertenze",
+                      "fotografia del prodotto"
+                  ]
+              ):
+                  return (
+                      True,
+                      "produttore contaminato"
+                  )
+
+              return False, ""
+
+
+          schede =
+              json.loads(
+                  (
+                      ROOT /
+                      "schede.json"
+                  ).read_text(
+                      encoding="utf-8"
+                  )
+              )
+
 
           results = []
 
-          for index, scheda in enumerate(schede, start=1):
-              print("")
-              print("==================================================")
-              print(f'{index:02d}/20 - {scheda["id"]}')
-              print("==================================================")
 
-              result = dict(scheda)
+          for n, scheda in enumerate(
+              schede,
+              1
+          ):
+
+              print("")
+              print(
+                  "=" * 60
+              )
+              print(
+                  f"{n:02d}/20 "
+                  f"{scheda['id']}"
+              )
+              print(
+                  "=" * 60
+              )
+
+              result =
+                  dict(scheda)
 
               result.update({
-                  "metodoEstrazione": "",
+                  "metodo": "",
                   "lotto": "",
-                  "scadenzaTmc": "",
+                  "tmc": "",
                   "produttore": "",
-                  "validazione": "DA_VERIFICARE",
+                  "validazione":
+                      "DA_VERIFICARE",
                   "problemi": []
               })
 
-              pdf_path = PDF_DIR / f'{scheda["id"]}.pdf'
+              pdf =
+                  PDF / (
+                      scheda["id"] +
+                      ".pdf"
+                  )
 
-              if not scheda.get("pdfScaricato") or not pdf_path.exists():
-                  result["problemi"].append("PDF non disponibile")
-                  results.append(result)
+              if not pdf.exists():
 
-                  print("DA_VERIFICARE - PDF non disponibile")
+                  result[
+                      "problemi"
+                  ].append(
+                      "PDF assente"
+                  )
+
+                  results.append(
+                      result
+                  )
+
                   continue
 
-              digital = digital_text(pdf_path)
 
-              if text_quality(digital):
-                  text = digital
-                  method = "TESTO_DIGITALE"
+              text =
+                  digital(pdf)
+
+              if good_text(text):
+
+                  method =
+                      "TESTO_DIGITALE"
+
               else:
-                  text = ocr_pdf(pdf_path)
-                  method = "OCR"
 
-              final_text = TEXT_DIR / f'{scheda["id"]}.txt'
-              final_text.write_text(
+                  text =
+                      ocr(pdf)
+
+                  method =
+                      "OCR"
+
+
+              (
+                  TXT /
+                  (
+                      scheda["id"] +
+                      ".txt"
+                  )
+              ).write_text(
                   text,
                   encoding="utf-8",
                   errors="ignore"
               )
 
-              result["metodoEstrazione"] = method
 
-              lot = extract_lot(text)
-              expiry = extract_expiry(text)
-              producer = extract_producer(text)
+              lot =
+                  extract_lot(text)
 
-              result["lotto"] = lot
-              result["scadenzaTmc"] = expiry
-              result["produttore"] = producer
+              tmc =
+                  extract_tmc(text)
 
-              if not scheda.get("marca"):
-                  result["problemi"].append(
-                      "Marca non acquisita dalla pagina ufficiale"
+              producer =
+                  extract_producer(text)
+
+
+              result["metodo"] =
+                  method
+
+              result["lotto"] =
+                  lot
+
+              result["tmc"] =
+                  tmc
+
+              result["produttore"] =
+                  producer
+
+
+              bad, reason =
+                  suspicious_lot(lot)
+
+              if bad:
+                  result[
+                      "problemi"
+                  ].append(reason)
+
+
+              bad, reason =
+                  suspicious_tmc(tmc)
+
+              if bad:
+                  result[
+                      "problemi"
+                  ].append(reason)
+
+
+              bad, reason =
+                  suspicious_producer(
+                      producer
                   )
 
-              if not scheda.get("prodotto"):
-                  result["problemi"].append(
-                      "Prodotto non acquisito dalla pagina ufficiale"
+              if bad:
+                  result[
+                      "problemi"
+                  ].append(reason)
+
+
+              if not scheda.get(
+                  "marca"
+              ):
+                  result[
+                      "problemi"
+                  ].append(
+                      "marca pagina assente"
                   )
 
-              if not scheda.get("motivo"):
-                  result["problemi"].append(
-                      "Motivo non acquisito dalla pagina ufficiale"
+
+              if not scheda.get(
+                  "prodotto"
+              ):
+                  result[
+                      "problemi"
+                  ].append(
+                      "prodotto pagina assente"
                   )
 
-              if not plausible(lot):
-                  result["problemi"].append(
-                      "Lotto assente o ambiguo"
+
+              if not scheda.get(
+                  "motivo"
+              ):
+                  result[
+                      "problemi"
+                  ].append(
+                      "motivo pagina assente"
                   )
 
-              if not plausible(expiry):
-                  result["problemi"].append(
-                      "Scadenza/TMC assente o ambigua"
-                  )
 
-              if not plausible(producer):
-                  result["problemi"].append(
-                      "Produttore assente o ambiguo"
-                  )
+              if not result[
+                  "problemi"
+              ]:
 
-              if not result["problemi"]:
-                  result["validazione"] = "PASS"
+                  result[
+                      "validazione"
+                  ] = "PASS"
 
-              print("Marca:", scheda.get("marca") or "—")
-              print("Prodotto:", scheda.get("prodotto") or "—")
-              print("Metodo:", method)
-              print("Lotto:", lot or "—")
-              print("Scadenza/TMC:", expiry or "—")
-              print("Produttore:", producer or "—")
-              print("VALIDAZIONE:", result["validazione"])
 
-              if result["problemi"]:
+              print(
+                  "Metodo:",
+                  method
+              )
+
+              print(
+                  "Lotto:",
+                  lot or "—"
+              )
+
+              print(
+                  "TMC:",
+                  tmc or "—"
+              )
+
+              print(
+                  "Produttore:",
+                  producer or "—"
+              )
+
+              print(
+                  "VALIDAZIONE:",
+                  result[
+                      "validazione"
+                  ]
+              )
+
+
+              if result[
+                  "problemi"
+              ]:
+
                   print(
-                      "Problemi:",
-                      " | ".join(result["problemi"])
+                      "PROBLEMI:"
                   )
 
-              results.append(result)
+                  for p in result[
+                      "problemi"
+                  ]:
+
+                      print(
+                          " -",
+                          p
+                      )
 
 
-          total = len(results)
+              results.append(
+                  result
+              )
 
-          passed = sum(
-              1 for x in results
-              if x["validazione"] == "PASS"
-          )
 
-          verify = sum(
-              1 for x in results
-              if x["validazione"] == "DA_VERIFICARE"
-          )
+          total =
+              len(results)
 
-          digital_count = sum(
-              1 for x in results
-              if x["metodoEstrazione"] == "TESTO_DIGITALE"
-          )
+          passed =
+              sum(
+                  r[
+                      "validazione"
+                  ] == "PASS"
+                  for r in results
+              )
 
-          ocr_count = sum(
-              1 for x in results
-              if x["metodoEstrazione"] == "OCR"
-          )
+          verify =
+              total - passed
 
-          pdf_count = sum(
-              1 for x in results
-              if x.get("pdfScaricato")
-          )
+          digital_count =
+              sum(
+                  r["metodo"] ==
+                  "TESTO_DIGITALE"
+                  for r in results
+              )
 
-          percentage = (
-              round(passed / total * 100, 1)
-              if total else 0
-          )
+          ocr_count =
+              sum(
+                  r["metodo"] ==
+                  "OCR"
+                  for r in results
+              )
+
 
           summary = {
               "totale": total,
-              "pdf_scaricati": pdf_count,
               "pass": passed,
-              "da_verificare": verify,
-              "testo_digitale": digital_count,
-              "ocr": ocr_count,
-              "percentuale_pass": percentage,
-              "richiami": results
+              "da_verificare":
+                  verify,
+              "testo_digitale":
+                  digital_count,
+              "ocr":
+                  ocr_count,
+              "percentuale_pass":
+                  round(
+                      passed /
+                      total *
+                      100,
+                      1
+                  )
+                  if total
+                  else 0,
+              "richiami":
+                  results
           }
 
-          (ROOT / "risultato-20.json").write_text(
+
+          (
+              ROOT /
+              "risultato-severo.json"
+          ).write_text(
               json.dumps(
                   summary,
                   ensure_ascii=False,
@@ -873,67 +1164,118 @@ jobs:
               encoding="utf-8"
           )
 
-          print("")
-          print("")
-          print("##################################################")
-          print("#          RISULTATO TEST 20 RICHIAMI            #")
-          print("##################################################")
-          print("")
-          print("Totale:", total)
-          print("PDF scaricati:", pdf_count)
-          print("PASS:", passed)
-          print("DA VERIFICARE:", verify)
-          print("Testo digitale:", digital_count)
-          print("OCR:", ocr_count)
-          print("Percentuale PASS:", f"{percentage}%")
-          print("")
 
-          if total == 20 and passed == 20:
-              print("✅ TEST 20/20 SUPERATO")
-          elif total == 20:
-              print(
-                  f"ℹ️ TEST COMPLETATO: {passed}/20 PASS, "
-                  f"{verify}/20 DA VERIFICARE"
-              )
-              print(
-                  "I casi dubbi NON sono stati trasformati "
-                  "automaticamente in PASS."
-              )
-          else:
-              print(
-                  "⚠️ Numero di richiami elaborati diverso da 20."
-              )
+          print("")
+          print("")
+          print(
+              "############################################"
+          )
+          print(
+              "#       RISULTATO VALIDAZIONE SEVERA       #"
+          )
+          print(
+              "############################################"
+          )
+
+          print(
+              "Totale:",
+              total
+          )
+
+          print(
+              "PASS SICURI:",
+              passed
+          )
+
+          print(
+              "DA VERIFICARE:",
+              verify
+          )
+
+          print(
+              "Testo digitale:",
+              digital_count
+          )
+
+          print(
+              "OCR:",
+              ocr_count
+          )
+
+          print(
+              "Percentuale PASS sicuri:",
+              summary[
+                  "percentuale_pass"
+              ],
+              "%"
+          )
+
+          print("")
+          print(
+              "CASI DA VERIFICARE:"
+          )
+
+          for r in results:
+
+              if (
+                  r["validazione"]
+                  ==
+                  "DA_VERIFICARE"
+              ):
+
+                  print("")
+                  print(
+                      r["id"]
+                  )
+
+                  print(
+                      " Lotto:",
+                      r["lotto"]
+                      or "—"
+                  )
+
+                  print(
+                      " TMC:",
+                      r["tmc"]
+                      or "—"
+                  )
+
+                  print(
+                      " Problemi:",
+                      " | ".join(
+                          r["problemi"]
+                      )
+                  )
           PYEOF
 
-      - name: Analizza automaticamente i 20 PDF
-        run: python analizza20.py
+      - name: Esegui validazione severa
+        run: python validatore.py
 
-      - name: Mostra riepilogo finale
+      - name: Mostra risultato finale
         if: always()
         run: |
-          echo "=============================================="
-          echo "RISULTATO FINALE"
-          echo "=============================================="
+          if [ -f risultati/risultato-severo.json ]; then
 
-          if [ -f risultati/risultato-20.json ]; then
             python - <<'PYEOF'
           import json
 
           with open(
-              "risultati/risultato-20.json",
-              "r",
+              "risultati/risultato-severo.json",
               encoding="utf-8"
           ) as f:
               d = json.load(f)
 
+          print("")
+          print("======================================")
+          print("RISULTATO TEST SEVERO")
+          print("======================================")
           print("Totale:", d["totale"])
-          print("PDF scaricati:", d["pdf_scaricati"])
-          print("PASS:", d["pass"])
+          print("PASS SICURI:", d["pass"])
           print("DA VERIFICARE:", d["da_verificare"])
           print("Testo digitale:", d["testo_digitale"])
           print("OCR:", d["ocr"])
           print(
-              "Percentuale PASS:",
+              "Percentuale PASS sicuri:",
               str(d["percentuale_pass"]) + "%"
           )
 
@@ -941,22 +1283,33 @@ jobs:
           print("DETTAGLIO:")
 
           for r in d["richiami"]:
+
+              stato =
+                  "✅" if r["validazione"] == "PASS" else "⚠️"
+
               print(
-                  f'{r["id"]}: '
-                  f'{r["validazione"]} | '
-                  f'Lotto={r["lotto"] or "—"} | '
-                  f'TMC={r["scadenzaTmc"] or "—"}'
+                  stato,
+                  r["id"],
+                  "-",
+                  r["validazione"]
               )
+
+              if r["validazione"] != "PASS":
+                  print(
+                      "   ",
+                      " | ".join(r["problemi"])
+                  )
           PYEOF
+
           else
-            echo "File risultato-20.json non trovato"
+            echo "risultato-severo.json non trovato"
           fi
 
-      - name: Salva risultati completi
+      - name: Salva risultati
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-reale-20-richiami
+          name: validazione-severa-20-richiami
           path: risultati/
           if-no-files-found: ignore
           retention-days: 14
