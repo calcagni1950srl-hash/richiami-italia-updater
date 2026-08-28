@@ -1,4 +1,4 @@
-name: Test Ministero Multi Richiamo OCR Intelligente
+name: Diagnostica Atio e Focaccina
 
 on:
   workflow_dispatch:
@@ -16,11 +16,6 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
       - name: Installa Playwright Chromium PDF e OCR
         run: |
           npm init -y
@@ -35,7 +30,7 @@ jobs:
 
           mkdir -p risultati
 
-      - name: Crea downloader multiplo
+      - name: Crea downloader
         run: |
           cat > scarica-richiami.mjs <<'EOF'
           import { chromium } from "playwright";
@@ -43,16 +38,8 @@ jobs:
 
           const richiami = [
             {
-              id: "tonno-conad",
-              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/filetti-di-tonno-allolio-di-oliva/"
-            },
-            {
               id: "atio-capriss",
               url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/atio/"
-            },
-            {
-              id: "pesto-rosso",
-              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pesto-rosso/"
             },
             {
               id: "focaccina-conad",
@@ -60,32 +47,11 @@ jobs:
             }
           ];
 
-          function pulisci(valore) {
-            return String(valore || "")
-              .replace(/\s+/g, " ")
-              .trim();
-          }
-
-          function estraiCampo(testo, etichetta) {
-            const regex = new RegExp(
-              etichetta + "\\s*:\\s*([^\\n\\r]+)",
-              "i"
-            );
-
-            const match = testo.match(regex);
-
-            if (!match || !match[1]) {
-              return "";
-            }
-
-            return pulisci(match[1]);
-          }
-
-          async function scaricaPDF(page, pdfUrl) {
+          async function scaricaPdf(page, url) {
             const risultato = await page.evaluate(
-              async (url) => {
+              async (pdfUrl) => {
                 const response = await fetch(
-                  url,
+                  pdfUrl,
                   {
                     credentials: "include"
                   }
@@ -98,13 +64,12 @@ jobs:
                   status: response.status,
                   contentType:
                     response.headers.get("content-type") || "",
-                  bytes:
-                    Array.from(
-                      new Uint8Array(buffer)
-                    )
+                  bytes: Array.from(
+                    new Uint8Array(buffer)
+                  )
                 };
               },
-              pdfUrl
+              url
             );
 
             const firma = risultato.bytes
@@ -140,14 +105,19 @@ jobs:
                 "Chrome/131.0.0.0 Safari/537.36"
             });
 
-            const riepilogo = [];
-
             try {
               for (const richiamo of richiami) {
                 console.log("");
-                console.log("======================================");
-                console.log("TEST:", richiamo.id);
-                console.log("======================================");
+                console.log(
+                  "======================================"
+                );
+                console.log(
+                  "SCARICO:",
+                  richiamo.id
+                );
+                console.log(
+                  "======================================"
+                );
 
                 const page = await context.newPage();
 
@@ -168,48 +138,14 @@ jobs:
                       .innerText()
                       .catch(() => "");
 
-                  const challenge =
+                  if (
                     /please enable javascript|please enable cookies|browser validation/i
-                      .test(testoPagina);
-
-                  if (challenge) {
-                    console.log(
-                      "❌ Browser Validation non superata"
+                      .test(testoPagina)
+                  ) {
+                    throw new Error(
+                      "Browser Validation non superata"
                     );
-
-                    riepilogo.push({
-                      id: richiamo.id,
-                      paginaOk: false,
-                      errore: "Browser Validation"
-                    });
-
-                    continue;
                   }
-
-                  const marca = estraiCampo(
-                    testoPagina,
-                    "Marca"
-                  );
-
-                  const prodotto = estraiCampo(
-                    testoPagina,
-                    "Denominazione"
-                  );
-
-                  const motivo = estraiCampo(
-                    testoPagina,
-                    "Motivo della segnalazione"
-                  );
-
-                  const dataPubblicazione = estraiCampo(
-                    testoPagina,
-                    "Data pubblicazione"
-                  );
-
-                  console.log("Marca:", marca);
-                  console.log("Prodotto:", prodotto);
-                  console.log("Motivo:", motivo);
-                  console.log("Data:", dataPubblicazione);
 
                   const links =
                     await page
@@ -232,38 +168,24 @@ jobs:
                   );
 
                   if (!pdf || !pdf.href) {
-                    console.log(
-                      "❌ Nessun PDF trovato"
+                    throw new Error(
+                      "PDF non trovato"
                     );
-
-                    riepilogo.push({
-                      id: richiamo.id,
-                      paginaOk: true,
-                      pdfOk: false,
-                      marca,
-                      prodotto,
-                      motivo
-                    });
-
-                    continue;
                   }
 
                   console.log(
-                    "PDF:",
+                    "PDF trovato:"
+                  );
+
+                  console.log(
                     pdf.href
                   );
 
                   const download =
-                    await scaricaPDF(
+                    await scaricaPdf(
                       page,
                       pdf.href
                     );
-
-                  const pdfValido =
-                    download.ok &&
-                    download.status === 200 &&
-                    download.bytes.length > 1000 &&
-                    download.firma === "%PDF-";
 
                   console.log(
                     "HTTP:",
@@ -276,30 +198,25 @@ jobs:
                   );
 
                   console.log(
-                    "Dimensione:",
-                    download.bytes.length
-                  );
-
-                  console.log(
                     "Firma:",
                     download.firma
                   );
 
-                  if (!pdfValido) {
-                    console.log(
-                      "❌ PDF non valido"
+                  console.log(
+                    "Dimensione:",
+                    download.bytes.length
+                  );
+
+                  const valido =
+                    download.ok &&
+                    download.status === 200 &&
+                    download.firma === "%PDF-" &&
+                    download.bytes.length > 1000;
+
+                  if (!valido) {
+                    throw new Error(
+                      "Il file ricevuto non è un PDF valido"
                     );
-
-                    riepilogo.push({
-                      id: richiamo.id,
-                      paginaOk: true,
-                      pdfOk: false,
-                      marca,
-                      prodotto,
-                      motivo
-                    });
-
-                    continue;
                   }
 
                   fs.writeFileSync(
@@ -309,56 +226,9 @@ jobs:
                     )
                   );
 
-                  fs.writeFileSync(
-                    `risultati/${richiamo.id}-pagina.txt`,
-                    testoPagina,
-                    "utf8"
-                  );
-
-                  fs.writeFileSync(
-                    `risultati/${richiamo.id}-meta.json`,
-                    JSON.stringify(
-                      {
-                        id: richiamo.id,
-                        pagina: richiamo.url,
-                        pdf: pdf.href,
-                        marca,
-                        prodotto,
-                        motivo,
-                        dataPubblicazione
-                      },
-                      null,
-                      2
-                    ),
-                    "utf8"
-                  );
-
-                  riepilogo.push({
-                    id: richiamo.id,
-                    paginaOk: true,
-                    pdfOk: true,
-                    marca,
-                    prodotto,
-                    motivo,
-                    dataPubblicazione,
-                    pdf: pdf.href
-                  });
-
                   console.log(
-                    "✅ Pagina e PDF acquisiti"
+                    "✅ PDF salvato"
                   );
-
-                } catch (error) {
-                  console.log(
-                    "❌ Errore:",
-                    String(error)
-                  );
-
-                  riepilogo.push({
-                    id: richiamo.id,
-                    paginaOk: false,
-                    errore: String(error)
-                  });
 
                 } finally {
                   await page
@@ -366,15 +236,6 @@ jobs:
                     .catch(() => {});
                 }
               }
-
-              fs.writeFileSync(
-                "risultati/download-riepilogo.json",
-                JSON.stringify(
-                  riepilogo,
-                  null,
-                  2
-                )
-              );
 
             } finally {
               await browser.close();
@@ -384,162 +245,10 @@ jobs:
           main();
           EOF
 
-      - name: Scarica quattro richiami reali
+      - name: Scarica i due PDF
         run: node scarica-richiami.mjs
 
-      - name: Crea controllo qualità testo PDF
-        run: |
-          cat > controlla_testo.py <<'PYEOF'
-          import re
-          import sys
-          from pathlib import Path
-
-
-          if len(sys.argv) < 2:
-              print("ERRORE: file mancante")
-              sys.exit(1)
-
-
-          file_path = Path(sys.argv[1])
-
-
-          if not file_path.exists():
-              print("QUALITA=SCARSA")
-              print("Motivo: file inesistente")
-              sys.exit(1)
-
-
-          testo = file_path.read_text(
-              encoding="utf-8",
-              errors="ignore"
-          )
-
-
-          testo_pulito = testo.strip()
-
-
-          if len(testo_pulito) < 40:
-              print("QUALITA=SCARSA")
-              print("Motivo: testo troppo corto")
-              sys.exit(1)
-
-
-          parole_chiave = [
-              "lotto",
-              "lotti",
-              "denominazione",
-              "produttore",
-              "scadenza",
-              "richiamo",
-              "avvertenze",
-              "marchio",
-              "stabilimento"
-          ]
-
-
-          testo_lower = testo_pulito.lower()
-
-
-          keyword_trovate = [
-              parola
-              for parola in parole_chiave
-              if parola in testo_lower
-          ]
-
-
-          caratteri = len(testo_pulito)
-
-
-          lettere_numeri = len(
-              re.findall(
-                  r"[A-Za-zÀ-ÿ0-9]",
-                  testo_pulito
-              )
-          )
-
-
-          rapporto_leggibile = (
-              lettere_numeri / caratteri
-              if caratteri
-              else 0
-          )
-
-
-          parole = re.findall(
-              r"[A-Za-zÀ-ÿ]{3,}",
-              testo_pulito
-          )
-
-
-          parole_normali = len(parole)
-
-
-          simboli_strani = len(
-              re.findall(
-                  r"[^A-Za-zÀ-ÿ0-9\s.,;:'\"()/%+\-_€]",
-                  testo_pulito
-              )
-          )
-
-
-          rapporto_simboli = (
-              simboli_strani / caratteri
-              if caratteri
-              else 1
-          )
-
-
-          print(
-              "Dimensione:",
-              caratteri
-          )
-
-          print(
-              "Keyword trovate:",
-              keyword_trovate
-          )
-
-          print(
-              "Rapporto leggibile:",
-              round(
-                  rapporto_leggibile,
-                  3
-              )
-          )
-
-          print(
-              "Parole normali:",
-              parole_normali
-          )
-
-          print(
-              "Rapporto simboli strani:",
-              round(
-                  rapporto_simboli,
-                  3
-              )
-          )
-
-
-          qualità_buona = (
-              len(keyword_trovate) >= 2
-              and rapporto_leggibile >= 0.45
-              and parole_normali >= 15
-              and rapporto_simboli <= 0.20
-          )
-
-
-          if qualità_buona:
-              print("QUALITA=BUONA")
-              sys.exit(0)
-
-
-          print("QUALITA=SCARSA")
-          sys.exit(1)
-
-          PYEOF
-
-      - name: Estrai testo con OCR intelligente
+      - name: Estrai testo con OCR automatico
         run: |
           set -e
 
@@ -547,42 +256,56 @@ jobs:
           do
             base="${pdf%.pdf}"
             txt="${base}.txt"
+            digitale="${base}-digitale.txt"
 
             echo ""
             echo "======================================"
-            echo "ANALISI: $pdf"
+            echo "PDF: $pdf"
             echo "======================================"
 
             pdftotext \
               -layout \
               "$pdf" \
-              "$txt" \
+              "$digitale" \
               || true
 
-            echo ""
-            echo "CONTROLLO QUALITA TESTO DIGITALE"
+            DIMENSIONE=0
 
-            TESTO_BUONO=0
-
-            if python controlla_testo.py "$txt"
-            then
-              TESTO_BUONO=1
-            else
-              TESTO_BUONO=0
+            if [ -f "$digitale" ]; then
+              DIMENSIONE=$(wc -c < "$digitale")
             fi
 
-            if [ "$TESTO_BUONO" -eq 1 ]
-            then
-              echo ""
-              echo "✅ Testo digitale valido."
-              echo "OCR non necessario."
+            echo "Testo digitale: $DIMENSIONE byte"
+
+            USA_OCR=0
+
+            if [ "$DIMENSIONE" -lt 40 ]; then
+              USA_OCR=1
+            fi
+
+            if [ "$DIMENSIONE" -ge 40 ]; then
+              KEYWORDS=$(grep -Eio \
+                'lotto|lotti|scadenza|denominazione|produttore|richiamo|marchio|stabilimento' \
+                "$digitale" \
+                | wc -l)
+
+              echo "Parole chiave trovate: $KEYWORDS"
+
+              if [ "$KEYWORDS" -lt 2 ]; then
+                USA_OCR=1
+              fi
+            fi
+
+            if [ "$USA_OCR" -eq 0 ]; then
+              echo "✅ Testo digitale considerato leggibile"
+
+              cp \
+                "$digitale" \
+                "$txt"
 
             else
-              echo ""
-              echo "⚠️ Testo assente oppure corrotto."
-              echo "AVVIO OCR AUTOMATICO"
-
-              rm -f "$txt"
+              echo "⚠️ Testo assente o corrotto"
+              echo "AVVIO OCR"
 
               OCRDIR="${base}-ocr"
 
@@ -614,700 +337,69 @@ jobs:
                 echo "" >> "$txt"
               done
 
-              echo ""
-              echo "CONTROLLO QUALITA DOPO OCR"
-
-              if python controlla_testo.py "$txt"
-              then
-                echo "✅ OCR riuscito e testo leggibile."
-              else
-                echo "⚠️ OCR eseguito ma qualità ancora bassa."
-              fi
+              echo "✅ OCR terminato"
             fi
 
             echo ""
-            echo "Prime 70 righe:"
-            echo "--------------------------------------"
+            echo "Testo finale:"
 
-            head -n 70 "$txt" || true
-
-            echo "--------------------------------------"
+            wc -c "$txt"
           done
 
-      - name: Crea estrattore dati
+      - name: Mostra testo Atio e Focaccina
         run: |
-          cat > estrai_richiami.py <<'PYEOF'
-          import json
-          import re
-          from pathlib import Path
-
-
-          CARTELLA = Path("risultati")
-
-
-          STOP_LOTTI = {
-              "DI",
-              "DEL",
-              "DELLA",
-              "DELLO",
-              "DEI",
-              "DEGLI",
-              "DELLE",
-              "IL",
-              "LO",
-              "LA",
-              "I",
-              "GLI",
-              "LE",
-              "LOTTO",
-              "LOTTI",
-              "PRODOTTO",
-              "PRODUZIONE",
-              "DATA",
-              "SCADENZA",
-              "TMC",
-              "TERMINE",
-              "MINIMO",
-              "CONSERVAZIONE",
-              "CONAD"
-          }
-
-
-          def pulisci(testo):
-              return re.sub(
-                  r"\s+",
-                  " ",
-                  testo or ""
-              ).strip()
-
-
-          def righe(testo):
-              return [
-                  pulisci(riga)
-                  for riga in testo.splitlines()
-                  if pulisci(riga)
-              ]
-
-
-          def normalizza_lotto(valore):
-              valore = pulisci(valore)
-
-              valore = re.sub(
-                  r"^[\s:;\-–—]+",
-                  "",
-                  valore
-              )
-
-              valore = re.sub(
-                  r"[\s,;:.]+$",
-                  "",
-                  valore
-              )
-
-              return valore
-
-
-          def lotto_plausibile(valore):
-              valore = normalizza_lotto(
-                  valore
-              )
-
-              if not valore:
-                  return False
-
-              if len(valore) < 2:
-                  return False
-
-              if len(valore) > 40:
-                  return False
-
-              if valore.upper() in STOP_LOTTI:
-                  return False
-
-              if not re.search(
-                  r"\d",
-                  valore
-              ):
-                  return False
-
-              if not re.fullmatch(
-                  r"[A-Za-z0-9./_\-]+",
-                  valore
-              ):
-                  return False
-
-              return True
-
-
-          def estrai_lotti(testo):
-              elenco_righe = righe(
-                  testo
-              )
-
-              candidati = []
-
-
-              pattern_lotto = re.compile(
-                  r"""
-                  (?:
-                      numero\s+di\s+lotto
-                    | numero\s+lotto
-                    | n[°º.]?\s*lotto
-                    | lotto\s+di\s+produzione
-                    | lotto
-                    | lotti
-                  )
-                  \s*
-                  [:;\-–—]?
-                  \s*
-                  ([A-Za-z0-9./_\-]+)
-                  """,
-                  re.I | re.X
-              )
-
-
-              for indice, riga in enumerate(
-                  elenco_righe
-              ):
-
-                  for match in pattern_lotto.finditer(
-                      riga
-                  ):
-
-                      valore = normalizza_lotto(
-                          match.group(1)
-                      )
-
-                      if lotto_plausibile(
-                          valore
-                      ):
-                          candidati.append(
-                              valore
-                          )
-
-
-                  if re.search(
-                      r"\b(?:lotto|lotti)\b",
-                      riga,
-                      re.I
-                  ):
-
-                      for offset in range(
-                          1,
-                          4
-                      ):
-
-                          posizione = indice + offset
-
-                          if posizione >= len(
-                              elenco_righe
-                          ):
-                              break
-
-                          successiva = elenco_righe[
-                              posizione
-                          ]
-
-                          if re.search(
-                              r"""
-                              ^(?:
-                                  data\s+di\s+scadenza
-                                | scadenza
-                                | termine\s+minimo
-                                | motivo
-                                | avverten
-                                | produttore
-                                | stabilimento
-                                | marchio
-                                | marca
-                                | denominazione
-                              )
-                              """,
-                              successiva,
-                              re.I | re.X
-                          ):
-                              break
-
-                          tokens = re.findall(
-                              r"\b[A-Za-z0-9][A-Za-z0-9./_\-]{1,30}\b",
-                              successiva
-                          )
-
-                          for token in tokens:
-
-                              if lotto_plausibile(
-                                  token
-                              ):
-                                  candidati.append(
-                                      normalizza_lotto(
-                                          token
-                                      )
-                                  )
-
-
-              risultato = []
-
-              for valore in candidati:
-
-                  if valore not in risultato:
-                      risultato.append(
-                          valore
-                      )
-
-              return risultato
-
-
-          def estrai_scadenze(testo):
-              elenco_righe = righe(
-                  testo
-              )
-
-              risultati = []
-
-
-              pattern_date = [
-                  r"\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b",
-                  r"\b\d{1,2}[/-]\d{4}\b",
-                  r"\b\d{1,2}[.]\d{1,2}[.]\d{2,4}\b"
-              ]
-
-
-              for indice, riga in enumerate(
-                  elenco_righe
-              ):
-
-                  if not re.search(
-                      r"""
-                      scaden
-                      |termine\s+minimo
-                      |tmc
-                      |preferibilmente
-                      """,
-                      riga,
-                      re.I | re.X
-                  ):
-                      continue
-
-                  blocco = " ".join(
-                      elenco_righe[
-                          indice:
-                          indice + 5
-                      ]
-                  )
-
-                  for pattern in pattern_date:
-
-                      for valore in re.findall(
-                          pattern,
-                          blocco,
-                          flags=re.I
-                      ):
-
-                          if valore not in risultati:
-                              risultati.append(
-                                  valore
-                              )
-
-              return risultati
-
-
-          def estrai_produttore(testo):
-              elenco_righe = righe(
-                  testo
-              )
-
-              pattern = re.compile(
-                  r"""
-                  ^Nome\s+del\s+produttore
-                  \s*[:\-–—]?\s*
-                  (.+)$
-                  """,
-                  re.I | re.X
-              )
-
-
-              for indice, riga in enumerate(
-                  elenco_righe
-              ):
-
-                  match = pattern.search(
-                      riga
-                  )
-
-                  if match:
-                      valore = pulisci(
-                          match.group(1)
-                      )
-
-                      if valore:
-                          return valore
-
-
-                  if re.match(
-                      r"^Nome\s+del\s+produttore\s*$",
-                      riga,
-                      re.I
-                  ):
-
-                      if indice + 1 < len(
-                          elenco_righe
-                      ):
-                          return pulisci(
-                              elenco_righe[
-                                  indice + 1
-                              ]
-                          )
-
-
-              return ""
-
-
-          risultati = []
-
-
-          for meta_file in sorted(
-              CARTELLA.glob(
-                  "*-meta.json"
-              )
-          ):
-
-              identificativo = (
-                  meta_file.name
-                  .replace(
-                      "-meta.json",
-                      ""
-                  )
-              )
-
-
-              testo_file = CARTELLA / (
-                  identificativo +
-                  ".txt"
-              )
-
-
-              meta = json.loads(
-                  meta_file.read_text(
-                      encoding="utf-8"
-                  )
-              )
-
-
-              if not testo_file.exists():
-
-                  risultati.append(
-                      {
-                          **meta,
-                          "produttore": "",
-                          "lotti": [],
-                          "scadenze": [],
-                          "validazione":
-                              "DA_VERIFICARE",
-                          "problemi": [
-                              "Testo PDF assente"
-                          ]
-                      }
-                  )
-
-                  continue
-
-
-              testo = testo_file.read_text(
-                  encoding="utf-8",
-                  errors="ignore"
-              )
-
-
-              marca = meta.get(
-                  "marca",
-                  ""
-              ).strip()
-
-
-              prodotto = meta.get(
-                  "prodotto",
-                  ""
-              ).strip()
-
-
-              motivo = meta.get(
-                  "motivo",
-                  ""
-              ).strip()
-
-
-              produttore = estrai_produttore(
-                  testo
-              )
-
-
-              lotti = estrai_lotti(
-                  testo
-              )
-
-
-              scadenze = estrai_scadenze(
-                  testo
-              )
-
-
-              problemi = []
-
-
-              if not marca:
-                  problemi.append(
-                      "Marca mancante"
-                  )
-
-
-              if not prodotto:
-                  problemi.append(
-                      "Prodotto mancante"
-                  )
-
-
-              if not motivo:
-                  problemi.append(
-                      "Motivo mancante"
-                  )
-
-
-              if not lotti:
-                  problemi.append(
-                      "Lotto mancante"
-                  )
-
-
-              risultato = {
-                  "id":
-                      identificativo,
-
-                  "data_pubblicazione":
-                      meta.get(
-                          "dataPubblicazione",
-                          ""
-                      ),
-
-                  "marca":
-                      marca,
-
-                  "prodotto":
-                      prodotto,
-
-                  "motivo":
-                      motivo,
-
-                  "produttore":
-                      produttore,
-
-                  "lotti":
-                      lotti,
-
-                  "scadenze":
-                      scadenze,
-
-                  "pagina":
-                      meta.get(
-                          "pagina",
-                          ""
-                      ),
-
-                  "pdf":
-                      meta.get(
-                          "pdf",
-                          ""
-                      ),
-
-                  "validazione":
-                      (
-                          "PASS"
-                          if not problemi
-                          else "DA_VERIFICARE"
-                      ),
-
-                  "problemi":
-                      problemi
-              }
-
-
-              risultati.append(
-                  risultato
-              )
-
-
-          output = {
-              "totale":
-                  len(risultati),
-
-              "pass":
-                  sum(
-                      1
-                      for r in risultati
-                      if r["validazione"]
-                      == "PASS"
-                  ),
-
-              "da_verificare":
-                  sum(
-                      1
-                      for r in risultati
-                      if r["validazione"]
-                      != "PASS"
-                  ),
-
-              "richiami":
-                  risultati
-          }
-
-
-          destinazione = (
-              CARTELLA /
-              "risultato-multiplo.json"
-          )
-
-
-          destinazione.write_text(
-              json.dumps(
-                  output,
-                  ensure_ascii=False,
-                  indent=2
-              ),
-              encoding="utf-8"
-          )
-
-
-          print("")
-          print(
-              "======================================"
-          )
-          print(
-              "RISULTATO TEST OCR INTELLIGENTE"
-          )
-          print(
-              "======================================"
-          )
-
-
-          for risultato in risultati:
-
-              print("")
-              print(
-                  "--------------------------------------"
-              )
-              print(
-                  risultato["id"]
-              )
-              print(
-                  "--------------------------------------"
-              )
-
-              print(
-                  "Marca:",
-                  risultato["marca"]
-              )
-
-              print(
-                  "Prodotto:",
-                  risultato["prodotto"]
-              )
-
-              print(
-                  "Motivo:",
-                  risultato["motivo"]
-              )
-
-              print(
-                  "Produttore:",
-                  risultato["produttore"]
-              )
-
-              print(
-                  "Lotti:",
-                  risultato["lotti"]
-              )
-
-              print(
-                  "Scadenze:",
-                  risultato["scadenze"]
-              )
-
-              print(
-                  "VALIDAZIONE:",
-                  risultato[
-                      "validazione"
-                  ]
-              )
-
-              if risultato["problemi"]:
-                  print(
-                      "Problemi:",
-                      risultato["problemi"]
-                  )
-
-
-          print("")
-          print(
-              "======================================"
-          )
-          print(
-              "RIEPILOGO"
-          )
-          print(
-              "======================================"
-          )
-
-          print(
-              "Totale:",
-              output["totale"]
-          )
-
-          print(
-              "PASS:",
-              output["pass"]
-          )
-
-          print(
-              "Da verificare:",
-              output[
-                  "da_verificare"
-              ]
-          )
-
-
-          if (
-              output["totale"] == 4
-              and
-              output["pass"] == 4
-          ):
-              print("")
-              print(
-                  "✅ 4/4 RICHIAMI SUPERATI"
-              )
-
-          else:
-              print("")
-              print(
-                  "⚠️ TEST NON ANCORA 4/4"
-              )
-
-          PYEOF
-
-      - name: Analizza quattro PDF
-        run: python estrai_richiami.py
-
-      - name: Mostra JSON finale
+          echo ""
+          echo "######################################"
+          echo "########### ATIO CAPRISS #############"
+          echo "######################################"
+          echo ""
+
+          if [ -f risultati/atio-capriss.txt ]; then
+            cat risultati/atio-capriss.txt
+          else
+            echo "FILE TESTO ATIO NON TROVATO"
+          fi
+
+          echo ""
+          echo ""
+          echo "######################################"
+          echo "######### FOCACCINA CONAD ############"
+          echo "######################################"
+          echo ""
+
+          if [ -f risultati/focaccina-conad.txt ]; then
+            cat risultati/focaccina-conad.txt
+          else
+            echo "FILE TESTO FOCACCINA NON TROVATO"
+          fi
+
+      - name: Cerca automaticamente lotto e scadenza
         run: |
+          echo ""
           echo "======================================"
-          echo "JSON COMPLETO"
+          echo "ATIO - RIGHE IMPORTANTI"
           echo "======================================"
 
-          cat risultati/risultato-multiplo.json
+          grep -Ein \
+            'lotto|lotti|scadenza|termine minimo|produzione' \
+            risultati/atio-capriss.txt \
+            || true
 
-      - name: Salva tutti i risultati
+          echo ""
+          echo "======================================"
+          echo "FOCACCINA - RIGHE IMPORTANTI"
+          echo "======================================"
+
+          grep -Ein \
+            'lotto|lotti|scadenza|termine minimo|produzione' \
+            risultati/focaccina-conad.txt \
+            || true
+
+      - name: Salva risultati diagnostici
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-richiami-ocr-intelligente
+          name: diagnostica-atio-focaccina
           path: |
             risultati/
           if-no-files-found: ignore
