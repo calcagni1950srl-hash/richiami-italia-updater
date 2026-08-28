@@ -1,18 +1,12 @@
-name: Aggiorna Richiami Italia
+name: Trova Feed Richiami Ministero
 
 on:
   workflow_dispatch:
 
-  schedule:
-    - cron: "0 7 * * *"
-
-permissions:
-  contents: write
-
 jobs:
-  aggiorna:
+  trova-feed:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 15
 
     steps:
       - name: Checkout
@@ -23,58 +17,34 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Installa strumenti
+      - name: Installa Playwright
         run: |
           npm init -y
           npm install playwright
           npx playwright install --with-deps chromium
+          mkdir -p risultato
 
-          sudo apt-get update
-          sudo apt-get install -y \
-            poppler-utils \
-            tesseract-ocr \
-            tesseract-ocr-ita
-
-          mkdir -p lavoro/pdf
-          mkdir -p lavoro/testi
-          mkdir -p lavoro/ocr
-          mkdir -p output
-
-      - name: Crea acquisizione automatica Ministero
+      - name: Crea ricerca feed
         run: |
-          cat > acquisisci.mjs <<'EOF'
+          cat > trova-feed.mjs <<'EOF'
           import { chromium } from "playwright";
           import fs from "fs";
 
-          const RSS_PAGE =
+          const PAGE =
             "https://www.salute.gov.it/new/it/altro/rss/";
-
-          const MAX_RICHIAMI = 100;
-
-          function clean(value) {
-            return String(value || "")
-              .replace(/\u00a0/g, " ")
-              .replace(/[ \t]+/g, " ")
-              .trim();
-          }
 
           async function superaChallenge(page) {
             for (let i = 0; i < 5; i++) {
               await page.waitForTimeout(4000);
 
-              const body = await page
+              const text = await page
                 .locator("body")
                 .innerText()
                 .catch(() => "");
 
               if (
                 !/browser validation|please enable javascript|please enable cookies/i
-                  .test(body)
+                  .test(text)
               ) {
                 return true;
               }
@@ -88,647 +58,230 @@ jobs:
             return false;
           }
 
-          async function trovaFeed(context) {
-            const page = await context.newPage();
+          const browser = await chromium.launch({
+            headless: true
+          });
 
-            try {
-              console.log("Apro pagina RSS ufficiale...");
+          const context = await browser.newContext({
+            locale: "it-IT",
+            viewport: {
+              width: 1400,
+              height: 1000
+            },
+            userAgent:
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+              "AppleWebKit/537.36 (KHTML, like Gecko) " +
+              "Chrome/131.0.0.0 Safari/537.36"
+          });
 
-              await page.goto(RSS_PAGE, {
-                waitUntil: "domcontentloaded",
-                timeout: 90000
-              });
+          const page = await context.newPage();
 
-              if (!(await superaChallenge(page))) {
-                throw new Error(
-                  "Protezione Ministero non superata"
-                );
-              }
+          try {
+            console.log("Apro pagina RSS...");
 
-              await page.waitForTimeout(5000);
+            await page.goto(PAGE, {
+              waitUntil: "domcontentloaded",
+              timeout: 90000
+            });
 
-              const candidates = await page
-                .locator("a")
-                .evaluateAll((links) => {
-                  return links.map((a) => ({
-                    href: a.href || "",
-                    text: (
-                      a.innerText ||
-                      a.textContent ||
-                      ""
-                    ).trim(),
-                    parentText: (
-                      a.parentElement?.innerText ||
-                      ""
-                    ).trim(),
-                    title:
-                      a.getAttribute("title") || "",
-                    aria:
-                      a.getAttribute("aria-label") || ""
-                  }));
-                });
+            if (!(await superaChallenge(page))) {
+              throw new Error(
+                "Protezione Ministero non superata"
+              );
+            }
 
-              console.log(
-                "Link trovati nella pagina:",
-                candidates.length
+            await page.waitForTimeout(5000);
+
+            const links = await page
+              .locator("a")
+              .evaluateAll((elements) =>
+                elements.map((a) => ({
+                  href: a.href || "",
+                  text: (
+                    a.innerText ||
+                    a.textContent ||
+                    ""
+                  ).trim(),
+                  title:
+                    a.getAttribute("title") || "",
+                  aria:
+                    a.getAttribute("aria-label") || ""
+                }))
               );
 
-              for (const item of candidates) {
-                const searchable = [
-                  item.text,
-                  item.parentText,
-                  item.title,
-                  item.aria,
-                  item.href
-                ]
-                  .join(" ")
-                  .toLowerCase();
+            console.log(
+              "Link totali:",
+              links.length
+            );
 
-                if (
-                  searchable.includes(
-                    "richiami di prodotti alimentari"
-                  ) ||
-                  (
-                    searchable.includes("richiami") &&
-                    searchable.includes("aliment")
-                  )
-                ) {
-                  console.log(
-                    "✅ Feed individuato:",
+            const candidates = links.filter((item) => {
+              const href = item.href.toLowerCase();
+              const text = (
+                item.text +
+                " " +
+                item.title +
+                " " +
+                item.aria
+              ).toLowerCase();
+
+              if (!item.href) {
+                return false;
+              }
+
+              if (href.includes("#main-content")) {
+                return false;
+              }
+
+              if (href === PAGE.toLowerCase()) {
+                return false;
+              }
+
+              return (
+                href.includes("rss") ||
+                href.includes("feed") ||
+                href.includes(".xml") ||
+                text.includes("rss")
+              );
+            });
+
+            console.log("");
+            console.log("====================================");
+            console.log("CANDIDATI RSS REALI");
+            console.log("====================================");
+
+            candidates.forEach((item, index) => {
+              console.log("");
+              console.log("CANDIDATO", index + 1);
+              console.log("TESTO:", item.text);
+              console.log("TITLE:", item.title);
+              console.log("ARIA:", item.aria);
+              console.log("URL:", item.href);
+            });
+
+            const exact = candidates.find((item) => {
+              const text = (
+                item.text +
+                " " +
+                item.title +
+                " " +
+                item.aria
+              ).toLowerCase();
+
+              return (
+                text.includes("richiami") &&
+                text.includes("prodotti alimentari")
+              );
+            });
+
+            let chosen = exact || null;
+
+            if (!chosen) {
+              for (const item of candidates) {
+                try {
+                  const response = await page.evaluate(
+                    async (url) => {
+                      const r = await fetch(url, {
+                        credentials: "include"
+                      });
+
+                      return {
+                        ok: r.ok,
+                        status: r.status,
+                        contentType:
+                          r.headers.get(
+                            "content-type"
+                          ) || "",
+                        text:
+                          await r.text()
+                      };
+                    },
                     item.href
                   );
 
-                  return item.href;
-                }
-              }
+                  const sample =
+                    response.text
+                      .slice(0, 5000)
+                      .toLowerCase();
 
-              console.log("");
-              console.log(
-                "Nessun feed trovato tramite testo."
-              );
-              console.log(
-                "Mostro i possibili link RSS:"
-              );
+                  const looksXml =
+                    sample.includes("<rss") ||
+                    sample.includes("<feed") ||
+                    sample.includes("<channel");
 
-              for (const item of candidates) {
-                if (
-                  /rss|feed|xml/i.test(item.href) ||
-                  /rss|feed/i.test(item.text)
-                ) {
+                  const looksRecall =
+                    sample.includes("richiam") ||
+                    sample.includes(
+                      "sicurezza-alimentare"
+                    );
+
+                  console.log("");
                   console.log(
-                    "CANDIDATO:",
-                    item.href,
-                    "|",
-                    item.text,
-                    "|",
-                    item.parentText
+                    "TEST URL:",
+                    item.href
                   );
-                }
-              }
-
-              throw new Error(
-                "Feed RSS richiami OSA non trovato"
-              );
-
-            } finally {
-              await page.close();
-            }
-          }
-
-          function decodeXml(value) {
-            return String(value || "")
-              .replace(/&amp;/g, "&")
-              .replace(/&lt;/g, "<")
-              .replace(/&gt;/g, ">")
-              .replace(/&quot;/g, '"')
-              .replace(/&#39;/g, "'");
-          }
-
-          function extractTag(block, tag) {
-            const regex = new RegExp(
-              `<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${tag}>`,
-              "i"
-            );
-
-            const match = block.match(regex);
-
-            if (!match) {
-              return "";
-            }
-
-            let value = match[1];
-
-            value = value
-              .replace(/^<!\[CDATA\[/, "")
-              .replace(/\]\]>$/, "");
-
-            return clean(
-              decodeXml(value)
-            );
-          }
-
-          function parseRss(xml) {
-            const blocks =
-              xml.match(
-                /<item\b[\s\S]*?<\/item>/gi
-              ) || [];
-
-            const results = [];
-
-            for (const block of blocks) {
-              const title =
-                extractTag(block, "title");
-
-              const link =
-                extractTag(block, "link");
-
-              const pubDate =
-                extractTag(block, "pubDate");
-
-              const description =
-                extractTag(
-                  block,
-                  "description"
-                );
-
-              if (!link) {
-                continue;
-              }
-
-              results.push({
-                title,
-                link,
-                pubDate,
-                description
-              });
-            }
-
-            return results;
-          }
-
-          async function scaricaFeed(
-            context,
-            feedUrl
-          ) {
-            const page =
-              await context.newPage();
-
-            try {
-              await page.goto(
-                "https://www.salute.gov.it/",
-                {
-                  waitUntil:
-                    "domcontentloaded",
-                  timeout: 90000
-                }
-              );
-
-              await superaChallenge(page);
-
-              const result =
-                await page.evaluate(
-                  async url => {
-                    const response =
-                      await fetch(url, {
-                        credentials:
-                          "include"
-                      });
-
-                    return {
-                      ok: response.ok,
-                      status:
-                        response.status,
-                      text:
-                        await response.text()
-                    };
-                  },
-                  feedUrl
-                );
-
-              if (!result.ok) {
-                throw new Error(
-                  `Feed HTTP ${result.status}`
-                );
-              }
-
-              return result.text;
-
-            } finally {
-              await page.close();
-            }
-          }
-
-          function safeId(urlString, index) {
-            try {
-              const url =
-                new URL(urlString);
-
-              const parts =
-                url.pathname
-                  .split("/")
-                  .filter(Boolean);
-
-              let slug =
-                parts[
-                  parts.length - 1
-                ] || "";
-
-              slug = slug
-                .toLowerCase()
-                .replace(
-                  /[^a-z0-9_-]/g,
-                  "-"
-                )
-                .replace(/-+/g, "-")
-                .replace(/^-|-$/g, "");
-
-              if (slug) {
-                return slug;
-              }
-            } catch {
-            }
-
-            return (
-              "richiamo-" +
-              String(index).padStart(
-                4,
-                "0"
-              )
-            );
-          }
-
-          function pageField(body, labels) {
-            for (const label of labels) {
-              const escaped =
-                label.replace(
-                  /[.*+?^${}()|[\]\\]/g,
-                  "\\$&"
-                );
-
-              const regex =
-                new RegExp(
-                  escaped +
-                  "\\s*:?\\s*" +
-                  "([^\\n\\r]+)",
-                  "i"
-                );
-
-              const match =
-                body.match(regex);
-
-              if (
-                match &&
-                match[1]
-              ) {
-                return clean(
-                  match[1]
-                );
-              }
-            }
-
-            return "";
-          }
-
-          async function downloadPdf(
-            page,
-            url
-          ) {
-            return await page.evaluate(
-              async pdfUrl => {
-                const response =
-                  await fetch(pdfUrl, {
-                    credentials:
-                      "include"
-                  });
-
-                const data =
-                  new Uint8Array(
-                    await response
-                      .arrayBuffer()
+                  console.log(
+                    "HTTP:",
+                    response.status
+                  );
+                  console.log(
+                    "XML:",
+                    looksXml
+                  );
+                  console.log(
+                    "RICHIAMI:",
+                    looksRecall
                   );
 
-                return {
-                  ok: response.ok,
-                  status:
-                    response.status,
-                  bytes:
-                    Array.from(data)
-                };
-              },
-              url
-            );
-          }
-
-          async function leggiScheda(
-            context,
-            item,
-            index
-          ) {
-            const page =
-              await context.newPage();
-
-            const id =
-              safeId(
-                item.link,
-                index
-              );
-
-            const result = {
-              id,
-              url: item.link,
-              titolo: item.title,
-              rssPubDate:
-                item.pubDate,
-              marca: "",
-              prodotto: "",
-              motivo: "",
-              dataPubblicazione:
-                "",
-              pdfUrl: "",
-              pdfFile: "",
-              pdfScaricato:
-                false,
-              errore: ""
-            };
-
-            try {
-              console.log("");
-              console.log(
-                `${index} - ${item.title}`
-              );
-
-              await page.goto(
-                item.link,
-                {
-                  waitUntil:
-                    "domcontentloaded",
-                  timeout: 90000
-                }
-              );
-
-              if (
-                !(await superaChallenge(page))
-              ) {
-                throw new Error(
-                  "Protezione scheda non superata"
-                );
-              }
-
-              await page.waitForTimeout(
-                2500
-              );
-
-              const body =
-                await page
-                  .locator("body")
-                  .innerText();
-
-              result.marca =
-                pageField(
-                  body,
-                  [
-                    "Marca",
-                    "Marchio"
-                  ]
-                );
-
-              result.prodotto =
-                pageField(
-                  body,
-                  [
-                    "Denominazione"
-                  ]
-                );
-
-              result.motivo =
-                pageField(
-                  body,
-                  [
-                    "Motivo della segnalazione"
-                  ]
-                );
-
-              result.dataPubblicazione =
-                pageField(
-                  body,
-                  [
-                    "Data pubblicazione"
-                  ]
-                );
-
-              const links =
-                await page
-                  .locator("a")
-                  .evaluateAll(
-                    elements =>
-                      elements.map(
-                        a => ({
-                          href:
-                            a.href || "",
-                          text:
-                            (
-                              a.innerText ||
-                              ""
-                            ).trim()
-                        })
-                      )
-                  );
-
-              const pdf =
-                links.find(
-                  x =>
-                    /\.pdf(?:$|\?)/i
-                      .test(x.href) ||
-                    /modello di richiamo/i
-                      .test(x.text)
-                );
-
-              if (!pdf) {
-                throw new Error(
-                  "PDF non trovato"
-                );
-              }
-
-              result.pdfUrl =
-                pdf.href;
-
-              const downloaded =
-                await downloadPdf(
-                  page,
-                  pdf.href
-                );
-
-              const buffer =
-                Buffer.from(
-                  downloaded.bytes
-                );
-
-              if (
-                !downloaded.ok ||
-                buffer.length < 1000 ||
-                buffer
-                  .subarray(0, 5)
-                  .toString()
-                  !== "%PDF-"
-              ) {
-                throw new Error(
-                  "PDF non valido"
-                );
-              }
-
-              const filename =
-                `${id}.pdf`;
-
-              fs.writeFileSync(
-                `lavoro/pdf/${filename}`,
-                buffer
-              );
-
-              result.pdfFile =
-                filename;
-
-              result.pdfScaricato =
-                true;
-
-              console.log(
-                "✅ acquisito"
-              );
-
-            } catch (error) {
-              result.errore =
-                String(
-                  error?.message ||
-                  error
-                );
-
-              console.log(
-                "❌",
-                result.errore
-              );
-
-            } finally {
-              await page.close()
-                .catch(() => {});
-            }
-
-            return result;
-          }
-
-          const browser =
-            await chromium.launch({
-              headless: true
-            });
-
-          const context =
-            await browser.newContext({
-              locale: "it-IT",
-              viewport: {
-                width: 1400,
-                height: 1000
-              },
-              userAgent:
-                "Mozilla/5.0 " +
-                "(Windows NT 10.0; Win64; x64) " +
-                "AppleWebKit/537.36 " +
-                "(KHTML, like Gecko) " +
-                "Chrome/131.0.0.0 Safari/537.36"
-            });
-
-          try {
-            const feedUrl =
-              await trovaFeed(context);
-
-            const xml =
-              await scaricaFeed(
-                context,
-                feedUrl
-              );
-
-            fs.writeFileSync(
-              "lavoro/feed.xml",
-              xml,
-              "utf8"
-            );
-
-            let items =
-              parseRss(xml);
-
-            console.log(
-              "Elementi nel feed:",
-              items.length
-            );
-
-            items =
-              items.filter(
-                item =>
-                  item.link.includes(
-                    "/ext-avviso-sicurezza-alimentare/"
-                  )
-              );
-
-            const seen =
-              new Set();
-
-            items =
-              items.filter(
-                item => {
                   if (
-                    seen.has(item.link)
+                    response.ok &&
+                    looksXml &&
+                    looksRecall
                   ) {
-                    return false;
+                    chosen = item;
+
+                    fs.writeFileSync(
+                      "risultato/feed.xml",
+                      response.text,
+                      "utf8"
+                    );
+
+                    break;
                   }
 
-                  seen.add(
-                    item.link
+                } catch (error) {
+                  console.log(
+                    "Errore candidato:",
+                    item.href,
+                    String(error)
                   );
-
-                  return true;
                 }
-              );
-
-            items =
-              items.slice(
-                0,
-                MAX_RICHIAMI
-              );
-
-            console.log(
-              "Richiami alimentari:",
-              items.length
-            );
-
-            if (
-              items.length === 0
-            ) {
-              throw new Error(
-                "Il feed è stato trovato ma non contiene schede riconosciute"
-              );
+              }
             }
 
-            const results = [];
-
-            for (
-              let i = 0;
-              i < items.length;
-              i++
-            ) {
-              results.push(
-                await leggiScheda(
-                  context,
-                  items[i],
-                  i + 1
-                )
+            if (!chosen) {
+              throw new Error(
+                "Nessun vero feed RSS richiami individuato"
               );
             }
 
             fs.writeFileSync(
-              "lavoro/schede.json",
-              JSON.stringify(
-                results,
-                null,
-                2
-              ),
+              "risultato/feed-url.txt",
+              chosen.href,
               "utf8"
+            );
+
+            console.log("");
+            console.log(
+              "########################################"
+            );
+            console.log(
+              "✅ FEED RICHIAMI INDIVIDUATO"
+            );
+            console.log(
+              "########################################"
+            );
+            console.log(
+              chosen.href
             );
 
           } finally {
@@ -736,61 +289,27 @@ jobs:
           }
           EOF
 
-      - name: Acquisisci richiami Ministero
-        run: node acquisisci.mjs
+      - name: Trova feed corretto
+        run: node trova-feed.mjs
 
-      - name: Diagnostica risultato
+      - name: Mostra feed trovato
         if: always()
         run: |
           echo "======================================"
-          echo "DIAGNOSTICA"
+          echo "RISULTATO"
           echo "======================================"
 
-          if [ -f lavoro/schede.json ]; then
-            python - <<'PYEOF'
-          import json
-
-          with open(
-              "lavoro/schede.json",
-              encoding="utf-8"
-          ) as f:
-              data = json.load(f)
-
-          print(
-              "Schede acquisite:",
-              len(data)
-          )
-
-          print(
-              "PDF scaricati:",
-              sum(
-                  1
-                  for x in data
-                  if x.get(
-                      "pdfScaricato"
-                  )
-              )
-          )
-
-          for item in data[:10]:
-              print(
-                  "-",
-                  item.get("titolo"),
-                  "|",
-                  item.get(
-                      "pdfScaricato"
-                  )
-              )
-          PYEOF
+          if [ -f risultato/feed-url.txt ]; then
+            echo "FEED TROVATO:"
+            cat risultato/feed-url.txt
           else
-            echo "schede.json non creato"
+            echo "Feed non ancora individuato."
           fi
 
-      - name: Salva diagnostica
+      - name: Salva risultato
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: diagnostica-rss-ministero
-          path: lavoro/
+          name: ricerca-feed-ministero
+          path: risultato/
           if-no-files-found: ignore
-          retention-days: 7
