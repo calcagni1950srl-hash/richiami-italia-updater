@@ -1,4 +1,4 @@
-name: Test Richiami con Fallback Ufficiale
+name: Test Definitivo 4 Richiami
 
 on:
   workflow_dispatch:
@@ -36,10 +36,9 @@ jobs:
 
           mkdir -p risultati
 
-
-      - name: Crea downloader Ministero
+      - name: Crea downloader quattro richiami
         run: |
-          cat > scarica-ministero.mjs <<'EOF'
+          cat > scarica-richiami.mjs <<'EOF'
           import { chromium } from "playwright";
           import fs from "fs";
 
@@ -51,6 +50,14 @@ jobs:
             {
               id: "focaccina-conad",
               url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/focaccina-con-prosciutto-crudo-e-formaggio-edamer/"
+            },
+            {
+              id: "pesto-rosso",
+              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pesto-rosso/"
+            },
+            {
+              id: "tonno-conad",
+              url: "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/filetti-di-tonno-allolio-di-oliva/"
             }
           ];
 
@@ -60,17 +67,19 @@ jobs:
               .trim();
           }
 
-          function campo(testo, nome) {
+          function estraiCampo(testo, etichetta) {
             const regex = new RegExp(
-              nome + "\\s*:\\s*([^\\n\\r]+)",
+              etichetta + "\\s*:\\s*([^\\n\\r]+)",
               "i"
             );
 
             const match = testo.match(regex);
 
-            return match && match[1]
-              ? pulisci(match[1])
-              : "";
+            if (!match || !match[1]) {
+              return "";
+            }
+
+            return pulisci(match[1]);
           }
 
           async function scaricaPdf(page, pdfUrl) {
@@ -83,19 +92,17 @@ jobs:
                   }
                 );
 
-                const buffer =
-                  await response.arrayBuffer();
+                const buffer = await response.arrayBuffer();
 
                 return {
                   ok: response.ok,
                   status: response.status,
                   contentType:
-                    response.headers.get(
-                      "content-type"
-                    ) || "",
-                  bytes: Array.from(
-                    new Uint8Array(buffer)
-                  )
+                    response.headers.get("content-type") || "",
+                  bytes:
+                    Array.from(
+                      new Uint8Array(buffer)
+                    )
                 };
               },
               pdfUrl
@@ -103,42 +110,32 @@ jobs:
           }
 
           async function main() {
-            const browser =
-              await chromium.launch({
-                headless: true
-              });
+            const browser = await chromium.launch({
+              headless: true
+            });
 
-            const context =
-              await browser.newContext({
-                locale: "it-IT",
+            const context = await browser.newContext({
+              locale: "it-IT",
 
-                viewport: {
-                  width: 1280,
-                  height: 900
-                },
+              viewport: {
+                width: 1280,
+                height: 900
+              },
 
-                userAgent:
-                  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-                  "AppleWebKit/537.36 (KHTML, like Gecko) " +
-                  "Chrome/131.0.0.0 Safari/537.36"
-              });
+              userAgent:
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+                "AppleWebKit/537.36 (KHTML, like Gecko) " +
+                "Chrome/131.0.0.0 Safari/537.36"
+            });
 
             try {
               for (const richiamo of richiami) {
                 console.log("");
-                console.log(
-                  "======================================"
-                );
-                console.log(
-                  "MINISTERO:",
-                  richiamo.id
-                );
-                console.log(
-                  "======================================"
-                );
+                console.log("======================================");
+                console.log("RICHiamo:", richiamo.id);
+                console.log("======================================");
 
-                const page =
-                  await context.newPage();
+                const page = await context.newPage();
 
                 try {
                   await page.goto(
@@ -149,9 +146,7 @@ jobs:
                     }
                   );
 
-                  await page.waitForTimeout(
-                    12000
-                  );
+                  await page.waitForTimeout(12000);
 
                   const testoPagina =
                     await page
@@ -173,44 +168,33 @@ jobs:
                     pagina: richiamo.url,
 
                     dataPubblicazione:
-                      campo(
+                      estraiCampo(
                         testoPagina,
                         "Data pubblicazione"
                       ),
 
                     marca:
-                      campo(
+                      estraiCampo(
                         testoPagina,
                         "Marca"
                       ),
 
                     prodotto:
-                      campo(
+                      estraiCampo(
                         testoPagina,
                         "Denominazione"
                       ),
 
                     motivo:
-                      campo(
+                      estraiCampo(
                         testoPagina,
                         "Motivo della segnalazione"
                       )
                   };
 
-                  console.log(
-                    "Marca:",
-                    meta.marca
-                  );
-
-                  console.log(
-                    "Prodotto:",
-                    meta.prodotto
-                  );
-
-                  console.log(
-                    "Motivo:",
-                    meta.motivo
-                  );
+                  console.log("Marca:", meta.marca);
+                  console.log("Prodotto:", meta.prodotto);
+                  console.log("Motivo:", meta.motivo);
 
                   const links =
                     await page
@@ -221,20 +205,15 @@ jobs:
                             a => ({
                               href: a.href || "",
                               text:
-                                (
-                                  a.innerText ||
-                                  ""
-                                ).trim()
+                                (a.innerText || "").trim()
                             })
                           )
                       );
 
                   const pdf = links.find(
                     link =>
-                      /\.pdf($|\?)/i
-                        .test(link.href) ||
-                      /pdf/i
-                        .test(link.text)
+                      /\.pdf($|\?)/i.test(link.href) ||
+                      /pdf/i.test(link.text)
                   );
 
                   if (!pdf || !pdf.href) {
@@ -259,9 +238,7 @@ jobs:
                       .slice(0, 5)
                       .map(
                         numero =>
-                          String.fromCharCode(
-                            numero
-                          )
+                          String.fromCharCode(numero)
                       )
                       .join("");
 
@@ -277,7 +254,7 @@ jobs:
                   }
 
                   fs.writeFileSync(
-                    `risultati/${richiamo.id}-ministero.pdf`,
+                    `risultati/${richiamo.id}.pdf`,
                     Buffer.from(
                       download.bytes
                     )
@@ -288,8 +265,7 @@ jobs:
                     JSON.stringify(
                       {
                         ...meta,
-                        pdfMinistero:
-                          pdf.href
+                        pdfMinistero: pdf.href
                       },
                       null,
                       2
@@ -298,7 +274,7 @@ jobs:
                   );
 
                   console.log(
-                    "✅ PDF Ministero acquisito"
+                    "✅ PDF acquisito"
                   );
 
                 } finally {
@@ -316,10 +292,8 @@ jobs:
           main();
           EOF
 
-
-      - name: Scarica PDF Ministero
-        run: node scarica-ministero.mjs
-
+      - name: Scarica quattro richiami
+        run: node scarica-richiami.mjs
 
       - name: Crea controllo qualità testo
         run: |
@@ -341,18 +315,20 @@ jobs:
           if len(testo) < 40:
               sys.exit(1)
 
-          parole = [
+          parole_chiave = [
               "lotto",
               "produzione",
               "scadenza",
               "produttore",
               "richiamo",
-              "denominazione"
+              "denominazione",
+              "marchio",
+              "stabilimento"
           ]
 
           trovate = sum(
               1
-              for parola in parole
+              for parola in parole_chiave
               if parola in testo.lower()
           )
 
@@ -361,9 +337,25 @@ jobs:
               testo
           )
 
+          caratteri = len(testo)
+
+          normali = len(
+              re.findall(
+                  r"[A-Za-zÀ-ÿ0-9\s.,;:'()/%+\-_]",
+                  testo
+              )
+          )
+
+          rapporto = (
+              normali / caratteri
+              if caratteri
+              else 0
+          )
+
           if (
               trovate >= 2
               and len(parole_normali) >= 15
+              and rapporto >= 0.70
           ):
               sys.exit(0)
 
@@ -371,16 +363,15 @@ jobs:
 
           PYEOF
 
-
-      - name: Estrai Ministero con OCR automatico
+      - name: Estrai testo con OCR automatico
         run: |
           set -e
 
-          for pdf in risultati/*-ministero.pdf
+          for pdf in risultati/*.pdf
           do
-            base="${pdf%-ministero.pdf}"
+            base="${pdf%.pdf}"
             digitale="${base}-digitale.txt"
-            finale="${base}-ministero.txt"
+            finale="${base}.txt"
 
             echo ""
             echo "======================================"
@@ -402,8 +393,8 @@ jobs:
                 "$finale"
 
             else
-              echo "⚠️ Testo assente/corrotto"
-              echo "➡️ OCR automatico"
+              echo "⚠️ Testo assente o corrotto"
+              echo "➡️ Avvio OCR"
 
               OCRDIR="${base}-ocr"
 
@@ -421,7 +412,7 @@ jobs:
 
               for img in "$OCRDIR"/*.png
               do
-                echo "OCR $img"
+                echo "OCR PSM6: $img"
 
                 tesseract \
                   "$img" \
@@ -434,6 +425,8 @@ jobs:
                   || true
 
                 echo "" >> "$finale"
+
+                echo "OCR PSM11: $img"
 
                 tesseract \
                   "$img" \
@@ -453,14 +446,8 @@ jobs:
             wc -c "$finale"
           done
 
-
       - name: Scarica fallback ufficiale CONAD
         run: |
-          echo ""
-          echo "======================================"
-          echo "FALLBACK UFFICIALE CONAD"
-          echo "======================================"
-
           URL_CONAD="https://www.conad.it/assets/images/news/richiami-prodotto/mdd/Locandina%20di%20Richiamo%20-%20Focaccine%20farcite%20Conad.pdf?_u=1ea8dba99e2d633f0a9a7f3db5832c683461e79e"
 
           curl \
@@ -469,32 +456,16 @@ jobs:
             --retry 3 \
             -A "Mozilla/5.0" \
             "$URL_CONAD" \
-            -o risultati/focaccina-conad-fonte-ufficiale.pdf
-
-          echo ""
-          echo "Controllo firma PDF:"
-
-          head \
-            -c 5 \
-            risultati/focaccina-conad-fonte-ufficiale.pdf
-
-          echo ""
+            -o risultati/focaccina-conad-ufficiale.pdf
 
           pdftotext \
             -layout \
-            risultati/focaccina-conad-fonte-ufficiale.pdf \
-            risultati/focaccina-conad-fonte-ufficiale.txt \
-            || true
+            risultati/focaccina-conad-ufficiale.pdf \
+            risultati/focaccina-conad-ufficiale.txt
 
-          echo ""
-          echo "TESTO FONTE UFFICIALE CONAD:"
-          echo "--------------------------------------"
+          echo "✅ Fonte ufficiale CONAD acquisita"
 
-          cat \
-            risultati/focaccina-conad-fonte-ufficiale.txt
-
-
-      - name: Crea estrattore finale con fallback
+      - name: Crea estrattore finale quattro richiami
         run: |
           cat > estrai_finale.py <<'PYEOF'
           import json
@@ -503,14 +474,6 @@ jobs:
 
 
           CARTELLA = Path("risultati")
-
-
-          def pulisci(valore):
-              return re.sub(
-                  r"\s+",
-                  " ",
-                  valore or ""
-              ).strip()
 
 
           def leggi(path):
@@ -525,10 +488,15 @@ jobs:
               )
 
 
-          def trova_regex(
-              testo,
-              patterns
-          ):
+          def pulisci(valore):
+              return re.sub(
+                  r"\s+",
+                  " ",
+                  valore or ""
+              ).strip()
+
+
+          def cerca(testo, patterns):
               for pattern in patterns:
                   match = re.search(
                       pattern,
@@ -544,6 +512,19 @@ jobs:
               return ""
 
 
+          def carica_meta(id_richiamo):
+              path = (
+                  CARTELLA /
+                  f"{id_richiamo}-meta.json"
+              )
+
+              return json.loads(
+                  path.read_text(
+                      encoding="utf-8"
+                  )
+              )
+
+
           risultati = []
 
 
@@ -551,105 +532,64 @@ jobs:
           # ATIO CAPRISS
           # =====================================
 
-          meta_atio = json.loads(
-              (
-                  CARTELLA /
-                  "atio-capriss-meta.json"
-              ).read_text(
-                  encoding="utf-8"
-              )
+          meta = carica_meta(
+              "atio-capriss"
           )
 
-          testo_atio = leggi(
+          testo = leggi(
               CARTELLA /
-              "atio-capriss-ministero.txt"
+              "atio-capriss.txt"
           )
 
-
-          lotto_atio = trova_regex(
-              testo_atio,
+          lotto = cerca(
+              testo,
               [
                   r"Lotto\s+di\s+produzione\s*:\s*([^\n\r]+)"
               ]
           )
 
-
-          scadenza_atio = trova_regex(
-              testo_atio,
+          scadenza = cerca(
+              testo,
               [
                   r"Data\s+di\s+scadenza\s+o\s+termine\s+minimo\s+di\s+conservazione\s*:\s*([^\n\r]+)"
               ]
           )
 
-
-          produttore_atio = trova_regex(
-              testo_atio,
+          produttore = cerca(
+              testo,
               [
                   r"Nome\s+del\s+produttore\s*:\s*([^\n\r]+)"
               ]
           )
 
+          problemi = []
 
-          problemi_atio = []
-
-          if not lotto_atio:
-              problemi_atio.append(
-                  "lotto mancante"
+          if not lotto:
+              problemi.append(
+                  "lotto non trovato"
               )
 
-          if not scadenza_atio:
-              problemi_atio.append(
-                  "scadenza mancante"
+          if not scadenza:
+              problemi.append(
+                  "scadenza non trovata"
               )
-
 
           risultati.append(
               {
-                  "id":
-                      "atio-capriss",
-
-                  "marca":
-                      meta_atio.get(
-                          "marca",
-                          ""
-                      ),
-
-                  "prodotto":
-                      meta_atio.get(
-                          "prodotto",
-                          ""
-                      ),
-
-                  "motivo":
-                      meta_atio.get(
-                          "motivo",
-                          ""
-                      ),
-
-                  "lotto":
-                      lotto_atio,
-
-                  "scadenza":
-                      scadenza_atio,
-
-                  "produttore":
-                      produttore_atio,
-
-                  "fonte_lotto":
-                      "Ministero della Salute",
-
-                  "fonte_scadenza":
-                      "Ministero della Salute",
-
+                  "id": "atio-capriss",
+                  "marca": meta.get("marca", ""),
+                  "prodotto": meta.get("prodotto", ""),
+                  "motivo": meta.get("motivo", ""),
+                  "lotto": lotto,
+                  "scadenza": scadenza,
+                  "produttore": produttore,
+                  "fonte_lotto": "Ministero della Salute",
+                  "fonte_scadenza": "Ministero della Salute",
                   "validazione":
-                      (
-                          "PASS"
-                          if not problemi_atio
-                          else "DA_VERIFICARE"
-                      ),
-
-                  "problemi":
-                      problemi_atio
+                      "PASS"
+                      if not problemi
+                      else "DA_VERIFICARE",
+                  "problemi": problemi
               }
           )
 
@@ -658,215 +598,265 @@ jobs:
           # FOCACCINA CONAD
           # =====================================
 
-          meta_focaccina = json.loads(
-              (
-                  CARTELLA /
-                  "focaccina-conad-meta.json"
-              ).read_text(
-                  encoding="utf-8"
-              )
+          meta = carica_meta(
+              "focaccina-conad"
           )
-
 
           testo_ministero = leggi(
               CARTELLA /
-              "focaccina-conad-ministero.txt"
+              "focaccina-conad.txt"
           )
-
 
           testo_conad = leggi(
               CARTELLA /
-              "focaccina-conad-fonte-ufficiale.txt"
+              "focaccina-conad-ufficiale.txt"
           )
 
-
-          lotto_ministero = trova_regex(
+          lotto_ministero = cerca(
               testo_ministero,
               [
                   r"Lotto\s+di\s+produzione\s*:\s*([^\n\r]+)"
               ]
           )
 
-
-          scadenza_ministero = trova_regex(
+          scadenza_ministero = cerca(
               testo_ministero,
               [
                   r"Data\s+di\s+scadenza\s+o\s+termine\s+minimo\s+di\s+conservazione\s*:\s*([^\n\r]+)"
               ]
           )
 
+          lotto = ""
+          scadenza = ""
+          fonte_lotto = ""
+          fonte_scadenza = ""
 
-          ministero_lotto_completo = (
-              bool(lotto_ministero)
-              and not lotto_ministero.upper().endswith(
-                  "DATA DI"
-              )
-          )
-
-
-          ministero_scadenza_completa = (
-              bool(scadenza_ministero)
-              and not scadenza_ministero.upper().endswith(
-                  "FIN"
-              )
-          )
-
-
-          lotto_finale = (
+          if (
               lotto_ministero
-              if ministero_lotto_completo
-              else ""
-          )
+              and not lotto_ministero.upper()
+              .endswith("DATA DI")
+          ):
+              lotto = lotto_ministero
+              fonte_lotto = "Ministero della Salute"
 
-
-          scadenza_finale = (
+          if (
               scadenza_ministero
-              if ministero_scadenza_completa
-              else ""
-          )
+              and not scadenza_ministero.upper()
+              .endswith("FIN")
+          ):
+              scadenza = scadenza_ministero
+              fonte_scadenza = "Ministero della Salute"
 
-
-          fonte_lotto = (
-              "Ministero della Salute"
-              if lotto_finale
-              else ""
-          )
-
-
-          fonte_scadenza = (
-              "Ministero della Salute"
-              if scadenza_finale
-              else ""
-          )
-
-
-          # Fallback soltanto su fonte ufficiale CONAD.
-
-          if not lotto_finale:
-              match = re.search(
+          if not lotto:
+              if re.search(
                   r"Lotto\s*:\s*tutti\s+i\s+lotti",
                   testo_conad,
                   re.I
-              )
-
-              if match:
-                  lotto_finale = "Tutti i lotti"
+              ):
+                  lotto = "Tutti i lotti"
                   fonte_lotto = "CONAD - avviso ufficiale"
 
-
-          if not scadenza_finale:
-              match = re.search(
+          if not scadenza:
+              if re.search(
                   r"TMC\s*:\s*tutti\s+i\s*TMC",
                   testo_conad,
                   re.I
-              )
-
-              if match:
-                  scadenza_finale = "Tutti i TMC"
+              ):
+                  scadenza = "Tutti i TMC"
                   fonte_scadenza = "CONAD - avviso ufficiale"
 
-
-          produttore_focaccina = trova_regex(
+          produttore = cerca(
               testo_conad,
               [
                   r"Prodotto\s+per\s+Conad\s+da\s*:\s*([^\n\r]+)",
-                  r"Salumifici\s+GranTerre\s+S\.?p\.?a\.?[^\n\r]*"
+                  r"Nome\s+del\s+produttore\s*:\s*([^\n\r]+)"
               ]
           )
 
+          problemi = []
 
-          problemi_focaccina = []
-
-
-          if not lotto_finale:
-              problemi_focaccina.append(
+          if not lotto:
+              problemi.append(
                   "lotto non confermato"
               )
 
-
-          if not scadenza_finale:
-              problemi_focaccina.append(
+          if not scadenza:
+              problemi.append(
                   "TMC non confermato"
               )
 
+          risultati.append(
+              {
+                  "id": "focaccina-conad",
+                  "marca": meta.get("marca", ""),
+                  "prodotto": meta.get("prodotto", ""),
+                  "motivo": meta.get("motivo", ""),
+                  "lotto": lotto,
+                  "scadenza": scadenza,
+                  "produttore": produttore,
+                  "fonte_lotto": fonte_lotto,
+                  "fonte_scadenza": fonte_scadenza,
+                  "validazione":
+                      "PASS"
+                      if not problemi
+                      else "DA_VERIFICARE",
+                  "problemi": problemi
+              }
+          )
+
+
+          # =====================================
+          # PESTO ROSSO
+          # =====================================
+
+          meta = carica_meta(
+              "pesto-rosso"
+          )
+
+          testo = leggi(
+              CARTELLA /
+              "pesto-rosso.txt"
+          )
+
+          lotto = cerca(
+              testo,
+              [
+                  r"Lotto\s+di\s+produzione\s*:\s*([A-Za-z0-9./_-]+)"
+              ]
+          )
+
+          scadenza = cerca(
+              testo,
+              [
+                  r"Data\s+di\s+scadenza\s+o\s+termine\s+minimo\s+di\s+conservazione\s*:\s*([^\n\r]+)"
+              ]
+          )
+
+          produttore = cerca(
+              testo,
+              [
+                  r"Nome\s+del\s+produttore\s*:\s*([^\n\r]+)"
+              ]
+          )
+
+          problemi = []
+
+          if not lotto:
+              problemi.append(
+                  "lotto non trovato"
+              )
 
           risultati.append(
               {
-                  "id":
-                      "focaccina-conad",
-
-                  "marca":
-                      meta_focaccina.get(
-                          "marca",
-                          ""
-                      ),
-
-                  "prodotto":
-                      meta_focaccina.get(
-                          "prodotto",
-                          ""
-                      ),
-
-                  "motivo":
-                      meta_focaccina.get(
-                          "motivo",
-                          ""
-                      ),
-
-                  "lotto":
-                      lotto_finale,
-
-                  "scadenza":
-                      scadenza_finale,
-
-                  "produttore":
-                      produttore_focaccina,
-
-                  "fonte_lotto":
-                      fonte_lotto,
-
+                  "id": "pesto-rosso",
+                  "marca": meta.get("marca", ""),
+                  "prodotto": meta.get("prodotto", ""),
+                  "motivo": meta.get("motivo", ""),
+                  "lotto": lotto,
+                  "scadenza": scadenza,
+                  "produttore": produttore,
+                  "fonte_lotto": "Ministero della Salute",
                   "fonte_scadenza":
-                      fonte_scadenza,
-
+                      "Ministero della Salute"
+                      if scadenza
+                      else "",
                   "validazione":
-                      (
-                          "PASS"
-                          if not problemi_focaccina
-                          else "DA_VERIFICARE"
-                      ),
+                      "PASS"
+                      if not problemi
+                      else "DA_VERIFICARE",
+                  "problemi": problemi
+              }
+          )
 
-                  "problemi":
-                      problemi_focaccina
+
+          # =====================================
+          # TONNO CONAD
+          # =====================================
+
+          meta = carica_meta(
+              "tonno-conad"
+          )
+
+          testo = leggi(
+              CARTELLA /
+              "tonno-conad.txt"
+          )
+
+          lotto = cerca(
+              testo,
+              [
+                  r"Lotto\s+di\s+produzione\s*:\s*([A-Za-z0-9./_-]+)"
+              ]
+          )
+
+          scadenza = cerca(
+              testo,
+              [
+                  r"Data\s+di\s+scadenza\s+o\s+termine\s+minimo\s+di\s+conservazione\s*:\s*([^\n\r]+)"
+              ]
+          )
+
+          produttore = cerca(
+              testo,
+              [
+                  r"Nome\s+del\s+produttore\s*:\s*([^\n\r]+)"
+              ]
+          )
+
+          problemi = []
+
+          if not lotto:
+              problemi.append(
+                  "lotto non trovato"
+              )
+
+          if not scadenza:
+              problemi.append(
+                  "scadenza non trovata"
+              )
+
+          risultati.append(
+              {
+                  "id": "tonno-conad",
+                  "marca": meta.get("marca", ""),
+                  "prodotto": meta.get("prodotto", ""),
+                  "motivo": meta.get("motivo", ""),
+                  "lotto": lotto,
+                  "scadenza": scadenza,
+                  "produttore": produttore,
+                  "fonte_lotto": "Ministero della Salute",
+                  "fonte_scadenza": "Ministero della Salute",
+                  "validazione":
+                      "PASS"
+                      if not problemi
+                      else "DA_VERIFICARE",
+                  "problemi": problemi
               }
           )
 
 
           output = {
-              "totale":
-                  len(risultati),
+              "totale": len(risultati),
 
-              "pass":
-                  sum(
-                      1
-                      for r in risultati
-                      if r["validazione"] == "PASS"
-                  ),
+              "pass": sum(
+                  1
+                  for r in risultati
+                  if r["validazione"] == "PASS"
+              ),
 
-              "da_verificare":
-                  sum(
-                      1
-                      for r in risultati
-                      if r["validazione"] != "PASS"
-                  ),
+              "da_verificare": sum(
+                  1
+                  for r in risultati
+                  if r["validazione"] != "PASS"
+              ),
 
-              "richiami":
-                  risultati
+              "richiami": risultati
           }
 
 
           (
               CARTELLA /
-              "risultato-finale.json"
+              "risultato-definitivo.json"
           ).write_text(
               json.dumps(
                   output,
@@ -878,93 +868,73 @@ jobs:
 
 
           print("")
-          print(
-              "======================================"
-          )
-          print(
-              "RISULTATO FINALE"
-          )
-          print(
-              "======================================"
-          )
+          print("======================================")
+          print("RISULTATO DEFINITIVO 4 RICHIAMI")
+          print("======================================")
 
 
-          for richiamo in risultati:
+          for r in risultati:
               print("")
-              print(
-                  "--------------------------------------"
-              )
-
-              print(
-                  richiamo["id"]
-              )
-
-              print(
-                  "--------------------------------------"
-              )
+              print("--------------------------------------")
+              print(r["id"])
+              print("--------------------------------------")
 
               print(
                   "Marca:",
-                  richiamo["marca"]
+                  r["marca"]
               )
 
               print(
                   "Prodotto:",
-                  richiamo["prodotto"]
+                  r["prodotto"]
               )
 
               print(
                   "Lotto:",
-                  richiamo["lotto"]
+                  r["lotto"]
               )
 
               print(
                   "Fonte lotto:",
-                  richiamo["fonte_lotto"]
+                  r["fonte_lotto"]
               )
 
               print(
                   "Scadenza/TMC:",
-                  richiamo["scadenza"]
+                  r["scadenza"]
               )
 
               print(
                   "Fonte scadenza:",
-                  richiamo["fonte_scadenza"]
+                  r["fonte_scadenza"]
               )
 
               print(
                   "Produttore:",
-                  richiamo["produttore"]
+                  r["produttore"]
               )
 
               print(
                   "Motivo:",
-                  richiamo["motivo"]
+                  r["motivo"]
               )
 
               print(
                   "VALIDAZIONE:",
-                  richiamo["validazione"]
+                  r["validazione"]
               )
 
-              if richiamo["problemi"]:
+              if r["problemi"]:
                   print(
                       "Problemi:",
-                      richiamo["problemi"]
+                      r["problemi"]
                   )
 
 
           print("")
-          print(
-              "======================================"
-          )
-          print(
-              "RIEPILOGO"
-          )
-          print(
-              "======================================"
-          )
+          print("======================================")
+          print("RIEPILOGO")
+          print("======================================")
 
           print(
               "Totale:",
@@ -981,29 +951,39 @@ jobs:
               output["da_verificare"]
           )
 
+          if (
+              output["totale"] == 4
+              and output["pass"] == 4
+          ):
+              print("")
+              print(
+                  "✅ TEST 4/4 SUPERATO"
+              )
+
+          else:
+              print("")
+              print(
+                  "⚠️ TEST NON ANCORA 4/4"
+              )
+
           PYEOF
 
-
-      - name: Costruisci risultato finale
+      - name: Analizza definitivamente quattro richiami
         run: python estrai_finale.py
 
-
-      - name: Mostra risultato finale
+      - name: Mostra JSON definitivo
         run: |
-          echo ""
           echo "======================================"
-          echo "JSON FINALE"
+          echo "JSON DEFINITIVO"
           echo "======================================"
 
-          cat \
-            risultati/risultato-finale.json
-
+          cat risultati/risultato-definitivo.json
 
       - name: Salva risultati
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-fallback-fonti-ufficiali
+          name: test-definitivo-quattro-richiami
           path: |
             risultati/
           if-no-files-found: ignore
