@@ -106,8 +106,8 @@ jobs:
              "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/contorno-delicato/"]
           ];
 
-          function clean(v) {
-            return String(v || "")
+          function clean(value) {
+            return String(value || "")
               .replace(/\u00a0/g, " ")
               .replace(/[ \t]+/g, " ")
               .trim();
@@ -115,42 +115,42 @@ jobs:
 
           function field(body, labels) {
             for (const label of labels) {
-              const escaped =
-                label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+              const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+              const regex = new RegExp(
+                escaped + "\\s*:?\\s*([^\\n\\r]+)",
+                "i"
+              );
 
-              const re =
-                new RegExp(
-                  escaped + "\\s*:?\\s*([^\\n\\r]+)",
-                  "i"
-                );
+              const match = body.match(regex);
 
-              const m = body.match(re);
+              if (match && match[1]) {
+                const value = clean(match[1]);
 
-              if (m && m[1]) {
-                const value = clean(m[1]);
-
-                if (value && value.length < 500)
+                if (value && value.length < 500) {
                   return value;
+                }
               }
             }
 
             return "";
           }
 
-          async function challenge(page) {
-            for (let i = 0; i < 4; i++) {
+          async function waitForChallenge(page) {
+            for (let attempt = 0; attempt < 4; attempt++) {
               await page.waitForTimeout(4000);
 
-              const body =
-                await page.locator("body")
-                  .innerText()
-                  .catch(() => "");
+              const body = await page
+                .locator("body")
+                .innerText()
+                .catch(() => "");
 
-              if (
-                !/browser validation|please enable javascript|please enable cookies/i
-                  .test(body)
-              )
+              const blocked =
+                /browser validation|please enable javascript|please enable cookies/i
+                  .test(body);
+
+              if (!blocked) {
                 return true;
+              }
 
               await page.reload({
                 waitUntil: "domcontentloaded",
@@ -161,59 +161,52 @@ jobs:
             return false;
           }
 
-          async function getPdf(page, url) {
-            return await page.evaluate(
-              async pdfUrl => {
-                const r =
-                  await fetch(pdfUrl, {
-                    credentials: "include"
-                  });
+          async function downloadPdf(page, url) {
+            return await page.evaluate(async (pdfUrl) => {
+              const response = await fetch(pdfUrl, {
+                credentials: "include"
+              });
 
-                const bytes =
-                  new Uint8Array(
-                    await r.arrayBuffer()
-                  );
+              const data = new Uint8Array(
+                await response.arrayBuffer()
+              );
 
-                return {
-                  status: r.status,
-                  ok: r.ok,
-                  bytes: Array.from(bytes)
-                };
-              },
-              url
-            );
+              return {
+                status: response.status,
+                ok: response.ok,
+                bytes: Array.from(data)
+              };
+            }, url);
           }
 
-          const browser =
-            await chromium.launch({
-              headless: true
-            });
+          const browser = await chromium.launch({
+            headless: true
+          });
 
-          const context =
-            await browser.newContext({
-              locale: "it-IT",
-              userAgent:
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-                "AppleWebKit/537.36 (KHTML, like Gecko) " +
-                "Chrome/131.0.0.0 Safari/537.36"
-            });
+          const context = await browser.newContext({
+            locale: "it-IT",
+            viewport: {
+              width: 1400,
+              height: 1000
+            },
+            userAgent:
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+              "AppleWebKit/537.36 (KHTML, like Gecko) " +
+              "Chrome/131.0.0.0 Safari/537.36"
+          });
 
           const risultati = [];
 
           try {
-
             for (let i = 0; i < RICHIAMI.length; i++) {
-
-              const [id, url] =
-                RICHIAMI[i];
+              const [id, url] = RICHIAMI[i];
 
               console.log("");
-              console.log(
-                `========== ${i + 1}/20 ${id} ==========`
-              );
+              console.log("==============================================");
+              console.log(`${i + 1}/20 - ${id}`);
+              console.log("==============================================");
 
-              const page =
-                await context.newPage();
+              const page = await context.newPage();
 
               const result = {
                 id,
@@ -228,88 +221,80 @@ jobs:
               };
 
               try {
-
                 await page.goto(url, {
                   waitUntil: "domcontentloaded",
                   timeout: 90000
                 });
 
-                if (!(await challenge(page)))
+                const challengeOk = await waitForChallenge(page);
+
+                if (!challengeOk) {
                   throw new Error(
                     "Browser validation non superata"
                   );
+                }
 
                 await page.waitForTimeout(3000);
 
-                const body =
-                  await page.locator("body")
-                    .innerText();
+                const body = await page
+                  .locator("body")
+                  .innerText();
 
-                result.marca =
-                  field(body, [
-                    "Marca",
-                    "Marchio"
-                  ]);
+                result.marca = field(body, [
+                  "Marca",
+                  "Marchio"
+                ]);
 
-                result.prodotto =
-                  field(body, [
-                    "Denominazione"
-                  ]);
+                result.prodotto = field(body, [
+                  "Denominazione"
+                ]);
 
-                result.motivo =
-                  field(body, [
-                    "Motivo della segnalazione"
-                  ]);
+                result.motivo = field(body, [
+                  "Motivo della segnalazione"
+                ]);
 
-                result.dataPubblicazione =
-                  field(body, [
-                    "Data pubblicazione"
-                  ]);
+                result.dataPubblicazione = field(body, [
+                  "Data pubblicazione"
+                ]);
 
-                const links =
-                  await page.locator("a")
-                    .evaluateAll(
-                      els => els.map(a => ({
-                        href: a.href || "",
-                        text:
-                          (a.innerText || "").trim()
-                      }))
-                    );
-
-                const pdf =
-                  links.find(
-                    x =>
-                      /\.pdf(?:$|\?)/i.test(x.href) ||
-                      /modello di richiamo/i.test(x.text)
+                const links = await page
+                  .locator("a")
+                  .evaluateAll((elements) =>
+                    elements.map((a) => ({
+                      href: a.href || "",
+                      text: (a.innerText || "").trim()
+                    }))
                   );
 
-                if (!pdf)
-                  throw new Error(
-                    "PDF non trovato"
-                  );
+                const pdfLink = links.find(
+                  (item) =>
+                    /\.pdf(?:$|\?)/i.test(item.href) ||
+                    /modello di richiamo/i.test(item.text)
+                );
 
-                result.pdfUrl = pdf.href;
+                if (!pdfLink || !pdfLink.href) {
+                  throw new Error("PDF non trovato");
+                }
 
-                const downloaded =
-                  await getPdf(
-                    page,
-                    pdf.href
-                  );
+                result.pdfUrl = pdfLink.href;
 
-                const buffer =
-                  Buffer.from(
-                    downloaded.bytes
-                  );
+                const downloaded = await downloadPdf(
+                  page,
+                  pdfLink.href
+                );
+
+                const buffer = Buffer.from(downloaded.bytes);
 
                 if (
                   !downloaded.ok ||
+                  downloaded.status !== 200 ||
                   buffer.length < 1000 ||
-                  buffer.subarray(0, 5)
-                    .toString() !== "%PDF-"
-                )
+                  buffer.subarray(0, 5).toString() !== "%PDF-"
+                ) {
                   throw new Error(
-                    "PDF non valido"
+                    `PDF non valido - HTTP ${downloaded.status}`
                   );
+                }
 
                 fs.writeFileSync(
                   `risultati/pdf/${id}.pdf`,
@@ -319,41 +304,40 @@ jobs:
                 result.pdfScaricato = true;
 
                 console.log("✅ PDF acquisito");
-
-              } catch (e) {
-
-                result.errore =
-                  String(e?.message || e);
-
-                console.log(
-                  "❌",
-                  result.errore
+              } catch (error) {
+                result.errore = String(
+                  error?.message || error
                 );
 
+                console.log(
+                  "❌ ERRORE:",
+                  result.errore
+                );
               } finally {
-
-                await page.close()
-                  .catch(() => {});
-
+                await page.close().catch(() => {});
               }
 
               risultati.push(result);
             }
-
           } finally {
-
             await browser.close();
-
           }
 
           fs.writeFileSync(
             "risultati/schede.json",
-            JSON.stringify(
-              risultati,
-              null,
-              2
-            )
+            JSON.stringify(risultati, null, 2),
+            "utf8"
           );
+
+          console.log("");
+          console.log("==============================================");
+          console.log("DOWNLOAD COMPLETATO");
+          console.log(
+            "PDF scaricati:",
+            risultati.filter((r) => r.pdfScaricato).length,
+            "/ 20"
+          );
+          console.log("==============================================");
           EOF
 
       - name: Scarica PDF
@@ -370,12 +354,12 @@ jobs:
 
 
           ROOT = Path("risultati")
-          PDF = ROOT / "pdf"
-          TXT = ROOT / "testi"
-          OCR = ROOT / "ocr"
+          PDF_DIR = ROOT / "pdf"
+          TXT_DIR = ROOT / "testi"
+          OCR_DIR = ROOT / "ocr"
 
-          TXT.mkdir(exist_ok=True)
-          OCR.mkdir(exist_ok=True)
+          TXT_DIR.mkdir(parents=True, exist_ok=True)
+          OCR_DIR.mkdir(parents=True, exist_ok=True)
 
 
           LABELS = [
@@ -390,49 +374,37 @@ jobs:
               "motivo del richiamo",
               "avvertenze",
               "fotografia del prodotto",
-              "denominazione di vendita"
+              "denominazione di vendita",
           ]
 
 
-          def run(cmd):
+          def run_command(command):
               return subprocess.run(
-                  cmd,
+                  command,
                   stdout=subprocess.PIPE,
                   stderr=subprocess.PIPE,
                   text=True,
-                  errors="ignore"
+                  errors="ignore",
               )
 
 
-          def clean(s):
-              s = s or ""
-
-              s = s.replace("\x0c", " ")
-              s = s.replace("\u00a0", " ")
-
-              s = re.sub(
-                  r"[ \t]+",
-                  " ",
-                  s
-              )
-
-              return s.strip(
-                  " \t\r\n:;-–—|[]"
-              )
+          def clean(value):
+              value = value or ""
+              value = value.replace("\x0c", " ")
+              value = value.replace("\u00a0", " ")
+              value = re.sub(r"[ \t]+", " ", value)
+              value = value.strip(" \t\r\n:;-–—|[]")
+              return value
 
 
-          def digital(pdf):
-              target =
-                  TXT / (
-                      pdf.stem +
-                      "-digitale.txt"
-                  )
+          def digital_text(pdf_path):
+              target = TXT_DIR / f"{pdf_path.stem}-digitale.txt"
 
-              run([
+              run_command([
                   "pdftotext",
                   "-layout",
-                  str(pdf),
-                  str(target)
+                  str(pdf_path),
+                  str(target),
               ])
 
               if not target.exists():
@@ -440,71 +412,65 @@ jobs:
 
               return target.read_text(
                   encoding="utf-8",
-                  errors="ignore"
+                  errors="ignore",
               )
 
 
-          def good_text(text):
+          def text_is_good(text):
               if len(text.strip()) < 120:
                   return False
 
               low = text.lower()
 
-              keys = [
+              keywords = [
                   "lotto",
                   "scadenza",
                   "conservazione",
                   "produttore",
                   "stabilimento",
-                  "richiamo"
+                  "richiamo",
               ]
 
-              return (
-                  sum(
-                      x in low
-                      for x in keys
-                  ) >= 3
+              score = sum(
+                  1
+                  for keyword in keywords
+                  if keyword in low
               )
 
+              return score >= 3
 
-          def ocr(pdf):
-              folder =
-                  OCR / pdf.stem
+
+          def ocr_pdf(pdf_path):
+              folder = OCR_DIR / pdf_path.stem
 
               if folder.exists():
                   shutil.rmtree(folder)
 
-              folder.mkdir()
+              folder.mkdir(
+                  parents=True,
+                  exist_ok=True,
+              )
 
-              prefix =
-                  folder / "page"
+              prefix = folder / "page"
 
-              run([
+              run_command([
                   "pdftoppm",
                   "-r",
                   "400",
                   "-png",
-                  str(pdf),
-                  str(prefix)
+                  str(pdf_path),
+                  str(prefix),
               ])
 
               pages = []
 
               for image in sorted(
-                  folder.glob(
-                      "page-*.png"
-                  )
+                  folder.glob("page-*.png")
               ):
-
                   versions = []
 
-                  for psm in [
-                      "6",
-                      "11",
-                      "4"
-                  ]:
-
-                      r = run([
+                  for psm in ["6", "11", "4"]:
+                      result = run_command([
                           "tesseract",
                           str(image),
                           "stdout",
@@ -513,27 +479,40 @@ jobs:
                           "--psm",
                           psm,
                           "-c",
-                          "preserve_interword_spaces=1"
+                          "preserve_interword_spaces=1",
                       ])
 
-                      versions.append(
-                          r.stdout
+                      if result.stdout.strip():
+                          versions.append(
+                              result.stdout
+                          )
+
+                  if not versions:
+                      continue
+
+                  def quality(candidate):
+                      low = candidate.lower()
+
+                      score = sum(
+                          1
+                          for keyword in [
+                              "lotto",
+                              "scadenza",
+                              "conservazione",
+                              "produttore",
+                              "richiamo",
+                          ]
+                          if keyword in low
+                      )
+
+                      return (
+                          score,
+                          len(candidate),
                       )
 
                   best = max(
                       versions,
-                      key=lambda t: (
-                          sum(
-                              x in t.lower()
-                              for x in [
-                                  "lotto",
-                                  "scadenza",
-                                  "produttore",
-                                  "richiamo"
-                              ]
-                          ),
-                          len(t)
-                      )
+                      key=quality,
                   )
 
                   pages.append(best)
@@ -543,30 +522,24 @@ jobs:
 
           def get_lines(text):
               return [
-                  clean(x)
-                  for x in text.splitlines()
-                  if clean(x)
+                  clean(line)
+                  for line in text.splitlines()
+                  if clean(line)
               ]
 
 
-          def stop_at_label(value):
+          def stop_at_next_label(value):
               low = value.lower()
-
               positions = []
 
               for label in LABELS:
+                  position = low.find(label)
 
-                  pos =
-                      low.find(label)
-
-                  if pos > 0:
-                      positions.append(pos)
+                  if position > 0:
+                      positions.append(position)
 
               if positions:
-                  value =
-                      value[
-                          :min(positions)
-                      ]
+                  value = value[:min(positions)]
 
               return clean(value)
 
@@ -574,55 +547,49 @@ jobs:
           def after_label(
               text,
               labels,
-              next_lines=2
+              max_next_lines=2,
           ):
+              text_lines = get_lines(text)
 
-              lines =
-                  get_lines(text)
-
-              for i, line in enumerate(lines):
-
-                  low =
-                      line.lower()
+              for index, line in enumerate(text_lines):
+                  low = line.lower()
 
                   for label in labels:
+                      position = low.find(
+                          label.lower()
+                      )
 
-                      pos =
-                          low.find(
-                              label.lower()
-                          )
-
-                      if pos < 0:
+                      if position < 0:
                           continue
 
-                      value =
-                          clean(
-                              line[
-                                  pos +
-                                  len(label):
-                              ]
-                          )
+                      value = clean(
+                          line[
+                              position
+                              + len(label):
+                          ]
+                      )
 
-                      value =
-                          stop_at_label(
-                              value
-                          )
+                      value = stop_at_next_label(
+                          value
+                      )
 
                       if value:
                           return value
 
-                      for n in range(
+                      for offset in range(
                           1,
-                          next_lines + 1
+                          max_next_lines + 1,
                       ):
+                          next_index = (
+                              index + offset
+                          )
 
-                          if i+n >= len(lines):
+                          if next_index >= len(text_lines):
                               break
 
-                          candidate =
-                              stop_at_label(
-                                  lines[i+n]
-                              )
+                          candidate = stop_at_next_label(
+                              text_lines[next_index]
+                          )
 
                           if candidate:
                               return candidate
@@ -631,16 +598,15 @@ jobs:
 
 
           def extract_lot(text):
-
-              m = re.search(
+              all_lots = re.search(
                   r"\btutti\s+i\s+lotti\b[^\n\r]*",
                   text,
-                  re.I
+                  re.I,
               )
 
-              if m:
-                  return stop_at_label(
-                      m.group(0)
+              if all_lots:
+                  return stop_at_next_label(
+                      all_lots.group(0)
                   )
 
               return after_label(
@@ -648,23 +614,22 @@ jobs:
                   [
                       "Lotto di produzione",
                       "Numero di lotto",
-                      "Lotto"
+                      "Lotto",
                   ],
-                  3
+                  max_next_lines=3,
               )
 
 
           def extract_tmc(text):
-
-              m = re.search(
+              all_tmc = re.search(
                   r"\btutti\s+(?:i\s+)?tmc\b[^\n\r]*",
                   text,
-                  re.I
+                  re.I,
               )
 
-              if m:
-                  return stop_at_label(
-                      m.group(0)
+              if all_tmc:
+                  return stop_at_next_label(
+                      all_tmc.group(0)
                   )
 
               return after_label(
@@ -673,229 +638,246 @@ jobs:
                       "Data di scadenza o termine minimo di conservazione",
                       "Termine minimo di conservazione",
                       "Data di scadenza",
-                      "TMC"
+                      "TMC",
                   ],
-                  3
+                  max_next_lines=3,
               )
 
 
           def extract_producer(text):
-
               return after_label(
                   text,
                   [
                       "Nome e sede del produttore",
                       "Nome del produttore",
-                      "Produttore"
+                      "Produttore",
                   ],
-                  3
+                  max_next_lines=3,
               )
 
 
-          def suspicious_lot(value):
-
+          def validate_lot(value):
               if not value:
-                  return True, "lotto assente"
+                  return False, "lotto assente"
 
-              low =
-                  value.lower()
-
-              if len(value) > 120:
-                  return True, "lotto troppo lungo"
-
-              if any(
-                  x in low
-                  for x in LABELS
-              ):
-                  return True, "lotto contaminato"
-
-              endings = [
-                  "fino alla data di",
-                  "fino al",
-                  "dal",
-                  "compresi tra",
-                  "da lotto",
-                  "dal lotto",
-                  "con tmc"
-              ]
-
-              for x in endings:
-                  if low.rstrip().endswith(x):
-                      return (
-                          True,
-                          "lotto troncato/incompleto"
-                      )
-
-              if re.search(
-                  r"[\[\{]$",
-                  value
-              ):
-                  return (
-                      True,
-                      "lotto troncato"
-                  )
-
-              if len(
-                  re.findall(
-                      r"[A-Za-z0-9]",
-                      value
-                  )
-              ) < 2:
-                  return (
-                      True,
-                      "lotto non plausibile"
-                  )
-
-              return False, ""
-
-
-          def suspicious_tmc(value):
-
-              if not value:
-                  return (
-                      True,
-                      "TMC/scadenza assente"
-                  )
-
-              low =
-                  value.lower()
+              low = value.lower()
 
               if len(value) > 150:
                   return (
-                      True,
-                      "TMC troppo lungo"
+                      False,
+                      "lotto troppo lungo",
                   )
 
-              if any(
-                  x in low
-                  for x in [
-                      "nome del produttore",
-                      "sede dello stabilimento",
-                      "motivo del richiamo",
-                      "avvertenze"
-                  ]
-              ):
-                  return (
-                      True,
-                      "TMC contaminato"
-                  )
-
-              incomplete = [
-                  "fino alla data di",
-                  "fino al",
-                  "dal",
-                  "compresi tra",
-                  "tutti i lotti fin"
+              contaminated = [
+                  "nome del produttore",
+                  "sede dello stabilimento",
+                  "motivo del richiamo",
+                  "avvertenze",
+                  "fotografia del prodotto",
+                  "data di scadenza",
               ]
 
               if any(
-                  low.rstrip().endswith(x)
-                  for x in incomplete
+                  item in low
+                  for item in contaminated
               ):
                   return (
-                      True,
-                      "TMC troncato/incompleto"
+                      False,
+                      "lotto contaminato",
+                  )
+
+              incomplete_endings = [
+                  "fino alla data di",
+                  "fino alla data",
+                  "fino al",
+                  "compresi tra",
+                  "da lotto",
+                  "dal lotto",
+                  "con tmc",
+                  "fino alla",
+              ]
+
+              if any(
+                  low.rstrip().endswith(item)
+                  for item in incomplete_endings
+              ):
+                  return (
+                      False,
+                      "lotto troncato/incompleto",
+                  )
+
+              if re.search(
+                  r"[\[\{]$",
+                  value,
+              ):
+                  return (
+                      False,
+                      "lotto troncato",
+                  )
+
+              alphanumeric = re.findall(
+                  r"[A-Za-z0-9]",
+                  value,
+              )
+
+              if len(alphanumeric) < 2:
+                  return (
+                      False,
+                      "lotto non plausibile",
+                  )
+
+              return True, ""
+
+
+          def validate_tmc(value):
+              if not value:
+                  return (
+                      False,
+                      "TMC/scadenza assente",
+                  )
+
+              low = value.lower()
+
+              if len(value) > 160:
+                  return (
+                      False,
+                      "TMC troppo lungo",
+                  )
+
+              contaminated = [
+                  "nome del produttore",
+                  "sede dello stabilimento",
+                  "motivo del richiamo",
+                  "avvertenze",
+                  "fotografia del prodotto",
+              ]
+
+              if any(
+                  item in low
+                  for item in contaminated
+              ):
+                  return (
+                      False,
+                      "TMC contaminato",
+                  )
+
+              incomplete_endings = [
+                  "fino alla data di",
+                  "fino alla data",
+                  "fino al",
+                  "compresi tra",
+                  "tutti i lotti fin",
+                  "fino alla",
+              ]
+
+              if any(
+                  low.rstrip().endswith(item)
+                  for item in incomplete_endings
+              ):
+                  return (
+                      False,
+                      "TMC troncato/incompleto",
                   )
 
               if (
-                  "tutti i tmc" in low or
-                  "tutti tmc" in low
+                  "tutti i tmc" in low
+                  or "tutti tmc" in low
               ):
-                  return False, ""
+                  return True, ""
 
-              date_like =
-                  re.search(
-                      r"\b(?:"
-                      r"\d{1,2}[./-]\d{1,2}[./-]\d{2,4}"
-                      r"|"
-                      r"\d{1,2}[./-]\d{2,4}"
-                      r"|"
-                      r"\d{2}/\d{4}"
-                      r")\b",
-                      value
-                  )
+              date_like = re.search(
+                  r"\b(?:"
+                  r"\d{1,2}[./-]\d{1,2}[./-]\d{2,4}"
+                  r"|"
+                  r"\d{1,2}[./-]\d{2,4}"
+                  r"|"
+                  r"\d{2}/\d{4}"
+                  r")\b",
+                  value,
+              )
 
-              if not date_like:
+              textual_duration = re.search(
+                  r"\b\d+\s+(?:giorni|mesi|anno|anni)\b",
+                  low,
+              )
+
+              if not date_like and not textual_duration:
                   return (
-                      True,
-                      "TMC senza data riconoscibile"
+                      False,
+                      "TMC senza data riconoscibile",
                   )
 
-              return False, ""
+              return True, ""
 
 
-          def suspicious_producer(value):
-
+          def validate_producer(value):
               if not value:
                   return (
-                      True,
-                      "produttore assente"
+                      False,
+                      "produttore assente",
                   )
 
               if len(value) < 3:
                   return (
-                      True,
-                      "produttore non plausibile"
+                      False,
+                      "produttore non plausibile",
                   )
 
-              if len(value) > 200:
+              if len(value) > 220:
                   return (
-                      True,
-                      "produttore troppo lungo"
+                      False,
+                      "produttore troppo lungo",
                   )
 
-              low =
-                  value.lower()
+              low = value.lower()
+
+              contaminated = [
+                  "motivo del richiamo",
+                  "avvertenze",
+                  "fotografia del prodotto",
+              ]
 
               if any(
-                  x in low
-                  for x in [
-                      "motivo del richiamo",
-                      "avvertenze",
-                      "fotografia del prodotto"
-                  ]
+                  item in low
+                  for item in contaminated
               ):
                   return (
-                      True,
-                      "produttore contaminato"
+                      False,
+                      "produttore contaminato",
                   )
 
-              return False, ""
+              return True, ""
 
 
-          schede =
-              json.loads(
-                  (
-                      ROOT /
-                      "schede.json"
-                  ).read_text(
-                      encoding="utf-8"
-                  )
+          schede_path = ROOT / "schede.json"
+
+          if not schede_path.exists():
+              raise SystemExit(
+                  "ERRORE: risultati/schede.json non trovato"
               )
 
+          schede = json.loads(
+              schede_path.read_text(
+                  encoding="utf-8"
+              )
+          )
 
           results = []
 
 
-          for n, scheda in enumerate(
+          for number, scheda in enumerate(
               schede,
-              1
+              start=1,
           ):
-
               print("")
+              print("=" * 60)
               print(
-                  "=" * 60
-              )
-              print(
-                  f"{n:02d}/20 "
+                  f"{number:02d}/20 - "
                   f"{scheda['id']}"
               )
-              print(
-                  "=" * 60
-              )
+              print("=" * 60)
 
-              result =
-                  dict(scheda)
+              result = dict(scheda)
 
               result.update({
                   "metodo": "",
@@ -904,150 +886,106 @@ jobs:
                   "produttore": "",
                   "validazione":
                       "DA_VERIFICARE",
-                  "problemi": []
+                  "problemi": [],
               })
 
-              pdf =
-                  PDF / (
-                      scheda["id"] +
-                      ".pdf"
+              pdf_path = (
+                  PDF_DIR
+                  / f"{scheda['id']}.pdf"
+              )
+
+              if (
+                  not scheda.get(
+                      "pdfScaricato"
                   )
-
-              if not pdf.exists():
-
-                  result[
-                      "problemi"
-                  ].append(
+                  or not pdf_path.exists()
+              ):
+                  result["problemi"].append(
                       "PDF assente"
                   )
 
-                  results.append(
-                      result
+                  results.append(result)
+
+                  print(
+                      "VALIDAZIONE: DA_VERIFICARE"
                   )
 
                   continue
 
+              text = digital_text(pdf_path)
 
-              text =
-                  digital(pdf)
-
-              if good_text(text):
-
-                  method =
-                      "TESTO_DIGITALE"
-
+              if text_is_good(text):
+                  method = "TESTO_DIGITALE"
               else:
+                  text = ocr_pdf(pdf_path)
+                  method = "OCR"
 
-                  text =
-                      ocr(pdf)
-
-                  method =
-                      "OCR"
-
-
-              (
-                  TXT /
-                  (
-                      scheda["id"] +
-                      ".txt"
-                  )
-              ).write_text(
-                  text,
-                  encoding="utf-8",
-                  errors="ignore"
+              final_text_path = (
+                  TXT_DIR
+                  / f"{scheda['id']}.txt"
               )
 
+              final_text_path.write_text(
+                  text,
+                  encoding="utf-8",
+                  errors="ignore",
+              )
 
-              lot =
-                  extract_lot(text)
+              lot = extract_lot(text)
+              tmc = extract_tmc(text)
+              producer = extract_producer(text)
 
-              tmc =
-                  extract_tmc(text)
+              result["metodo"] = method
+              result["lotto"] = lot
+              result["tmc"] = tmc
+              result["produttore"] = producer
 
-              producer =
-                  extract_producer(text)
-
-
-              result["metodo"] =
-                  method
-
-              result["lotto"] =
+              lot_ok, lot_problem = validate_lot(
                   lot
+              )
 
-              result["tmc"] =
-                  tmc
-
-              result["produttore"] =
-                  producer
-
-
-              bad, reason =
-                  suspicious_lot(lot)
-
-              if bad:
-                  result[
-                      "problemi"
-                  ].append(reason)
-
-
-              bad, reason =
-                  suspicious_tmc(tmc)
-
-              if bad:
-                  result[
-                      "problemi"
-                  ].append(reason)
-
-
-              bad, reason =
-                  suspicious_producer(
-                      producer
+              if not lot_ok:
+                  result["problemi"].append(
+                      lot_problem
                   )
 
-              if bad:
-                  result[
-                      "problemi"
-                  ].append(reason)
+              tmc_ok, tmc_problem = validate_tmc(
+                  tmc
+              )
 
+              if not tmc_ok:
+                  result["problemi"].append(
+                      tmc_problem
+                  )
 
-              if not scheda.get(
-                  "marca"
-              ):
-                  result[
-                      "problemi"
-                  ].append(
+              producer_ok, producer_problem = (
+                  validate_producer(
+                      producer
+                  )
+              )
+
+              if not producer_ok:
+                  result["problemi"].append(
+                      producer_problem
+                  )
+
+              if not scheda.get("marca"):
+                  result["problemi"].append(
                       "marca pagina assente"
                   )
 
-
-              if not scheda.get(
-                  "prodotto"
-              ):
-                  result[
-                      "problemi"
-                  ].append(
+              if not scheda.get("prodotto"):
+                  result["problemi"].append(
                       "prodotto pagina assente"
                   )
 
-
-              if not scheda.get(
-                  "motivo"
-              ):
-                  result[
-                      "problemi"
-                  ].append(
+              if not scheda.get("motivo"):
+                  result["problemi"].append(
                       "motivo pagina assente"
                   )
 
-
-              if not result[
-                  "problemi"
-              ]:
-
-                  result[
-                      "validazione"
-                  ] = "PASS"
-
+              if not result["problemi"]:
+                  result["validazione"] = "PASS"
 
               print(
                   "Metodo:",
@@ -1071,99 +1009,84 @@ jobs:
 
               print(
                   "VALIDAZIONE:",
-                  result[
-                      "validazione"
-                  ]
+                  result["validazione"]
               )
 
+              if result["problemi"]:
+                  print("PROBLEMI:")
 
-              if result[
-                  "problemi"
-              ]:
-
-                  print(
-                      "PROBLEMI:"
-                  )
-
-                  for p in result[
-                      "problemi"
-                  ]:
-
+                  for problem in result["problemi"]:
                       print(
                           " -",
-                          p
+                          problem
                       )
 
+              results.append(result)
 
-              results.append(
-                  result
+
+          total = len(results)
+
+          passed = sum(
+              1
+              for result in results
+              if result["validazione"] == "PASS"
+          )
+
+          verify = sum(
+              1
+              for result in results
+              if result["validazione"]
+              == "DA_VERIFICARE"
+          )
+
+          digital_count = sum(
+              1
+              for result in results
+              if result["metodo"]
+              == "TESTO_DIGITALE"
+          )
+
+          ocr_count = sum(
+              1
+              for result in results
+              if result["metodo"]
+              == "OCR"
+          )
+
+          percentage = (
+              round(
+                  passed / total * 100,
+                  1,
               )
-
-
-          total =
-              len(results)
-
-          passed =
-              sum(
-                  r[
-                      "validazione"
-                  ] == "PASS"
-                  for r in results
-              )
-
-          verify =
-              total - passed
-
-          digital_count =
-              sum(
-                  r["metodo"] ==
-                  "TESTO_DIGITALE"
-                  for r in results
-              )
-
-          ocr_count =
-              sum(
-                  r["metodo"] ==
-                  "OCR"
-                  for r in results
-              )
-
+              if total
+              else 0
+          )
 
           summary = {
               "totale": total,
               "pass": passed,
-              "da_verificare":
-                  verify,
+              "da_verificare": verify,
               "testo_digitale":
                   digital_count,
-              "ocr":
-                  ocr_count,
+              "ocr": ocr_count,
               "percentuale_pass":
-                  round(
-                      passed /
-                      total *
-                      100,
-                      1
-                  )
-                  if total
-                  else 0,
-              "richiami":
-                  results
+                  percentage,
+              "richiami": results,
           }
 
+          output_path = (
+              ROOT
+              / "risultato-severo.json"
+          )
 
-          (
-              ROOT /
-              "risultato-severo.json"
-          ).write_text(
+          output_path.write_text(
               json.dumps(
                   summary,
                   ensure_ascii=False,
-                  indent=2
+                  indent=2,
               ),
-              encoding="utf-8"
+              encoding="utf-8",
           )
-
 
           print("")
           print("")
@@ -1176,38 +1099,29 @@ jobs:
           print(
               "############################################"
           )
-
           print(
               "Totale:",
               total
           )
-
           print(
               "PASS SICURI:",
               passed
           )
-
           print(
               "DA VERIFICARE:",
               verify
           )
-
           print(
               "Testo digitale:",
               digital_count
           )
-
           print(
               "OCR:",
               ocr_count
           )
-
           print(
               "Percentuale PASS sicuri:",
-              summary[
-                  "percentuale_pass"
-              ],
-              "%"
+              f"{percentage}%"
           )
 
           print("")
@@ -1215,38 +1129,39 @@ jobs:
               "CASI DA VERIFICARE:"
           )
 
-          for r in results:
-
+          for result in results:
               if (
-                  r["validazione"]
-                  ==
-                  "DA_VERIFICARE"
+                  result["validazione"]
+                  != "DA_VERIFICARE"
               ):
+                  continue
 
-                  print("")
-                  print(
-                      r["id"]
+              print("")
+              print(
+                  result["id"]
+              )
+              print(
+                  " Lotto:",
+                  result["lotto"] or "—"
+              )
+              print(
+                  " TMC:",
+                  result["tmc"] or "—"
+              )
+              print(
+                  " Produttore:",
+                  result["produttore"] or "—"
+              )
+              print(
+                  " Problemi:",
+                  " | ".join(
+                      result["problemi"]
                   )
-
-                  print(
-                      " Lotto:",
-                      r["lotto"]
-                      or "—"
-                  )
-
-                  print(
-                      " TMC:",
-                      r["tmc"]
-                      or "—"
-                  )
-
-                  print(
-                      " Problemi:",
-                      " | ".join(
-                          r["problemi"]
-                      )
-                  )
+              )
           PYEOF
+
+      - name: Controlla sintassi validatore
+        run: python -m py_compile validatore.py
 
       - name: Esegui validazione severa
         run: python validatore.py
@@ -1255,52 +1170,68 @@ jobs:
         if: always()
         run: |
           if [ -f risultati/risultato-severo.json ]; then
-
             python - <<'PYEOF'
           import json
 
           with open(
               "risultati/risultato-severo.json",
-              encoding="utf-8"
-          ) as f:
-              d = json.load(f)
+              "r",
+              encoding="utf-8",
+          ) as file:
+              data = json.load(file)
 
           print("")
-          print("======================================")
+          print("==============================================")
           print("RISULTATO TEST SEVERO")
-          print("======================================")
-          print("Totale:", d["totale"])
-          print("PASS SICURI:", d["pass"])
-          print("DA VERIFICARE:", d["da_verificare"])
-          print("Testo digitale:", d["testo_digitale"])
-          print("OCR:", d["ocr"])
+          print("==============================================")
+          print("Totale:", data["totale"])
+          print("PASS SICURI:", data["pass"])
+          print(
+              "DA VERIFICARE:",
+              data["da_verificare"]
+          )
+          print(
+              "Testo digitale:",
+              data["testo_digitale"]
+          )
+          print("OCR:", data["ocr"])
           print(
               "Percentuale PASS sicuri:",
-              str(d["percentuale_pass"]) + "%"
+              str(data["percentuale_pass"]) + "%"
           )
 
           print("")
-          print("DETTAGLIO:")
+          print("DETTAGLIO COMPLETO:")
 
-          for r in d["richiami"]:
+          for result in data["richiami"]:
+              if result["validazione"] == "PASS":
+                  icon = "PASS"
+              else:
+                  icon = "DA_VERIFICARE"
 
-              stato =
-                  "✅" if r["validazione"] == "PASS" else "⚠️"
-
+              print("")
               print(
-                  stato,
-                  r["id"],
+                  result["id"],
                   "-",
-                  r["validazione"]
+                  icon
+              )
+              print(
+                  "  Lotto:",
+                  result["lotto"] or "—"
+              )
+              print(
+                  "  TMC:",
+                  result["tmc"] or "—"
               )
 
-              if r["validazione"] != "PASS":
+              if result["problemi"]:
                   print(
-                      "   ",
-                      " | ".join(r["problemi"])
+                      "  Problemi:",
+                      " | ".join(
+                          result["problemi"]
+                      )
                   )
           PYEOF
-
           else
             echo "risultato-severo.json non trovato"
           fi
