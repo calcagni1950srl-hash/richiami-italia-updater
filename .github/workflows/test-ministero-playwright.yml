@@ -1,4 +1,4 @@
-name: Diagnostica Atio e Focaccina
+name: Diagnostica OCR Intelligente
 
 on:
   workflow_dispatch:
@@ -8,27 +8,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout repository
         uses: actions/checkout@v4
+
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
+
       - name: Installa Playwright Chromium PDF e OCR
         run: |
           npm init -y
           npm install playwright
+
           npx playwright install --with-deps chromium
 
           sudo apt-get update
+
           sudo apt-get install -y \
             poppler-utils \
             tesseract-ocr \
             tesseract-ocr-ita
 
           mkdir -p risultati
+
 
       - name: Crea downloader
         run: |
@@ -47,11 +53,11 @@ jobs:
             }
           ];
 
-          async function scaricaPdf(page, url) {
+          async function scaricaPdf(page, pdfUrl) {
             const risultato = await page.evaluate(
-              async (pdfUrl) => {
+              async (url) => {
                 const response = await fetch(
-                  pdfUrl,
+                  url,
                   {
                     credentials: "include"
                   }
@@ -64,12 +70,13 @@ jobs:
                   status: response.status,
                   contentType:
                     response.headers.get("content-type") || "",
-                  bytes: Array.from(
-                    new Uint8Array(buffer)
-                  )
+                  bytes:
+                    Array.from(
+                      new Uint8Array(buffer)
+                    )
                 };
               },
-              url
+              pdfUrl
             );
 
             const firma = risultato.bytes
@@ -87,6 +94,7 @@ jobs:
           }
 
           async function main() {
+
             const browser = await chromium.launch({
               headless: true
             });
@@ -106,13 +114,15 @@ jobs:
             });
 
             try {
+
               for (const richiamo of richiami) {
+
                 console.log("");
                 console.log(
                   "======================================"
                 );
                 console.log(
-                  "SCARICO:",
+                  "RICHiamo:",
                   richiamo.id
                 );
                 console.log(
@@ -122,6 +132,7 @@ jobs:
                 const page = await context.newPage();
 
                 try {
+
                   await page.goto(
                     richiamo.url,
                     {
@@ -138,10 +149,11 @@ jobs:
                       .innerText()
                       .catch(() => "");
 
-                  if (
+                  const challenge =
                     /please enable javascript|please enable cookies|browser validation/i
-                      .test(testoPagina)
-                  ) {
+                      .test(testoPagina);
+
+                  if (challenge) {
                     throw new Error(
                       "Browser Validation non superata"
                     );
@@ -156,7 +168,8 @@ jobs:
                             a => ({
                               href: a.href || "",
                               text:
-                                (a.innerText || "").trim()
+                                (a.innerText || "")
+                                  .trim()
                             })
                           )
                       );
@@ -174,7 +187,7 @@ jobs:
                   }
 
                   console.log(
-                    "PDF trovato:"
+                    "PDF:"
                   );
 
                   console.log(
@@ -210,12 +223,12 @@ jobs:
                   const valido =
                     download.ok &&
                     download.status === 200 &&
-                    download.firma === "%PDF-" &&
-                    download.bytes.length > 1000;
+                    download.bytes.length > 1000 &&
+                    download.firma === "%PDF-";
 
                   if (!valido) {
                     throw new Error(
-                      "Il file ricevuto non è un PDF valido"
+                      "PDF non valido"
                     );
                   }
 
@@ -231,6 +244,7 @@ jobs:
                   );
 
                 } finally {
+
                   await page
                     .close()
                     .catch(() => {});
@@ -238,6 +252,7 @@ jobs:
               }
 
             } finally {
+
               await browser.close();
             }
           }
@@ -245,22 +260,177 @@ jobs:
           main();
           EOF
 
-      - name: Scarica i due PDF
+
+      - name: Scarica Atio e Focaccina
         run: node scarica-richiami.mjs
 
-      - name: Estrai testo con OCR automatico
+
+      - name: Crea controllo qualità testo
+        run: |
+          cat > controlla_testo.py <<'PYEOF'
+          import re
+          import sys
+          from pathlib import Path
+
+
+          if len(sys.argv) != 2:
+              print("QUALITA=SCARSA")
+              sys.exit(1)
+
+
+          file_path = Path(
+              sys.argv[1]
+          )
+
+
+          if not file_path.exists():
+              print("QUALITA=SCARSA")
+              print("File non trovato")
+              sys.exit(1)
+
+
+          testo = file_path.read_text(
+              encoding="utf-8",
+              errors="ignore"
+          )
+
+
+          testo = testo.strip()
+
+
+          print(
+              "Dimensione testo:",
+              len(testo)
+          )
+
+
+          if len(testo) < 40:
+              print(
+                  "QUALITA=SCARSA"
+              )
+              print(
+                  "Motivo: testo troppo corto"
+              )
+              sys.exit(1)
+
+
+          parole_chiave = [
+              "lotto",
+              "produzione",
+              "denominazione",
+              "marchio",
+              "produttore",
+              "stabilimento",
+              "scadenza",
+              "richiamo",
+              "avvertenze"
+          ]
+
+
+          testo_lower = testo.lower()
+
+
+          trovate = [
+              parola
+              for parola in parole_chiave
+              if parola in testo_lower
+          ]
+
+
+          print(
+              "Parole chiave:",
+              trovate
+          )
+
+
+          caratteri_totali = len(
+              testo
+          )
+
+
+          caratteri_normali = len(
+              re.findall(
+                  r"[A-Za-zÀ-ÿ0-9\s.,;:'()/%+\-_]",
+                  testo
+              )
+          )
+
+
+          rapporto_normale = (
+              caratteri_normali /
+              caratteri_totali
+              if caratteri_totali
+              else 0
+          )
+
+
+          parole_normali = re.findall(
+              r"\b[A-Za-zÀ-ÿ]{3,}\b",
+              testo
+          )
+
+
+          print(
+              "Rapporto caratteri normali:",
+              round(
+                  rapporto_normale,
+                  3
+              )
+          )
+
+
+          print(
+              "Numero parole normali:",
+              len(
+                  parole_normali
+              )
+          )
+
+
+          qualità_buona = (
+              len(trovate) >= 2
+              and rapporto_normale >= 0.75
+              and len(parole_normali) >= 15
+          )
+
+
+          if qualità_buona:
+              print(
+                  "QUALITA=BUONA"
+              )
+              sys.exit(0)
+
+
+          print(
+              "QUALITA=SCARSA"
+          )
+
+          print(
+              "Il testo è probabilmente assente o corrotto."
+          )
+
+          sys.exit(1)
+
+          PYEOF
+
+
+      - name: Estrai testo con OCR intelligente
         run: |
           set -e
 
           for pdf in risultati/*.pdf
           do
+
             base="${pdf%.pdf}"
-            txt="${base}.txt"
+
             digitale="${base}-digitale.txt"
+
+            finale="${base}.txt"
 
             echo ""
             echo "======================================"
-            echo "PDF: $pdf"
+            echo "ANALISI PDF:"
+            echo "$pdf"
             echo "======================================"
 
             pdftotext \
@@ -269,43 +439,25 @@ jobs:
               "$digitale" \
               || true
 
-            DIMENSIONE=0
+            echo ""
+            echo "CONTROLLO TESTO DIGITALE"
 
-            if [ -f "$digitale" ]; then
-              DIMENSIONE=$(wc -c < "$digitale")
-            fi
+            if python controlla_testo.py "$digitale"
+            then
 
-            echo "Testo digitale: $DIMENSIONE byte"
-
-            USA_OCR=0
-
-            if [ "$DIMENSIONE" -lt 40 ]; then
-              USA_OCR=1
-            fi
-
-            if [ "$DIMENSIONE" -ge 40 ]; then
-              KEYWORDS=$(grep -Eio \
-                'lotto|lotti|scadenza|denominazione|produttore|richiamo|marchio|stabilimento' \
-                "$digitale" \
-                | wc -l)
-
-              echo "Parole chiave trovate: $KEYWORDS"
-
-              if [ "$KEYWORDS" -lt 2 ]; then
-                USA_OCR=1
-              fi
-            fi
-
-            if [ "$USA_OCR" -eq 0 ]; then
-              echo "✅ Testo digitale considerato leggibile"
+              echo ""
+              echo "✅ TESTO DIGITALE VALIDO"
+              echo "OCR NON NECESSARIO"
 
               cp \
                 "$digitale" \
-                "$txt"
+                "$finale"
 
             else
-              echo "⚠️ Testo assente o corrotto"
-              echo "AVVIO OCR"
+
+              echo ""
+              echo "⚠️ TESTO DIGITALE ASSENTE O CORROTTO"
+              echo "➡️ AVVIO OCR AUTOMATICO"
 
               OCRDIR="${base}-ocr"
 
@@ -319,87 +471,91 @@ jobs:
                 "$pdf" \
                 "$OCRDIR/pagina"
 
-              > "$txt"
+              > "$finale"
 
-              for img in "$OCRDIR"/*.png
+              for immagine in "$OCRDIR"/*.png
               do
-                echo "OCR: $img"
+
+                echo ""
+                echo "OCR:"
+                echo "$immagine"
 
                 tesseract \
-                  "$img" \
+                  "$immagine" \
                   stdout \
                   -l ita \
                   --psm 6 \
-                  >> "$txt" \
+                  >> "$finale" \
                   2>/dev/null \
                   || true
 
-                echo "" >> "$txt"
+                echo "" >> "$finale"
+
               done
 
-              echo "✅ OCR terminato"
+              echo ""
+              echo "CONTROLLO DOPO OCR"
+
+              python \
+                controlla_testo.py \
+                "$finale" \
+                || true
+
             fi
 
             echo ""
-            echo "Testo finale:"
+            echo "--------------------------------------"
+            echo "TESTO FINALE"
+            echo "--------------------------------------"
 
-            wc -c "$txt"
+            wc -c "$finale"
+
           done
 
-      - name: Mostra testo Atio e Focaccina
+
+      - name: Cerca lotto scadenza e produttore
         run: |
           echo ""
           echo "######################################"
-          echo "########### ATIO CAPRISS #############"
+          echo "############ ATIO CAPRISS ############"
           echo "######################################"
           echo ""
-
-          if [ -f risultati/atio-capriss.txt ]; then
-            cat risultati/atio-capriss.txt
-          else
-            echo "FILE TESTO ATIO NON TROVATO"
-          fi
-
-          echo ""
-          echo ""
-          echo "######################################"
-          echo "######### FOCACCINA CONAD ############"
-          echo "######################################"
-          echo ""
-
-          if [ -f risultati/focaccina-conad.txt ]; then
-            cat risultati/focaccina-conad.txt
-          else
-            echo "FILE TESTO FOCACCINA NON TROVATO"
-          fi
-
-      - name: Cerca automaticamente lotto e scadenza
-        run: |
-          echo ""
-          echo "======================================"
-          echo "ATIO - RIGHE IMPORTANTI"
-          echo "======================================"
 
           grep -Ein \
-            'lotto|lotti|scadenza|termine minimo|produzione' \
+            'lotto|produzione|scadenza|termine minimo|produttore|richiamo' \
             risultati/atio-capriss.txt \
             || true
 
+
           echo ""
-          echo "======================================"
-          echo "FOCACCINA - RIGHE IMPORTANTI"
-          echo "======================================"
+          echo ""
+          echo "######################################"
+          echo "########## FOCACCINA CONAD ###########"
+          echo "######################################"
+          echo ""
 
           grep -Ein \
-            'lotto|lotti|scadenza|termine minimo|produzione' \
+            'lotto|produzione|scadenza|termine minimo|produttore|richiamo' \
             risultati/focaccina-conad.txt \
             || true
 
-      - name: Salva risultati diagnostici
+
+      - name: Mostra testo Focaccina dopo OCR
+        run: |
+          echo ""
+          echo "======================================"
+          echo "FOCACCINA - TESTO FINALE"
+          echo "======================================"
+
+          cat \
+            risultati/focaccina-conad.txt
+
+
+      - name: Salva risultati
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: diagnostica-atio-focaccina
+          name: diagnostica-ocr-intelligente
           path: |
             risultati/
           if-no-files-found: ignore
