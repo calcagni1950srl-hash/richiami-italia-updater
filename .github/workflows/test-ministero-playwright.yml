@@ -1,4 +1,4 @@
-name: Test Ministero Multi Richiamo OCR
+name: Test Ministero Multi Richiamo OCR Intelligente
 
 on:
   workflow_dispatch:
@@ -109,7 +109,10 @@ jobs:
 
             const firma = risultato.bytes
               .slice(0, 5)
-              .map(numero => String.fromCharCode(numero))
+              .map(
+                numero =>
+                  String.fromCharCode(numero)
+              )
               .join("");
 
             return {
@@ -384,7 +387,159 @@ jobs:
       - name: Scarica quattro richiami reali
         run: node scarica-richiami.mjs
 
-      - name: Estrai testo PDF con fallback OCR
+      - name: Crea controllo qualità testo PDF
+        run: |
+          cat > controlla_testo.py <<'PYEOF'
+          import re
+          import sys
+          from pathlib import Path
+
+
+          if len(sys.argv) < 2:
+              print("ERRORE: file mancante")
+              sys.exit(1)
+
+
+          file_path = Path(sys.argv[1])
+
+
+          if not file_path.exists():
+              print("QUALITA=SCARSA")
+              print("Motivo: file inesistente")
+              sys.exit(1)
+
+
+          testo = file_path.read_text(
+              encoding="utf-8",
+              errors="ignore"
+          )
+
+
+          testo_pulito = testo.strip()
+
+
+          if len(testo_pulito) < 40:
+              print("QUALITA=SCARSA")
+              print("Motivo: testo troppo corto")
+              sys.exit(1)
+
+
+          parole_chiave = [
+              "lotto",
+              "lotti",
+              "denominazione",
+              "produttore",
+              "scadenza",
+              "richiamo",
+              "avvertenze",
+              "marchio",
+              "stabilimento"
+          ]
+
+
+          testo_lower = testo_pulito.lower()
+
+
+          keyword_trovate = [
+              parola
+              for parola in parole_chiave
+              if parola in testo_lower
+          ]
+
+
+          caratteri = len(testo_pulito)
+
+
+          lettere_numeri = len(
+              re.findall(
+                  r"[A-Za-zÀ-ÿ0-9]",
+                  testo_pulito
+              )
+          )
+
+
+          rapporto_leggibile = (
+              lettere_numeri / caratteri
+              if caratteri
+              else 0
+          )
+
+
+          parole = re.findall(
+              r"[A-Za-zÀ-ÿ]{3,}",
+              testo_pulito
+          )
+
+
+          parole_normali = len(parole)
+
+
+          simboli_strani = len(
+              re.findall(
+                  r"[^A-Za-zÀ-ÿ0-9\s.,;:'\"()/%+\-_€]",
+                  testo_pulito
+              )
+          )
+
+
+          rapporto_simboli = (
+              simboli_strani / caratteri
+              if caratteri
+              else 1
+          )
+
+
+          print(
+              "Dimensione:",
+              caratteri
+          )
+
+          print(
+              "Keyword trovate:",
+              keyword_trovate
+          )
+
+          print(
+              "Rapporto leggibile:",
+              round(
+                  rapporto_leggibile,
+                  3
+              )
+          )
+
+          print(
+              "Parole normali:",
+              parole_normali
+          )
+
+          print(
+              "Rapporto simboli strani:",
+              round(
+                  rapporto_simboli,
+                  3
+              )
+          )
+
+
+          qualità_buona = (
+              len(keyword_trovate) >= 2
+              and rapporto_leggibile >= 0.45
+              and parole_normali >= 15
+              and rapporto_simboli <= 0.20
+          )
+
+
+          if qualità_buona:
+              print("QUALITA=BUONA")
+              sys.exit(0)
+
+
+          print("QUALITA=SCARSA")
+          sys.exit(1)
+
+          PYEOF
+
+      - name: Estrai testo con OCR intelligente
         run: |
           set -e
 
@@ -398,24 +553,40 @@ jobs:
             echo "ANALISI: $pdf"
             echo "======================================"
 
-            pdftotext -layout "$pdf" "$txt" || true
+            pdftotext \
+              -layout \
+              "$pdf" \
+              "$txt" \
+              || true
 
-            DIMENSIONE=0
+            echo ""
+            echo "CONTROLLO QUALITA TESTO DIGITALE"
 
-            if [ -f "$txt" ]; then
-              DIMENSIONE=$(wc -c < "$txt")
+            TESTO_BUONO=0
+
+            if python controlla_testo.py "$txt"
+            then
+              TESTO_BUONO=1
+            else
+              TESTO_BUONO=0
             fi
 
-            echo "Testo digitale trovato: $DIMENSIONE byte"
-
-            if [ "$DIMENSIONE" -lt 40 ]; then
+            if [ "$TESTO_BUONO" -eq 1 ]
+            then
               echo ""
-              echo "⚠️ PDF senza testo digitale sufficiente."
-              echo "Avvio OCR automatico..."
+              echo "✅ Testo digitale valido."
+              echo "OCR non necessario."
+
+            else
+              echo ""
+              echo "⚠️ Testo assente oppure corrotto."
+              echo "AVVIO OCR AUTOMATICO"
 
               rm -f "$txt"
 
               OCRDIR="${base}-ocr"
+
+              rm -rf "$OCRDIR"
 
               mkdir -p "$OCRDIR"
 
@@ -437,36 +608,33 @@ jobs:
                   -l ita \
                   --psm 6 \
                   >> "$txt" \
-                  2>/dev/null || true
+                  2>/dev/null \
+                  || true
 
                 echo "" >> "$txt"
               done
 
-              DIMENSIONE=$(wc -c < "$txt")
-
               echo ""
-              echo "Testo ottenuto con OCR: $DIMENSIONE byte"
+              echo "CONTROLLO QUALITA DOPO OCR"
 
-              if [ "$DIMENSIONE" -lt 40 ]; then
-                echo "❌ OCR insufficiente"
+              if python controlla_testo.py "$txt"
+              then
+                echo "✅ OCR riuscito e testo leggibile."
               else
-                echo "✅ OCR completato"
+                echo "⚠️ OCR eseguito ma qualità ancora bassa."
               fi
-
-            else
-              echo "✅ PDF con testo digitale: OCR non necessario"
             fi
 
             echo ""
-            echo "Prime 80 righe:"
+            echo "Prime 70 righe:"
             echo "--------------------------------------"
 
-            head -n 80 "$txt" || true
+            head -n 70 "$txt" || true
 
             echo "--------------------------------------"
           done
 
-      - name: Crea estrattore robusto
+      - name: Crea estrattore dati
         run: |
           cat > estrai_richiami.py <<'PYEOF'
           import json
@@ -505,28 +673,24 @@ jobs:
           }
 
 
-          def pulisci_spazi(testo):
+          def pulisci(testo):
               return re.sub(
-                  r"[ \t]+",
+                  r"\s+",
                   " ",
-                  testo
+                  testo or ""
               ).strip()
 
 
-          def righe_non_vuote(testo):
-              risultato = []
-
-              for riga in testo.splitlines():
-                  riga = pulisci_spazi(riga)
-
-                  if riga:
-                      risultato.append(riga)
-
-              return risultato
+          def righe(testo):
+              return [
+                  pulisci(riga)
+                  for riga in testo.splitlines()
+                  if pulisci(riga)
+              ]
 
 
           def normalizza_lotto(valore):
-              valore = valore.strip()
+              valore = pulisci(valore)
 
               valore = re.sub(
                   r"^[\s:;\-–—]+",
@@ -544,7 +708,9 @@ jobs:
 
 
           def lotto_plausibile(valore):
-              valore = normalizza_lotto(valore)
+              valore = normalizza_lotto(
+                  valore
+              )
 
               if not valore:
                   return False
@@ -574,50 +740,51 @@ jobs:
 
 
           def estrai_lotti(testo):
-              righe = righe_non_vuote(testo)
+              elenco_righe = righe(
+                  testo
+              )
 
               candidati = []
 
-              patterns = [
-                  re.compile(
-                      r"""
-                      (?:
-                          numero\s+di\s+lotto
-                        | numero\s+lotto
-                        | n[°º.]?\s*lotto
-                        | lotto\s+di\s+produzione
-                        | lotto
-                        | lotti
-                      )
-                      \s*
-                      [:;\-–—]?
-                      \s*
-                      ([A-Za-z0-9./_\-]+)
-                      """,
-                      re.I | re.X
-                  ),
 
-                  re.compile(
-                      r"""
-                      \bL\.?
-                      \s*
-                      ([A-Za-z0-9][A-Za-z0-9./_\-]{2,30})
-                      \b
-                      """,
-                      re.I | re.X
+              pattern_lotto = re.compile(
+                  r"""
+                  (?:
+                      numero\s+di\s+lotto
+                    | numero\s+lotto
+                    | n[°º.]?\s*lotto
+                    | lotto\s+di\s+produzione
+                    | lotto
+                    | lotti
                   )
-              ]
+                  \s*
+                  [:;\-–—]?
+                  \s*
+                  ([A-Za-z0-9./_\-]+)
+                  """,
+                  re.I | re.X
+              )
 
-              for indice, riga in enumerate(righe):
 
-                  for pattern in patterns:
-                      for match in pattern.finditer(riga):
-                          valore = normalizza_lotto(
-                              match.group(1)
+              for indice, riga in enumerate(
+                  elenco_righe
+              ):
+
+                  for match in pattern_lotto.finditer(
+                      riga
+                  ):
+
+                      valore = normalizza_lotto(
+                          match.group(1)
+                      )
+
+                      if lotto_plausibile(
+                          valore
+                      ):
+                          candidati.append(
+                              valore
                           )
 
-                          if lotto_plausibile(valore):
-                              candidati.append(valore)
 
                   if re.search(
                       r"\b(?:lotto|lotti)\b",
@@ -625,13 +792,21 @@ jobs:
                       re.I
                   ):
 
-                      for offset in range(1, 5):
+                      for offset in range(
+                          1,
+                          4
+                      ):
+
                           posizione = indice + offset
 
-                          if posizione >= len(righe):
+                          if posizione >= len(
+                              elenco_righe
+                          ):
                               break
 
-                          successiva = righe[posizione]
+                          successiva = elenco_righe[
+                              posizione
+                          ]
 
                           if re.search(
                               r"""
@@ -659,32 +834,47 @@ jobs:
                           )
 
                           for token in tokens:
-                              if lotto_plausibile(token):
+
+                              if lotto_plausibile(
+                                  token
+                              ):
                                   candidati.append(
-                                      normalizza_lotto(token)
+                                      normalizza_lotto(
+                                          token
+                                      )
                                   )
 
-              unici = []
+
+              risultato = []
 
               for valore in candidati:
-                  if valore not in unici:
-                      unici.append(valore)
 
-              return unici
+                  if valore not in risultato:
+                      risultato.append(
+                          valore
+                      )
+
+              return risultato
 
 
           def estrai_scadenze(testo):
-              righe = righe_non_vuote(testo)
+              elenco_righe = righe(
+                  testo
+              )
 
               risultati = []
 
-              patterns_date = [
+
+              pattern_date = [
                   r"\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b",
                   r"\b\d{1,2}[/-]\d{4}\b",
                   r"\b\d{1,2}[.]\d{1,2}[.]\d{2,4}\b"
               ]
 
-              for indice, riga in enumerate(righe):
+
+              for indice, riga in enumerate(
+                  elenco_righe
+              ):
 
                   if not re.search(
                       r"""
@@ -698,102 +888,76 @@ jobs:
                   ):
                       continue
 
-                  blocco_righe = []
+                  blocco = " ".join(
+                      elenco_righe[
+                          indice:
+                          indice + 5
+                      ]
+                  )
 
-                  for offset in range(0, 6):
-                      posizione = indice + offset
+                  for pattern in pattern_date:
 
-                      if posizione >= len(righe):
-                          break
-
-                      blocco_righe.append(
-                          righe[posizione]
-                      )
-
-                  blocco = " ".join(blocco_righe)
-
-                  for pattern in patterns_date:
-                      valori = re.findall(
+                      for valore in re.findall(
                           pattern,
                           blocco,
                           flags=re.I
-                      )
+                      ):
 
-                      for valore in valori:
                           if valore not in risultati:
-                              risultati.append(valore)
+                              risultati.append(
+                                  valore
+                              )
 
               return risultati
 
 
           def estrai_produttore(testo):
-              righe = righe_non_vuote(testo)
+              elenco_righe = righe(
+                  testo
+              )
 
-              parole = [
-                  "nome del produttore",
-                  "produttore",
-                  "nome o ragione sociale",
-                  "operatore del settore alimentare"
-              ]
+              pattern = re.compile(
+                  r"""
+                  ^Nome\s+del\s+produttore
+                  \s*[:\-–—]?\s*
+                  (.+)$
+                  """,
+                  re.I | re.X
+              )
 
-              for indice, riga in enumerate(righe):
 
-                  riga_lower = riga.lower()
+              for indice, riga in enumerate(
+                  elenco_righe
+              ):
 
-                  if not any(
-                      parola in riga_lower
-                      for parola in parole
-                  ):
-                      continue
-
-                  parti = re.split(
-                      r"[:\-–—]",
-                      riga,
-                      maxsplit=1
+                  match = pattern.search(
+                      riga
                   )
 
-                  if len(parti) == 2:
-                      valore = pulisci_spazi(
-                          parti[1]
+                  if match:
+                      valore = pulisci(
+                          match.group(1)
                       )
 
-                      if (
-                          len(valore) >= 3
-                          and "produttore" not in valore.lower()
-                          and "nome del quale" not in valore.lower()
-                      ):
+                      if valore:
                           return valore
 
-                  for offset in range(1, 4):
-                      posizione = indice + offset
 
-                      if posizione >= len(righe):
-                          break
+                  if re.match(
+                      r"^Nome\s+del\s+produttore\s*$",
+                      riga,
+                      re.I
+                  ):
 
-                      valore = righe[posizione]
-
-                      if re.search(
-                          r"""
-                          ^(?:
-                              lotto
-                            | lotti
-                            | data\s+di\s+scadenza
-                            | scadenza
-                            | motivo
-                            | avverten
-                            | stabilimento
-                            | marchio
-                            | marca
-                            | denominazione
+                      if indice + 1 < len(
+                          elenco_righe
+                      ):
+                          return pulisci(
+                              elenco_righe[
+                                  indice + 1
+                              ]
                           )
-                          """,
-                          valore,
-                          re.I | re.X
-                      ):
-                          break
 
-                      if len(valore) >= 3:
-                          return valore
 
               return ""
 
@@ -801,89 +965,122 @@ jobs:
           risultati = []
 
 
-          for meta_path in sorted(
-              CARTELLA.glob("*-meta.json")
+          for meta_file in sorted(
+              CARTELLA.glob(
+                  "*-meta.json"
+              )
           ):
 
-              id_richiamo = meta_path.name.replace(
-                  "-meta.json",
-                  ""
+              identificativo = (
+                  meta_file.name
+                  .replace(
+                      "-meta.json",
+                      ""
+                  )
               )
 
-              txt_path = CARTELLA / (
-                  id_richiamo + ".txt"
+
+              testo_file = CARTELLA / (
+                  identificativo +
+                  ".txt"
               )
+
 
               meta = json.loads(
-                  meta_path.read_text(
+                  meta_file.read_text(
                       encoding="utf-8"
                   )
               )
 
-              if not txt_path.exists():
+
+              if not testo_file.exists():
+
                   risultati.append(
                       {
                           **meta,
+                          "produttore": "",
                           "lotti": [],
                           "scadenze": [],
-                          "produttore": "",
-                          "validazione": "FAIL",
+                          "validazione":
+                              "DA_VERIFICARE",
                           "problemi": [
-                              "PDF senza testo estratto"
+                              "Testo PDF assente"
                           ]
                       }
                   )
 
                   continue
 
-              testo = txt_path.read_text(
+
+              testo = testo_file.read_text(
                   encoding="utf-8",
                   errors="ignore"
               )
 
-              lotti = estrai_lotti(testo)
-              scadenze = estrai_scadenze(testo)
-              produttore = estrai_produttore(testo)
-
-              problemi = []
 
               marca = meta.get(
                   "marca",
                   ""
               ).strip()
 
+
               prodotto = meta.get(
                   "prodotto",
                   ""
               ).strip()
+
 
               motivo = meta.get(
                   "motivo",
                   ""
               ).strip()
 
+
+              produttore = estrai_produttore(
+                  testo
+              )
+
+
+              lotti = estrai_lotti(
+                  testo
+              )
+
+
+              scadenze = estrai_scadenze(
+                  testo
+              )
+
+
+              problemi = []
+
+
               if not marca:
                   problemi.append(
-                      "marca pagina mancante"
+                      "Marca mancante"
                   )
+
 
               if not prodotto:
                   problemi.append(
-                      "prodotto pagina mancante"
+                      "Prodotto mancante"
                   )
+
 
               if not motivo:
                   problemi.append(
-                      "motivo pagina mancante"
+                      "Motivo mancante"
                   )
+
 
               if not lotti:
                   problemi.append(
-                      "nessun lotto affidabile trovato"
+                      "Lotto mancante"
                   )
 
+
               risultato = {
-                  "id": id_richiamo,
+                  "id":
+                      identificativo,
 
                   "data_pubblicazione":
                       meta.get(
@@ -891,17 +1088,23 @@ jobs:
                           ""
                       ),
 
-                  "marca": marca,
+                  "marca":
+                      marca,
 
-                  "prodotto": prodotto,
+                  "prodotto":
+                      prodotto,
 
-                  "motivo": motivo,
+                  "motivo":
+                      motivo,
 
-                  "produttore": produttore,
+                  "produttore":
+                      produttore,
 
-                  "lotti": lotti,
+                  "lotti":
+                      lotti,
 
-                  "scadenze": scadenze,
+                  "scadenze":
+                      scadenze,
 
                   "pagina":
                       meta.get(
@@ -922,10 +1125,14 @@ jobs:
                           else "DA_VERIFICARE"
                       ),
 
-                  "problemi": problemi
+                  "problemi":
+                      problemi
               }
 
-              risultati.append(risultato)
+
+              risultati.append(
+                  risultato
+              )
 
 
           output = {
@@ -935,19 +1142,17 @@ jobs:
               "pass":
                   sum(
                       1
-                      for risultato in risultati
-                      if risultato.get(
-                          "validazione"
-                      ) == "PASS"
+                      for r in risultati
+                      if r["validazione"]
+                      == "PASS"
                   ),
 
               "da_verificare":
                   sum(
                       1
-                      for risultato in risultati
-                      if risultato.get(
-                          "validazione"
-                      ) != "PASS"
+                      for r in risultati
+                      if r["validazione"]
+                      != "PASS"
                   ),
 
               "richiami":
@@ -955,11 +1160,13 @@ jobs:
           }
 
 
-          output_path = CARTELLA / (
+          destinazione = (
+              CARTELLA /
               "risultato-multiplo.json"
           )
 
-          output_path.write_text(
+
+          destinazione.write_text(
               json.dumps(
                   output,
                   ensure_ascii=False,
@@ -974,7 +1181,7 @@ jobs:
               "======================================"
           )
           print(
-              "RISULTATO TEST MULTIPLO CON OCR"
+              "RISULTATO TEST OCR INTELLIGENTE"
           )
           print(
               "======================================"
@@ -987,83 +1194,54 @@ jobs:
               print(
                   "--------------------------------------"
               )
-
               print(
-                  risultato.get(
-                      "id",
-                      ""
-                  )
+                  risultato["id"]
               )
-
               print(
                   "--------------------------------------"
               )
 
               print(
                   "Marca:",
-                  risultato.get(
-                      "marca",
-                      ""
-                  )
+                  risultato["marca"]
               )
 
               print(
                   "Prodotto:",
-                  risultato.get(
-                      "prodotto",
-                      ""
-                  )
+                  risultato["prodotto"]
               )
 
               print(
                   "Motivo:",
-                  risultato.get(
-                      "motivo",
-                      ""
-                  )
+                  risultato["motivo"]
               )
 
               print(
                   "Produttore:",
-                  risultato.get(
-                      "produttore",
-                      ""
-                  )
+                  risultato["produttore"]
               )
 
               print(
                   "Lotti:",
-                  risultato.get(
-                      "lotti",
-                      []
-                  )
+                  risultato["lotti"]
               )
 
               print(
                   "Scadenze:",
-                  risultato.get(
-                      "scadenze",
-                      []
-                  )
+                  risultato["scadenze"]
               )
 
               print(
                   "VALIDAZIONE:",
-                  risultato.get(
-                      "validazione",
-                      ""
-                  )
+                  risultato[
+                      "validazione"
+                  ]
               )
 
-              problemi = risultato.get(
-                  "problemi",
-                  []
-              )
-
-              if problemi:
+              if risultato["problemi"]:
                   print(
                       "Problemi:",
-                      problemi
+                      risultato["problemi"]
                   )
 
 
@@ -1090,8 +1268,27 @@ jobs:
 
           print(
               "Da verificare:",
-              output["da_verificare"]
+              output[
+                  "da_verificare"
+              ]
           )
+
+
+          if (
+              output["totale"] == 4
+              and
+              output["pass"] == 4
+          ):
+              print("")
+              print(
+                  "✅ 4/4 RICHIAMI SUPERATI"
+              )
+
+          else:
+              print("")
+              print(
+                  "⚠️ TEST NON ANCORA 4/4"
+              )
 
           PYEOF
 
@@ -1110,7 +1307,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-multiplo-richiami-ocr
+          name: test-richiami-ocr-intelligente
           path: |
             risultati/
           if-no-files-found: ignore
