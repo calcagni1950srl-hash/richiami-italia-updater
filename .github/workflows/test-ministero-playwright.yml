@@ -1,44 +1,45 @@
-name: Diagnostica OCR Intelligente Avanzata
+name: Test Richiami con Fallback Ufficiale
 
 on:
   workflow_dispatch:
 
 jobs:
-  test-ministero:
+  test-richiami:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout repository
         uses: actions/checkout@v4
-
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-      - name: Installa Playwright Chromium PDF e OCR
+      - name: Installa Chromium PDF e OCR
         run: |
           npm init -y
           npm install playwright
-
           npx playwright install --with-deps chromium
 
           sudo apt-get update
-
           sudo apt-get install -y \
             poppler-utils \
             tesseract-ocr \
-            tesseract-ocr-ita
+            tesseract-ocr-ita \
+            curl
 
           mkdir -p risultati
 
 
-      - name: Crea downloader
+      - name: Crea downloader Ministero
         run: |
-          cat > scarica-richiami.mjs <<'EOF'
+          cat > scarica-ministero.mjs <<'EOF'
           import { chromium } from "playwright";
           import fs from "fs";
 
@@ -53,8 +54,27 @@ jobs:
             }
           ];
 
+          function pulisci(valore) {
+            return String(valore || "")
+              .replace(/\s+/g, " ")
+              .trim();
+          }
+
+          function campo(testo, nome) {
+            const regex = new RegExp(
+              nome + "\\s*:\\s*([^\\n\\r]+)",
+              "i"
+            );
+
+            const match = testo.match(regex);
+
+            return match && match[1]
+              ? pulisci(match[1])
+              : "";
+          }
+
           async function scaricaPdf(page, pdfUrl) {
-            const risultato = await page.evaluate(
+            return await page.evaluate(
               async (url) => {
                 const response = await fetch(
                   url,
@@ -63,63 +83,62 @@ jobs:
                   }
                 );
 
-                const buffer = await response.arrayBuffer();
+                const buffer =
+                  await response.arrayBuffer();
 
                 return {
                   ok: response.ok,
                   status: response.status,
                   contentType:
-                    response.headers.get("content-type") || "",
-                  bytes:
-                    Array.from(
-                      new Uint8Array(buffer)
-                    )
+                    response.headers.get(
+                      "content-type"
+                    ) || "",
+                  bytes: Array.from(
+                    new Uint8Array(buffer)
+                  )
                 };
               },
               pdfUrl
             );
-
-            const firma = risultato.bytes
-              .slice(0, 5)
-              .map(
-                numero =>
-                  String.fromCharCode(numero)
-              )
-              .join("");
-
-            return {
-              ...risultato,
-              firma
-            };
           }
 
           async function main() {
-            const browser = await chromium.launch({
-              headless: true
-            });
+            const browser =
+              await chromium.launch({
+                headless: true
+              });
 
-            const context = await browser.newContext({
-              locale: "it-IT",
+            const context =
+              await browser.newContext({
+                locale: "it-IT",
 
-              viewport: {
-                width: 1280,
-                height: 900
-              },
+                viewport: {
+                  width: 1280,
+                  height: 900
+                },
 
-              userAgent:
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-                "AppleWebKit/537.36 (KHTML, like Gecko) " +
-                "Chrome/131.0.0.0 Safari/537.36"
-            });
+                userAgent:
+                  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+                  "AppleWebKit/537.36 (KHTML, like Gecko) " +
+                  "Chrome/131.0.0.0 Safari/537.36"
+              });
 
             try {
               for (const richiamo of richiami) {
                 console.log("");
-                console.log("======================================");
-                console.log("RICHiamo:", richiamo.id);
-                console.log("======================================");
+                console.log(
+                  "======================================"
+                );
+                console.log(
+                  "MINISTERO:",
+                  richiamo.id
+                );
+                console.log(
+                  "======================================"
+                );
 
-                const page = await context.newPage();
+                const page =
+                  await context.newPage();
 
                 try {
                   await page.goto(
@@ -130,7 +149,9 @@ jobs:
                     }
                   );
 
-                  await page.waitForTimeout(12000);
+                  await page.waitForTimeout(
+                    12000
+                  );
 
                   const testoPagina =
                     await page
@@ -138,15 +159,58 @@ jobs:
                       .innerText()
                       .catch(() => "");
 
-                  const challenge =
+                  if (
                     /please enable javascript|please enable cookies|browser validation/i
-                      .test(testoPagina);
-
-                  if (challenge) {
+                      .test(testoPagina)
+                  ) {
                     throw new Error(
                       "Browser Validation non superata"
                     );
                   }
+
+                  const meta = {
+                    id: richiamo.id,
+                    pagina: richiamo.url,
+
+                    dataPubblicazione:
+                      campo(
+                        testoPagina,
+                        "Data pubblicazione"
+                      ),
+
+                    marca:
+                      campo(
+                        testoPagina,
+                        "Marca"
+                      ),
+
+                    prodotto:
+                      campo(
+                        testoPagina,
+                        "Denominazione"
+                      ),
+
+                    motivo:
+                      campo(
+                        testoPagina,
+                        "Motivo della segnalazione"
+                      )
+                  };
+
+                  console.log(
+                    "Marca:",
+                    meta.marca
+                  );
+
+                  console.log(
+                    "Prodotto:",
+                    meta.prodotto
+                  );
+
+                  console.log(
+                    "Motivo:",
+                    meta.motivo
+                  );
 
                   const links =
                     await page
@@ -157,26 +221,32 @@ jobs:
                             a => ({
                               href: a.href || "",
                               text:
-                                (a.innerText || "")
-                                  .trim()
+                                (
+                                  a.innerText ||
+                                  ""
+                                ).trim()
                             })
                           )
                       );
 
                   const pdf = links.find(
                     link =>
-                      /\.pdf($|\?)/i.test(link.href) ||
-                      /pdf/i.test(link.text)
+                      /\.pdf($|\?)/i
+                        .test(link.href) ||
+                      /pdf/i
+                        .test(link.text)
                   );
 
                   if (!pdf || !pdf.href) {
                     throw new Error(
-                      "PDF non trovato"
+                      "PDF Ministero non trovato"
                     );
                   }
 
-                  console.log("PDF:");
-                  console.log(pdf.href);
+                  console.log(
+                    "PDF Ministero:",
+                    pdf.href
+                  );
 
                   const download =
                     await scaricaPdf(
@@ -184,47 +254,51 @@ jobs:
                       pdf.href
                     );
 
-                  console.log(
-                    "HTTP:",
-                    download.status
-                  );
+                  const firma =
+                    download.bytes
+                      .slice(0, 5)
+                      .map(
+                        numero =>
+                          String.fromCharCode(
+                            numero
+                          )
+                      )
+                      .join("");
 
-                  console.log(
-                    "Content-Type:",
-                    download.contentType
-                  );
-
-                  console.log(
-                    "Firma:",
-                    download.firma
-                  );
-
-                  console.log(
-                    "Dimensione:",
-                    download.bytes.length
-                  );
-
-                  const valido =
-                    download.ok &&
-                    download.status === 200 &&
-                    download.bytes.length > 1000 &&
-                    download.firma === "%PDF-";
-
-                  if (!valido) {
+                  if (
+                    !download.ok ||
+                    download.status !== 200 ||
+                    firma !== "%PDF-" ||
+                    download.bytes.length < 1000
+                  ) {
                     throw new Error(
-                      "PDF non valido"
+                      "PDF Ministero non valido"
                     );
                   }
 
                   fs.writeFileSync(
-                    `risultati/${richiamo.id}.pdf`,
+                    `risultati/${richiamo.id}-ministero.pdf`,
                     Buffer.from(
                       download.bytes
                     )
                   );
 
+                  fs.writeFileSync(
+                    `risultati/${richiamo.id}-meta.json`,
+                    JSON.stringify(
+                      {
+                        ...meta,
+                        pdfMinistero:
+                          pdf.href
+                      },
+                      null,
+                      2
+                    ),
+                    "utf8"
+                  );
+
                   console.log(
-                    "✅ PDF salvato"
+                    "✅ PDF Ministero acquisito"
                   );
 
                 } finally {
@@ -243,8 +317,8 @@ jobs:
           EOF
 
 
-      - name: Scarica Atio e Focaccina
-        run: node scarica-richiami.mjs
+      - name: Scarica PDF Ministero
+        run: node scarica-ministero.mjs
 
 
       - name: Crea controllo qualità testo
@@ -254,165 +328,63 @@ jobs:
           import sys
           from pathlib import Path
 
+          path = Path(sys.argv[1])
 
-          if len(sys.argv) != 2:
-              print("QUALITA=SCARSA")
+          if not path.exists():
               sys.exit(1)
 
-
-          file_path = Path(
-              sys.argv[1]
-          )
-
-
-          if not file_path.exists():
-              print("QUALITA=SCARSA")
-              print("File non trovato")
-              sys.exit(1)
-
-
-          testo = file_path.read_text(
+          testo = path.read_text(
               encoding="utf-8",
               errors="ignore"
-          )
-
-
-          testo = testo.strip()
-
-
-          print(
-              "Dimensione testo:",
-              len(testo)
-          )
-
+          ).strip()
 
           if len(testo) < 40:
-              print(
-                  "QUALITA=SCARSA"
-              )
-              print(
-                  "Motivo: testo troppo corto"
-              )
               sys.exit(1)
 
-
-          parole_chiave = [
+          parole = [
               "lotto",
               "produzione",
-              "denominazione",
-              "marchio",
-              "produttore",
-              "stabilimento",
               "scadenza",
+              "produttore",
               "richiamo",
-              "avvertenze"
+              "denominazione"
           ]
 
-
-          testo_lower = testo.lower()
-
-
-          trovate = [
-              parola
-              for parola in parole_chiave
-              if parola in testo_lower
-          ]
-
-
-          print(
-              "Parole chiave:",
-              trovate
+          trovate = sum(
+              1
+              for parola in parole
+              if parola in testo.lower()
           )
-
-
-          caratteri_totali = len(
-              testo
-          )
-
-
-          caratteri_normali = len(
-              re.findall(
-                  r"[A-Za-zÀ-ÿ0-9\s.,;:'()/%+\-_]",
-                  testo
-              )
-          )
-
-
-          rapporto_normale = (
-              caratteri_normali /
-              caratteri_totali
-              if caratteri_totali
-              else 0
-          )
-
 
           parole_normali = re.findall(
               r"\b[A-Za-zÀ-ÿ]{3,}\b",
               testo
           )
 
-
-          print(
-              "Rapporto caratteri normali:",
-              round(
-                  rapporto_normale,
-                  3
-              )
-          )
-
-
-          print(
-              "Numero parole normali:",
-              len(
-                  parole_normali
-              )
-          )
-
-
-          qualita_buona = (
-              len(trovate) >= 2
-              and rapporto_normale >= 0.75
+          if (
+              trovate >= 2
               and len(parole_normali) >= 15
-          )
-
-
-          if qualita_buona:
-              print(
-                  "QUALITA=BUONA"
-              )
+          ):
               sys.exit(0)
-
-
-          print(
-              "QUALITA=SCARSA"
-          )
-
-          print(
-              "Il testo è probabilmente assente o corrotto."
-          )
 
           sys.exit(1)
 
           PYEOF
 
 
-      - name: Estrai testo con OCR intelligente avanzato
+      - name: Estrai Ministero con OCR automatico
         run: |
           set -e
 
-          for pdf in risultati/*.pdf
+          for pdf in risultati/*-ministero.pdf
           do
-
-            base="${pdf%.pdf}"
-
+            base="${pdf%-ministero.pdf}"
             digitale="${base}-digitale.txt"
-
-            finale="${base}.txt"
+            finale="${base}-ministero.txt"
 
             echo ""
             echo "======================================"
-            echo "ANALISI PDF:"
-            echo "$pdf"
+            echo "ANALISI $pdf"
             echo "======================================"
 
             pdftotext \
@@ -421,25 +393,17 @@ jobs:
               "$digitale" \
               || true
 
-            echo ""
-            echo "CONTROLLO TESTO DIGITALE"
-
             if python controlla_testo.py "$digitale"
             then
-
-              echo ""
-              echo "✅ TESTO DIGITALE VALIDO"
-              echo "OCR NON NECESSARIO"
+              echo "✅ Testo digitale valido"
 
               cp \
                 "$digitale" \
                 "$finale"
 
             else
-
-              echo ""
-              echo "⚠️ TESTO DIGITALE ASSENTE O CORROTTO"
-              echo "➡️ AVVIO OCR AUTOMATICO AVANZATO"
+              echo "⚠️ Testo assente/corrotto"
+              echo "➡️ OCR automatico"
 
               OCRDIR="${base}-ocr"
 
@@ -455,18 +419,12 @@ jobs:
 
               > "$finale"
 
-              for immagine in "$OCRDIR"/*.png
+              for img in "$OCRDIR"/*.png
               do
-
-                echo ""
-                echo "OCR:"
-                echo "$immagine"
-
-                echo "" >> "$finale"
-                echo "=== OCR PSM 6 ===" >> "$finale"
+                echo "OCR $img"
 
                 tesseract \
-                  "$immagine" \
+                  "$img" \
                   stdout \
                   -l ita \
                   --psm 6 \
@@ -475,12 +433,10 @@ jobs:
                   2>/dev/null \
                   || true
 
-
                 echo "" >> "$finale"
-                echo "=== OCR PSM 11 ===" >> "$finale"
 
                 tesseract \
-                  "$immagine" \
+                  "$img" \
                   stdout \
                   -l ita \
                   --psm 11 \
@@ -489,109 +445,565 @@ jobs:
                   2>/dev/null \
                   || true
 
-
                 echo "" >> "$finale"
-                echo "=== OCR PSM 4 ===" >> "$finale"
-
-                tesseract \
-                  "$immagine" \
-                  stdout \
-                  -l ita \
-                  --psm 4 \
-                  -c preserve_interword_spaces=1 \
-                  >> "$finale" \
-                  2>/dev/null \
-                  || true
-
               done
-
-              echo ""
-              echo "CONTROLLO DOPO OCR"
-
-              python \
-                controlla_testo.py \
-                "$finale" \
-                || true
-
             fi
 
-            echo ""
-            echo "--------------------------------------"
-            echo "TESTO FINALE"
-            echo "--------------------------------------"
-
+            echo "Testo finale:"
             wc -c "$finale"
-
           done
 
 
-      - name: Cerca lotto scadenza produttore e motivo
-        run: |
-          echo ""
-          echo "######################################"
-          echo "############ ATIO CAPRISS ############"
-          echo "######################################"
-          echo ""
-
-          grep -Ein \
-            'lotto|produzione|scadenza|termine minimo|produttore|richiamo|corpi estranei|stec' \
-            risultati/atio-capriss.txt \
-            || true
-
-
-          echo ""
-          echo ""
-          echo "######################################"
-          echo "########## FOCACCINA CONAD ###########"
-          echo "######################################"
-          echo ""
-
-          grep -Ein \
-            'lotto|produzione|scadenza|termine minimo|produttore|richiamo|corpi estranei|fino alla data' \
-            risultati/focaccina-conad.txt \
-            || true
-
-
-      - name: Cerca date nella Focaccina
+      - name: Scarica fallback ufficiale CONAD
         run: |
           echo ""
           echo "======================================"
-          echo "DATE TROVATE NEL TESTO FOCACCINA"
+          echo "FALLBACK UFFICIALE CONAD"
           echo "======================================"
 
-          grep -Ein \
-            '[0-9]{1,2}[/-][0-9]{1,2}[/-][0-9]{2,4}|[0-9]{1,2}[/-][0-9]{4}' \
-            risultati/focaccina-conad.txt \
+          URL_CONAD="https://www.conad.it/assets/images/news/richiami-prodotto/mdd/Locandina%20di%20Richiamo%20-%20Focaccine%20farcite%20Conad.pdf?_u=1ea8dba99e2d633f0a9a7f3db5832c683461e79e"
+
+          curl \
+            -L \
+            --fail \
+            --retry 3 \
+            -A "Mozilla/5.0" \
+            "$URL_CONAD" \
+            -o risultati/focaccina-conad-fonte-ufficiale.pdf
+
+          echo ""
+          echo "Controllo firma PDF:"
+
+          head \
+            -c 5 \
+            risultati/focaccina-conad-fonte-ufficiale.pdf
+
+          echo ""
+
+          pdftotext \
+            -layout \
+            risultati/focaccina-conad-fonte-ufficiale.pdf \
+            risultati/focaccina-conad-fonte-ufficiale.txt \
             || true
 
+          echo ""
+          echo "TESTO FONTE UFFICIALE CONAD:"
+          echo "--------------------------------------"
 
-      - name: Mostra testo Focaccina dopo OCR
+          cat \
+            risultati/focaccina-conad-fonte-ufficiale.txt
+
+
+      - name: Crea estrattore finale con fallback
+        run: |
+          cat > estrai_finale.py <<'PYEOF'
+          import json
+          import re
+          from pathlib import Path
+
+
+          CARTELLA = Path("risultati")
+
+
+          def pulisci(valore):
+              return re.sub(
+                  r"\s+",
+                  " ",
+                  valore or ""
+              ).strip()
+
+
+          def leggi(path):
+              path = Path(path)
+
+              if not path.exists():
+                  return ""
+
+              return path.read_text(
+                  encoding="utf-8",
+                  errors="ignore"
+              )
+
+
+          def trova_regex(
+              testo,
+              patterns
+          ):
+              for pattern in patterns:
+                  match = re.search(
+                      pattern,
+                      testo,
+                      re.I | re.M
+                  )
+
+                  if match:
+                      return pulisci(
+                          match.group(1)
+                      )
+
+              return ""
+
+
+          risultati = []
+
+
+          # =====================================
+          # ATIO CAPRISS
+          # =====================================
+
+          meta_atio = json.loads(
+              (
+                  CARTELLA /
+                  "atio-capriss-meta.json"
+              ).read_text(
+                  encoding="utf-8"
+              )
+          )
+
+          testo_atio = leggi(
+              CARTELLA /
+              "atio-capriss-ministero.txt"
+          )
+
+
+          lotto_atio = trova_regex(
+              testo_atio,
+              [
+                  r"Lotto\s+di\s+produzione\s*:\s*([^\n\r]+)"
+              ]
+          )
+
+
+          scadenza_atio = trova_regex(
+              testo_atio,
+              [
+                  r"Data\s+di\s+scadenza\s+o\s+termine\s+minimo\s+di\s+conservazione\s*:\s*([^\n\r]+)"
+              ]
+          )
+
+
+          produttore_atio = trova_regex(
+              testo_atio,
+              [
+                  r"Nome\s+del\s+produttore\s*:\s*([^\n\r]+)"
+              ]
+          )
+
+
+          problemi_atio = []
+
+          if not lotto_atio:
+              problemi_atio.append(
+                  "lotto mancante"
+              )
+
+          if not scadenza_atio:
+              problemi_atio.append(
+                  "scadenza mancante"
+              )
+
+
+          risultati.append(
+              {
+                  "id":
+                      "atio-capriss",
+
+                  "marca":
+                      meta_atio.get(
+                          "marca",
+                          ""
+                      ),
+
+                  "prodotto":
+                      meta_atio.get(
+                          "prodotto",
+                          ""
+                      ),
+
+                  "motivo":
+                      meta_atio.get(
+                          "motivo",
+                          ""
+                      ),
+
+                  "lotto":
+                      lotto_atio,
+
+                  "scadenza":
+                      scadenza_atio,
+
+                  "produttore":
+                      produttore_atio,
+
+                  "fonte_lotto":
+                      "Ministero della Salute",
+
+                  "fonte_scadenza":
+                      "Ministero della Salute",
+
+                  "validazione":
+                      (
+                          "PASS"
+                          if not problemi_atio
+                          else "DA_VERIFICARE"
+                      ),
+
+                  "problemi":
+                      problemi_atio
+              }
+          )
+
+
+          # =====================================
+          # FOCACCINA CONAD
+          # =====================================
+
+          meta_focaccina = json.loads(
+              (
+                  CARTELLA /
+                  "focaccina-conad-meta.json"
+              ).read_text(
+                  encoding="utf-8"
+              )
+          )
+
+
+          testo_ministero = leggi(
+              CARTELLA /
+              "focaccina-conad-ministero.txt"
+          )
+
+
+          testo_conad = leggi(
+              CARTELLA /
+              "focaccina-conad-fonte-ufficiale.txt"
+          )
+
+
+          lotto_ministero = trova_regex(
+              testo_ministero,
+              [
+                  r"Lotto\s+di\s+produzione\s*:\s*([^\n\r]+)"
+              ]
+          )
+
+
+          scadenza_ministero = trova_regex(
+              testo_ministero,
+              [
+                  r"Data\s+di\s+scadenza\s+o\s+termine\s+minimo\s+di\s+conservazione\s*:\s*([^\n\r]+)"
+              ]
+          )
+
+
+          ministero_lotto_completo = (
+              bool(lotto_ministero)
+              and not lotto_ministero.upper().endswith(
+                  "DATA DI"
+              )
+          )
+
+
+          ministero_scadenza_completa = (
+              bool(scadenza_ministero)
+              and not scadenza_ministero.upper().endswith(
+                  "FIN"
+              )
+          )
+
+
+          lotto_finale = (
+              lotto_ministero
+              if ministero_lotto_completo
+              else ""
+          )
+
+
+          scadenza_finale = (
+              scadenza_ministero
+              if ministero_scadenza_completa
+              else ""
+          )
+
+
+          fonte_lotto = (
+              "Ministero della Salute"
+              if lotto_finale
+              else ""
+          )
+
+
+          fonte_scadenza = (
+              "Ministero della Salute"
+              if scadenza_finale
+              else ""
+          )
+
+
+          # Fallback soltanto su fonte ufficiale CONAD.
+
+          if not lotto_finale:
+              match = re.search(
+                  r"Lotto\s*:\s*tutti\s+i\s+lotti",
+                  testo_conad,
+                  re.I
+              )
+
+              if match:
+                  lotto_finale = "Tutti i lotti"
+                  fonte_lotto = "CONAD - avviso ufficiale"
+
+
+          if not scadenza_finale:
+              match = re.search(
+                  r"TMC\s*:\s*tutti\s+i\s*TMC",
+                  testo_conad,
+                  re.I
+              )
+
+              if match:
+                  scadenza_finale = "Tutti i TMC"
+                  fonte_scadenza = "CONAD - avviso ufficiale"
+
+
+          produttore_focaccina = trova_regex(
+              testo_conad,
+              [
+                  r"Prodotto\s+per\s+Conad\s+da\s*:\s*([^\n\r]+)",
+                  r"Salumifici\s+GranTerre\s+S\.?p\.?a\.?[^\n\r]*"
+              ]
+          )
+
+
+          problemi_focaccina = []
+
+
+          if not lotto_finale:
+              problemi_focaccina.append(
+                  "lotto non confermato"
+              )
+
+
+          if not scadenza_finale:
+              problemi_focaccina.append(
+                  "TMC non confermato"
+              )
+
+
+          risultati.append(
+              {
+                  "id":
+                      "focaccina-conad",
+
+                  "marca":
+                      meta_focaccina.get(
+                          "marca",
+                          ""
+                      ),
+
+                  "prodotto":
+                      meta_focaccina.get(
+                          "prodotto",
+                          ""
+                      ),
+
+                  "motivo":
+                      meta_focaccina.get(
+                          "motivo",
+                          ""
+                      ),
+
+                  "lotto":
+                      lotto_finale,
+
+                  "scadenza":
+                      scadenza_finale,
+
+                  "produttore":
+                      produttore_focaccina,
+
+                  "fonte_lotto":
+                      fonte_lotto,
+
+                  "fonte_scadenza":
+                      fonte_scadenza,
+
+                  "validazione":
+                      (
+                          "PASS"
+                          if not problemi_focaccina
+                          else "DA_VERIFICARE"
+                      ),
+
+                  "problemi":
+                      problemi_focaccina
+              }
+          )
+
+
+          output = {
+              "totale":
+                  len(risultati),
+
+              "pass":
+                  sum(
+                      1
+                      for r in risultati
+                      if r["validazione"] == "PASS"
+                  ),
+
+              "da_verificare":
+                  sum(
+                      1
+                      for r in risultati
+                      if r["validazione"] != "PASS"
+                  ),
+
+              "richiami":
+                  risultati
+          }
+
+
+          (
+              CARTELLA /
+              "risultato-finale.json"
+          ).write_text(
+              json.dumps(
+                  output,
+                  ensure_ascii=False,
+                  indent=2
+              ),
+              encoding="utf-8"
+          )
+
+
+          print("")
+          print(
+              "======================================"
+          )
+          print(
+              "RISULTATO FINALE"
+          )
+          print(
+              "======================================"
+          )
+
+
+          for richiamo in risultati:
+              print("")
+              print(
+                  "--------------------------------------"
+              )
+
+              print(
+                  richiamo["id"]
+              )
+
+              print(
+                  "--------------------------------------"
+              )
+
+              print(
+                  "Marca:",
+                  richiamo["marca"]
+              )
+
+              print(
+                  "Prodotto:",
+                  richiamo["prodotto"]
+              )
+
+              print(
+                  "Lotto:",
+                  richiamo["lotto"]
+              )
+
+              print(
+                  "Fonte lotto:",
+                  richiamo["fonte_lotto"]
+              )
+
+              print(
+                  "Scadenza/TMC:",
+                  richiamo["scadenza"]
+              )
+
+              print(
+                  "Fonte scadenza:",
+                  richiamo["fonte_scadenza"]
+              )
+
+              print(
+                  "Produttore:",
+                  richiamo["produttore"]
+              )
+
+              print(
+                  "Motivo:",
+                  richiamo["motivo"]
+              )
+
+              print(
+                  "VALIDAZIONE:",
+                  richiamo["validazione"]
+              )
+
+              if richiamo["problemi"]:
+                  print(
+                      "Problemi:",
+                      richiamo["problemi"]
+                  )
+
+
+          print("")
+          print(
+              "======================================"
+          )
+          print(
+              "RIEPILOGO"
+          )
+          print(
+              "======================================"
+          )
+
+          print(
+              "Totale:",
+              output["totale"]
+          )
+
+          print(
+              "PASS:",
+              output["pass"]
+          )
+
+          print(
+              "Da verificare:",
+              output["da_verificare"]
+          )
+
+          PYEOF
+
+
+      - name: Costruisci risultato finale
+        run: python estrai_finale.py
+
+
+      - name: Mostra risultato finale
         run: |
           echo ""
           echo "======================================"
-          echo "FOCACCINA - TESTO FINALE"
+          echo "JSON FINALE"
           echo "======================================"
 
           cat \
-            risultati/focaccina-conad.txt
-
-
-      - name: Mostra testo Atio dopo OCR
-        run: |
-          echo ""
-          echo "======================================"
-          echo "ATIO - TESTO FINALE"
-          echo "======================================"
-
-          cat \
-            risultati/atio-capriss.txt
+            risultati/risultato-finale.json
 
 
       - name: Salva risultati
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: diagnostica-ocr-intelligente-avanzata
+          name: test-fallback-fonti-ufficiali
           path: |
             risultati/
           if-no-files-found: ignore
