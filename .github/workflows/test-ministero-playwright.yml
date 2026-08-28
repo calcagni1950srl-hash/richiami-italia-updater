@@ -1,4 +1,4 @@
-name: Diagnostica OCR Intelligente
+name: Diagnostica OCR Intelligente Avanzata
 
 on:
   workflow_dispatch:
@@ -94,7 +94,6 @@ jobs:
           }
 
           async function main() {
-
             const browser = await chromium.launch({
               headless: true
             });
@@ -114,25 +113,15 @@ jobs:
             });
 
             try {
-
               for (const richiamo of richiami) {
-
                 console.log("");
-                console.log(
-                  "======================================"
-                );
-                console.log(
-                  "RICHiamo:",
-                  richiamo.id
-                );
-                console.log(
-                  "======================================"
-                );
+                console.log("======================================");
+                console.log("RICHiamo:", richiamo.id);
+                console.log("======================================");
 
                 const page = await context.newPage();
 
                 try {
-
                   await page.goto(
                     richiamo.url,
                     {
@@ -186,13 +175,8 @@ jobs:
                     );
                   }
 
-                  console.log(
-                    "PDF:"
-                  );
-
-                  console.log(
-                    pdf.href
-                  );
+                  console.log("PDF:");
+                  console.log(pdf.href);
 
                   const download =
                     await scaricaPdf(
@@ -244,7 +228,6 @@ jobs:
                   );
 
                 } finally {
-
                   await page
                     .close()
                     .catch(() => {});
@@ -252,7 +235,6 @@ jobs:
               }
 
             } finally {
-
               await browser.close();
             }
           }
@@ -387,14 +369,14 @@ jobs:
           )
 
 
-          qualità_buona = (
+          qualita_buona = (
               len(trovate) >= 2
               and rapporto_normale >= 0.75
               and len(parole_normali) >= 15
           )
 
 
-          if qualità_buona:
+          if qualita_buona:
               print(
                   "QUALITA=BUONA"
               )
@@ -414,7 +396,7 @@ jobs:
           PYEOF
 
 
-      - name: Estrai testo con OCR intelligente
+      - name: Estrai testo con OCR intelligente avanzato
         run: |
           set -e
 
@@ -457,7 +439,7 @@ jobs:
 
               echo ""
               echo "⚠️ TESTO DIGITALE ASSENTE O CORROTTO"
-              echo "➡️ AVVIO OCR AUTOMATICO"
+              echo "➡️ AVVIO OCR AUTOMATICO AVANZATO"
 
               OCRDIR="${base}-ocr"
 
@@ -466,7 +448,7 @@ jobs:
               mkdir -p "$OCRDIR"
 
               pdftoppm \
-                -r 300 \
+                -r 400 \
                 -png \
                 "$pdf" \
                 "$OCRDIR/pagina"
@@ -480,16 +462,46 @@ jobs:
                 echo "OCR:"
                 echo "$immagine"
 
+                echo "" >> "$finale"
+                echo "=== OCR PSM 6 ===" >> "$finale"
+
                 tesseract \
                   "$immagine" \
                   stdout \
                   -l ita \
                   --psm 6 \
+                  -c preserve_interword_spaces=1 \
                   >> "$finale" \
                   2>/dev/null \
                   || true
 
+
                 echo "" >> "$finale"
+                echo "=== OCR PSM 11 ===" >> "$finale"
+
+                tesseract \
+                  "$immagine" \
+                  stdout \
+                  -l ita \
+                  --psm 11 \
+                  -c preserve_interword_spaces=1 \
+                  >> "$finale" \
+                  2>/dev/null \
+                  || true
+
+
+                echo "" >> "$finale"
+                echo "=== OCR PSM 4 ===" >> "$finale"
+
+                tesseract \
+                  "$immagine" \
+                  stdout \
+                  -l ita \
+                  --psm 4 \
+                  -c preserve_interword_spaces=1 \
+                  >> "$finale" \
+                  2>/dev/null \
+                  || true
 
               done
 
@@ -513,7 +525,7 @@ jobs:
           done
 
 
-      - name: Cerca lotto scadenza e produttore
+      - name: Cerca lotto scadenza produttore e motivo
         run: |
           echo ""
           echo "######################################"
@@ -522,7 +534,7 @@ jobs:
           echo ""
 
           grep -Ein \
-            'lotto|produzione|scadenza|termine minimo|produttore|richiamo' \
+            'lotto|produzione|scadenza|termine minimo|produttore|richiamo|corpi estranei|stec' \
             risultati/atio-capriss.txt \
             || true
 
@@ -535,7 +547,20 @@ jobs:
           echo ""
 
           grep -Ein \
-            'lotto|produzione|scadenza|termine minimo|produttore|richiamo' \
+            'lotto|produzione|scadenza|termine minimo|produttore|richiamo|corpi estranei|fino alla data' \
+            risultati/focaccina-conad.txt \
+            || true
+
+
+      - name: Cerca date nella Focaccina
+        run: |
+          echo ""
+          echo "======================================"
+          echo "DATE TROVATE NEL TESTO FOCACCINA"
+          echo "======================================"
+
+          grep -Ein \
+            '[0-9]{1,2}[/-][0-9]{1,2}[/-][0-9]{2,4}|[0-9]{1,2}[/-][0-9]{4}' \
             risultati/focaccina-conad.txt \
             || true
 
@@ -551,11 +576,22 @@ jobs:
             risultati/focaccina-conad.txt
 
 
+      - name: Mostra testo Atio dopo OCR
+        run: |
+          echo ""
+          echo "======================================"
+          echo "ATIO - TESTO FINALE"
+          echo "======================================"
+
+          cat \
+            risultati/atio-capriss.txt
+
+
       - name: Salva risultati
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: diagnostica-ocr-intelligente
+          name: diagnostica-ocr-intelligente-avanzata
           path: |
             risultati/
           if-no-files-found: ignore
