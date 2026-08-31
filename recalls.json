@@ -1,12 +1,62 @@
 {
   "version": 2,
-  "generatedAt": "2026-08-30T12:33:38.545733Z",
+  "generatedAt": "2026-08-31T14:46:52.520578Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
   "pass": 19,
   "daVerificare": 1,
   "recalls": [
+    {
+      "id": "formaggio-nostrano-formazza",
+      "marca": "Formazza",
+      "prodotto": "FORMAGGIO NOSTRANO FORMAZZA",
+      "lotto": "12/04/26 – 14/04/26 – 15/04/26 – 18/04/26 LOTTO 2428",
+      "tmc": "VEDI ETICHETTA",
+      "produttore": "IT 01 844",
+      "motivo": "Richiamo per rischio microbiologico",
+      "dataPubblicazione": "31 agosto 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/formaggio-nostrano-formazza",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/CARTELLO_RICHIAMO_FORMAZZA_LOTTO_2428_1788168796.pdf",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "TMC da verificare"
+      ]
+    },
+    {
+      "id": "salame-galbanetto",
+      "marca": "Galbani",
+      "prodotto": "Salame Galbanetto",
+      "lotto": "L264173 e L265173",
+      "tmc": "23-24/10/26",
+      "produttore": "IT 32 L UE",
+      "motivo": "Richiamo per rischio fisico",
+      "dataPubblicazione": "29 agosto 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salame-galbanetto",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modulo_di_%20richiamo_TMC_%2023_24.10.2026_1788013508.pdf",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "OCR",
+      "note": []
+    },
+    {
+      "id": "formaggio-gorgonzola-dolce-200g",
+      "marca": "IDAL",
+      "prodotto": "Formaggio Gorgonzola Dolce 200g",
+      "lotto": "126G22",
+      "tmc": "05/09/26",
+      "produttore": "IT T616G UE",
+      "motivo": "Richiamo per rischio microbiologico",
+      "dataPubblicazione": "29 agosto 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/formaggio-gorgonzola-dolce-200g",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Allegato%202%20Richiamo%20_%20Gorgonzola%20200g%20IDAL_1788013614.pdf",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": []
+    },
     {
       "id": "tubo-piccolo-peperoncino-amando-165-gr",
       "marca": "MONTOSCO",
@@ -277,56 +327,6 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
-      "note": []
-    },
-    {
-      "id": "pesto-pakino",
-      "marca": "MUSEUM",
-      "prodotto": "PESTO PAKINO",
-      "lotto": "030 026",
-      "tmc": "20 04 28",
-      "produttore": "/ANTICA SICILIA SRL",
-      "motivo": "Richiamo per rischio fisico",
-      "dataPubblicazione": "7 agosto 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pesto-pakino",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/RICHIAMO2_1786113242.pdf",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "TMC da verificare"
-      ]
-    },
-    {
-      "id": "pop-corn",
-      "marca": "Snack Day",
-      "prodotto": "Pop corn",
-      "lotto": "26269",
-      "tmc": "16/12/26",
-      "produttore": "_",
-      "motivo": "Richiamo per rischio chimico",
-      "dataPubblicazione": "7 agosto 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pop-corn",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/cartello%20di%20richiamo%20LIDL_1786128315.pdf",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "OCR",
-      "note": []
-    },
-    {
-      "id": "hamburger-con-marchigiana",
-      "marca": "Terre d'Italia",
-      "prodotto": "Hamburger con Marchigiana",
-      "lotto": "506091",
-      "tmc": "07-08/08/26",
-      "produttore": "IT 1392/L UE",
-      "motivo": "Richiamo per rischio microbiologico",
-      "dataPubblicazione": "6 agosto 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/hamburger-con-marchigiana",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modulo%20Ministero%20_%20Terre%20d_Italia_1786017783.pdf",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "TESTO_DIGITALE",
       "note": []
     }
   ]
