@@ -40,6 +40,8 @@ jobs:
             tesseract-ocr \
             tesseract-ocr-ita
 
+          python -m pip install pillow
+
           mkdir -p lavoro/pdf
           mkdir -p lavoro/testi
           mkdir -p lavoro/ocr
@@ -730,6 +732,8 @@ jobs:
           from datetime import datetime, timezone
           from pathlib import Path
 
+          from PIL import Image
+
 
           ROOT = Path("lavoro")
           PDF_DIR = ROOT / "pdf"
@@ -1049,6 +1053,135 @@ jobs:
               return False
 
 
+          def extract_from_rendered_page(
+              pdf,
+              recall_id,
+              folder
+          ):
+              render_folder = folder / "render"
+
+              render_folder.mkdir(
+                  parents=True,
+                  exist_ok=True
+              )
+
+              prefix = render_folder / "page"
+
+              run_command([
+                  "pdftoppm",
+                  "-f", "1",
+                  "-singlefile",
+                  "-r", "200",
+                  "-png",
+                  str(pdf),
+                  str(prefix)
+              ])
+
+              page_image = render_folder / "page.png"
+
+              if not page_image.exists():
+                  return ""
+
+              try:
+                  image = Image.open(
+                      page_image
+                  ).convert("RGB")
+              except Exception:
+                  return ""
+
+              width, height = image.size
+
+              #
+              # Secondo tentativo:
+              # analizziamo la parte inferiore della
+              # prima pagina, dove normalmente sono
+              # collocate le foto del prodotto.
+              #
+              zones = [
+                  (
+                      0,
+                      int(height * 0.55),
+                      width,
+                      height
+                  ),
+                  (
+                      0,
+                      int(height * 0.62),
+                      width,
+                      height
+                  )
+              ]
+
+              valid = []
+
+              for index, box in enumerate(zones):
+                  candidate = image.crop(box)
+
+                  candidate_path = (
+                      render_folder /
+                      f"candidate-{index}.png"
+                  )
+
+                  candidate.save(
+                      candidate_path,
+                      "PNG"
+                  )
+
+                  if (
+                      candidate.width < 250
+                      or candidate.height < 180
+                  ):
+                      continue
+
+                  if image_looks_like_document(
+                      candidate_path
+                  ):
+                      continue
+
+                  try:
+                      size = candidate_path.stat().st_size
+                  except OSError:
+                      continue
+
+                  if size < 20000:
+                      continue
+
+                  valid.append(
+                      (
+                          size,
+                          candidate_path
+                      )
+                  )
+
+              if not valid:
+                  return ""
+
+              valid.sort(
+                  reverse=True,
+                  key=lambda item: item[0]
+              )
+
+              best = valid[0][1]
+
+              target = (
+                  OUTPUT_IMAGE_DIR /
+                  f"{recall_id}.png"
+              )
+
+              shutil.copy2(
+                  best,
+                  target
+              )
+
+              return (
+                  "https://raw.githubusercontent.com/"
+                  "calcagni1950srl-hash/"
+                  "richiami-italia-updater/"
+                  "refs/heads/main/images/"
+                  f"{recall_id}.png"
+              )
+
+
           def extract_product_image(
               pdf,
               recall_id
@@ -1150,7 +1283,11 @@ jobs:
                   )
 
               if not candidates:
-                  return ""
+                  return extract_from_rendered_page(
+                      pdf,
+                      recall_id,
+                      folder
+                  )
 
               candidates.sort(
                   reverse=True,
