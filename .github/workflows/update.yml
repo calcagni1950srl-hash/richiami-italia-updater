@@ -1815,7 +1815,23 @@ jobs:
                       height / width
                   )
 
-                  if ratio > 5:
+                  #
+                  # I moduli del Ministero possono contenere
+                  # fasce grafiche molto larghe che pdfimages
+                  # estrae come immagini separate.
+                  # Non sono fotografie del prodotto.
+                  #
+                  if ratio > 4.2:
+                      print(
+                          "⚠️ Immagine scartata perché troppo panoramica:",
+                          image.name,
+                          "ratio",
+                          round(
+                              ratio,
+                              2
+                          )
+                      )
+
                       continue
 
                   try:
@@ -1844,12 +1860,84 @@ jobs:
 
                       continue
 
+                  try:
+                      pil_image = Image.open(
+                          image
+                      ).convert(
+                          "RGB"
+                      )
+                  except Exception:
+                      continue
+
+                  embedded_visual = (
+                      visual_score(
+                          pil_image
+                      )
+                  )
+
+                  embedded_white = (
+                      white_ratio(
+                          pil_image
+                      )
+                  )
+
+                  embedded_detail = (
+                      detail_score(
+                          pil_image
+                      )
+                  )
+
+                  #
+                  # Punteggio fotografico:
+                  # - premia colore e dettaglio;
+                  # - penalizza aree quasi bianche del modulo.
+                  #
+                  photo_score = (
+                      embedded_visual
+                      + embedded_detail * 1.2
+                      - embedded_white * 1.5
+                  )
+
+                  if photo_score < 0.65:
+                      print(
+                          "⚠️ Immagine scartata per bassa qualità fotografica:",
+                          image.name,
+                          "score",
+                          round(
+                              photo_score,
+                              3
+                          )
+                      )
+
+                      continue
+
                   area = (
                       width * height
                   )
 
+                  #
+                  # Ricaviamo l'ordine originale dell'immagine
+                  # nel PDF. Quando ci sono più fotografie
+                  # valide, la prima è normalmente quella
+                  # principale/frontale del prodotto.
+                  #
+                  match = re.search(
+                      r"img-(\d+)\.png$",
+                      image.name
+                  )
+
+                  image_index = (
+                      int(
+                          match.group(1)
+                      )
+                      if match
+                      else 9999
+                  )
+
                   candidates.append(
                       (
+                          photo_score,
+                          image_index,
                           area,
                           size,
                           image
@@ -1869,15 +1957,40 @@ jobs:
                       folder
                   )
 
-              candidates.sort(
-                  reverse=True,
-                  key=lambda item: (
-                      item[0],
-                      item[1]
-                  )
-              )
+              #
+              # Se abbiamo fotografie chiaramente riconoscibili,
+              # preferiamo la prima nell'ordine del PDF.
+              # Nei moduli ufficiali è spesso la foto frontale
+              # del prodotto. In caso contrario scegliamo il
+              # candidato con il miglior punteggio fotografico.
+              #
+              high_confidence = [
+                  item
+                  for item in candidates
+                  if item[0] >= 2.0
+              ]
 
-              best = candidates[0][2]
+              if high_confidence:
+                  high_confidence.sort(
+                      key=lambda item:
+                          item[1]
+                  )
+
+                  best = (
+                      high_confidence[0][4]
+                  )
+
+              else:
+                  candidates.sort(
+                      reverse=True,
+                      key=lambda item: (
+                          item[0],
+                          item[2],
+                          item[3]
+                      )
+                  )
+
+                  best = candidates[0][4]
 
               target = (
                   OUTPUT_IMAGE_DIR /
