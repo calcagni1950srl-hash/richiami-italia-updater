@@ -43,7 +43,9 @@ jobs:
           mkdir -p lavoro/pdf
           mkdir -p lavoro/testi
           mkdir -p lavoro/ocr
+          mkdir -p lavoro/immagini
           mkdir -p output
+          mkdir -p output/images
 
       - name: Crea acquisizione Ministero
         run: |
@@ -733,7 +735,9 @@ jobs:
           PDF_DIR = ROOT / "pdf"
           TXT_DIR = ROOT / "testi"
           OCR_DIR = ROOT / "ocr"
+          IMAGE_DIR = ROOT / "immagini"
           OUTPUT_DIR = Path("output")
+          OUTPUT_IMAGE_DIR = OUTPUT_DIR / "images"
 
           TXT_DIR.mkdir(
               parents=True,
@@ -745,7 +749,17 @@ jobs:
               exist_ok=True
           )
 
+          IMAGE_DIR.mkdir(
+              parents=True,
+              exist_ok=True
+          )
+
           OUTPUT_DIR.mkdir(
+              parents=True,
+              exist_ok=True
+          )
+
+          OUTPUT_IMAGE_DIR.mkdir(
               parents=True,
               exist_ok=True
           )
@@ -936,6 +950,149 @@ jobs:
 
               return "\n".join(
                   pages
+              )
+
+
+          def png_dimensions(path):
+              try:
+                  with path.open("rb") as file:
+                      header = file.read(24)
+
+                  if (
+                      len(header) >= 24
+                      and header[:8]
+                      == b"\x89PNG\r\n\x1a\n"
+                  ):
+                      width = int.from_bytes(
+                          header[16:20],
+                          "big"
+                      )
+
+                      height = int.from_bytes(
+                          header[20:24],
+                          "big"
+                      )
+
+                      return width, height
+
+              except Exception:
+                  pass
+
+              return 0, 0
+
+
+          def extract_product_image(
+              pdf,
+              recall_id
+          ):
+              folder = (
+                  IMAGE_DIR /
+                  recall_id
+              )
+
+              if folder.exists():
+                  shutil.rmtree(
+                      folder
+                  )
+
+              folder.mkdir(
+                  parents=True,
+                  exist_ok=True
+              )
+
+              prefix = (
+                  folder /
+                  "img"
+              )
+
+              result = run_command([
+                  "pdfimages",
+                  "-png",
+                  str(pdf),
+                  str(prefix)
+              ])
+
+              candidates = []
+
+              for image in sorted(
+                  folder.glob(
+                      "img-*.png"
+                  )
+              ):
+                  width, height = (
+                      png_dimensions(image)
+                  )
+
+                  if (
+                      width < 250
+                      or height < 150
+                  ):
+                      continue
+
+                  if (
+                      width > 0
+                      and height > 0
+                  ):
+                      ratio = max(
+                          width / height,
+                          height / width
+                      )
+
+                      if ratio > 5:
+                          continue
+
+                  try:
+                      size = (
+                          image.stat()
+                          .st_size
+                      )
+                  except OSError:
+                      continue
+
+                  if size < 15000:
+                      continue
+
+                  area = (
+                      width * height
+                  )
+
+                  candidates.append(
+                      (
+                          area,
+                          size,
+                          image
+                      )
+                  )
+
+              if not candidates:
+                  return ""
+
+              candidates.sort(
+                  reverse=True,
+                  key=lambda item: (
+                      item[0],
+                      item[1]
+                  )
+              )
+
+              best = candidates[0][2]
+
+              target = (
+                  OUTPUT_IMAGE_DIR /
+                  f"{recall_id}.png"
+              )
+
+              shutil.copy2(
+                  best,
+                  target
+              )
+
+              return (
+                  "https://raw.githubusercontent.com/"
+                  "calcagni1950srl-hash/"
+                  "richiami-italia-updater/"
+                  "refs/heads/main/images/"
+                  f"{recall_id}.png"
               )
 
 
@@ -1266,6 +1423,9 @@ jobs:
                           ""
                       ),
 
+                  "immagine":
+                      "",
+
                   "criterioMatch":
                       "LOTTO_E_TMC",
 
@@ -1335,6 +1495,39 @@ jobs:
               recall[
                   "metodoEstrazione"
               ] = method
+
+
+              try:
+                  recall[
+                      "immagine"
+                  ] = extract_product_image(
+                      pdf,
+                      scheda["id"]
+                  )
+
+                  if recall["immagine"]:
+                      print(
+                          "🖼️ Immagine prodotto estratta:",
+                          scheda["id"]
+                      )
+                  else:
+                      recall[
+                          "note"
+                      ].append(
+                          "Immagine prodotto non estratta"
+                      )
+
+              except Exception as error:
+                  recall[
+                      "immagine"
+                  ] = ""
+
+                  recall[
+                      "note"
+                  ].append(
+                      "Errore estrazione immagine: "
+                      + str(error)
+                  )
 
 
               (
@@ -1669,9 +1862,12 @@ jobs:
           print("✅ recalls.json valido")
           PYEOF
 
-      - name: Copia database nel repository
+      - name: Copia database e immagini nel repository
         run: |
           cp output/recalls.json recalls.json
+          rm -rf images
+          mkdir -p images
+          cp -r output/images/. images/ 2>/dev/null || true
 
       - name: Salva artifact
         uses: actions/upload-artifact@v4
@@ -1679,7 +1875,9 @@ jobs:
           name: recalls-json
           path: |
             output/recalls.json
+            output/images/
             recalls.json
+            images/
           retention-days: 30
 
       - name: Aggiorna recalls.json nel repository
@@ -1687,7 +1885,7 @@ jobs:
           git config user.name "Richiami Italia Bot"
           git config user.email "actions@github.com"
 
-          git add recalls.json
+          git add recalls.json images
 
           if git diff --cached --quiet; then
             echo "Nessuna modifica al database."
