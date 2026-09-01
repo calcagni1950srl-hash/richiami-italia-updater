@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-01T12:21:42.041078Z",
+  "generatedAt": "2026-09-01T13:55:41.247790Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
@@ -18,6 +18,7 @@
       "dataPubblicazione": "31 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/formaggio-nostrano-formazza",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/CARTELLO_RICHIAMO_FORMAZZA_LOTTO_2428_1788168796.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/formaggio-nostrano-formazza.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "DA_VERIFICARE",
       "metodoEstrazione": "TESTO_DIGITALE",
@@ -36,6 +37,7 @@
       "dataPubblicazione": "29 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salame-galbanetto",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modulo_di_%20richiamo_TMC_%2023_24.10.2026_1788013508.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salame-galbanetto.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
@@ -52,6 +54,7 @@
       "dataPubblicazione": "29 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/formaggio-gorgonzola-dolce-200g",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Allegato%202%20Richiamo%20_%20Gorgonzola%20200g%20IDAL_1788013614.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/formaggio-gorgonzola-dolce-200g.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
@@ -68,6 +71,7 @@
       "dataPubblicazione": "28 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/tubo-piccolo-peperoncino-amando-165-gr",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/cartello%20di%20richiamo%20_2__1787928034.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/tubo-piccolo-peperoncino-amando-165-gr.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
@@ -84,6 +88,7 @@
       "dataPubblicazione": "28 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/cozze-guscio-gr-500",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/AllegatoA_Modello_richiamo_o_revoca_ARBIDARIOSPA_1787928158.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/cozze-guscio-gr-500.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
@@ -100,10 +105,13 @@
       "dataPubblicazione": "28 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/trancia-di-verdesca-iwp",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20Happy%20gelo%201_1787943175.pdf",
+      "immagine": "",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
-      "note": []
+      "note": [
+        "Immagine prodotto non estratta"
+      ]
     },
     {
       "id": "gorgonzola-dolce-200g",
@@ -116,6 +124,7 @@
       "dataPubblicazione": "27 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/gorgonzola-dolce-200g",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/RICHIAMO_Gorgonzola_200g_IDAL_1787832490.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/gorgonzola-dolce-200g.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
@@ -132,6 +141,7 @@
       "dataPubblicazione": "27 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/gorgonzola-dop-200g",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/RICHIAMO_Gorgonzola_TAPPOROSSO%20_%20Centrale%20del%20Latte%20di%20Torino_1787832494.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/gorgonzola-dop-200g.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
@@ -148,6 +158,7 @@
       "dataPubblicazione": "21 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/preparato-torte-senza-glutine-400-g",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/2026.08.19%20_%20Preparato%20per%20torte%20400g%20_%20MOLINO%20ROSSETTO_1787314100.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/preparato-torte-senza-glutine-400-g.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
@@ -164,6 +175,7 @@
       "dataPubblicazione": "21 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/budino-proteico-gusto-cioccolato",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/budino_Allegato3_ModellodiRichiamo_1787332213.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/budino-proteico-gusto-cioccolato.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
@@ -180,10 +192,13 @@
       "dataPubblicazione": "18 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/insalata-di-riso-3",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20di%20Richiamo_1787073042.pdf",
+      "immagine": "",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
-      "note": []
+      "note": [
+        "Immagine prodotto non estratta"
+      ]
     },
     {
       "id": "brie-mon-sir-60-1kg",
@@ -196,6 +211,7 @@
       "dataPubblicazione": "17 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/brie-mon-sir-60-1kg",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/cartello%20richiamo%20Brie%20Mon%20Sir%20_%20lotto%20ZUAD2_1786968497.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/brie-mon-sir-60-1kg.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
@@ -212,6 +228,7 @@
       "dataPubblicazione": "14 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mdh-funugreek-leaves-kasuri-methi",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/CARTELLO%20DI%20RICHIAMO_1786700413.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/mdh-funugreek-leaves-kasuri-methi.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
@@ -228,6 +245,7 @@
       "dataPubblicazione": "14 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/flying-power-250ml-sugarfree",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20_%20847770%20_%20Flying%20Power%20250ml%20Sugarfree_1786709301.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/flying-power-250ml-sugarfree.png",
       "criterioMatch": "TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
@@ -244,6 +262,7 @@
       "dataPubblicazione": "13 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/lingue-di-pane",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Richiamo_LINGUE_DI_PANE_1786622905.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/lingue-di-pane.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
@@ -260,10 +279,13 @@
       "dataPubblicazione": "12 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/fichi-secchi-bianchi",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modulo%20di%20richiamo_1786545615.pdf",
+      "immagine": "",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
-      "note": []
+      "note": [
+        "Immagine prodotto non estratta"
+      ]
     },
     {
       "id": "filetti-di-pesce-spada-allolio-doliva-200g-0",
@@ -276,6 +298,7 @@
       "dataPubblicazione": "12 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/filetti-di-pesce-spada-allolio-doliva-200g-0",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello%20Richiamo_Drago__1786554624.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/filetti-di-pesce-spada-allolio-doliva-200g-0.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
@@ -292,6 +315,7 @@
       "dataPubblicazione": "11 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pop-corn-1",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/cartello_2026.08.10_PopCorn120g_PREZIOSIFOOD1_1786441200.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/pop-corn-1.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
@@ -308,6 +332,7 @@
       "dataPubblicazione": "8 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pop-corn-0",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modulo%20Richiamo%20Pop%20Corn_1786215096.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/pop-corn-0.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
@@ -324,6 +349,7 @@
       "dataPubblicazione": "7 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/kalanit-forte",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/PG0060602_2026_Modulo%20richiamo%20KALANIT%20FORTE%20BUSTE_05.08.26_1786095215.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/kalanit-forte.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
