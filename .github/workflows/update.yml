@@ -981,6 +981,74 @@ jobs:
               return 0, 0
 
 
+          def image_looks_like_document(
+              image
+          ):
+              result = run_command([
+                  "tesseract",
+                  str(image),
+                  "stdout",
+                  "-l",
+                  "ita",
+                  "--psm",
+                  "11"
+              ])
+
+              text = clean(
+                  result.stdout
+              )
+
+              if not text:
+                  return False
+
+              low = text.lower()
+
+              document_keywords = [
+                  "richiamo",
+                  "denominazione",
+                  "lotto",
+                  "produttore",
+                  "stabilimento",
+                  "motivo",
+                  "marchio",
+                  "scadenza",
+                  "conservazione",
+                  "ministero"
+              ]
+
+              keyword_hits = sum(
+                  1
+                  for keyword
+                  in document_keywords
+                  if keyword in low
+              )
+
+              lines = [
+                  clean(line)
+                  for line
+                  in result.stdout.splitlines()
+                  if clean(line)
+              ]
+
+              alnum_count = len(
+                  re.findall(
+                      r"[A-Za-z0-9À-ÿ]",
+                      text
+                  )
+              )
+
+              if keyword_hits >= 3:
+                  return True
+
+              if (
+                  alnum_count >= 280
+                  and len(lines) >= 8
+              ):
+                  return True
+
+              return False
+
+
           def extract_product_image(
               pdf,
               recall_id
@@ -1005,7 +1073,7 @@ jobs:
                   "img"
               )
 
-              result = run_command([
+              run_command([
                   "pdfimages",
                   "-png",
                   str(pdf),
@@ -1030,16 +1098,18 @@ jobs:
                       continue
 
                   if (
-                      width > 0
-                      and height > 0
+                      width <= 0
+                      or height <= 0
                   ):
-                      ratio = max(
-                          width / height,
-                          height / width
-                      )
+                      continue
 
-                      if ratio > 5:
-                          continue
+                  ratio = max(
+                      width / height,
+                      height / width
+                  )
+
+                  if ratio > 5:
+                      continue
 
                   try:
                       size = (
@@ -1050,6 +1120,21 @@ jobs:
                       continue
 
                   if size < 15000:
+                      continue
+
+                  #
+                  # Evita di usare come miniatura
+                  # una scansione dell'intera scheda
+                  # di richiamo.
+                  #
+                  if image_looks_like_document(
+                      image
+                  ):
+                      print(
+                          "⚠️ Immagine scartata perché sembra una scheda:",
+                          image.name
+                      )
+
                       continue
 
                   area = (
