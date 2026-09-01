@@ -1053,31 +1053,123 @@ jobs:
               return False
 
 
+          def visual_score(
+              image
+          ):
+              try:
+                  rgb = image.convert("RGB")
+              except Exception:
+                  return 0.0
+
+              small = rgb.resize(
+                  (
+                      max(1, rgb.width // 8),
+                      max(1, rgb.height // 8)
+                  )
+              )
+
+              pixels = list(
+                  small.getdata()
+              )
+
+              if not pixels:
+                  return 0.0
+
+              useful = 0
+              colorful = 0
+              dark = 0
+
+              for red, green, blue in pixels:
+                  maximum = max(
+                      red,
+                      green,
+                      blue
+                  )
+
+                  minimum = min(
+                      red,
+                      green,
+                      blue
+                  )
+
+                  #
+                  # Pixel non quasi-bianco.
+                  #
+                  if maximum < 245:
+                      useful += 1
+
+                  #
+                  # Differenza tra canali:
+                  # aiuta a riconoscere foto/confezioni
+                  # rispetto a moduli prevalentemente
+                  # bianchi e neri.
+                  #
+                  if (
+                      maximum - minimum
+                      >= 24
+                  ):
+                      colorful += 1
+
+                  if maximum < 185:
+                      dark += 1
+
+              total = len(pixels)
+
+              useful_ratio = (
+                  useful / total
+              )
+
+              colorful_ratio = (
+                  colorful / total
+              )
+
+              dark_ratio = (
+                  dark / total
+              )
+
+              return (
+                  useful_ratio * 2.0
+                  + colorful_ratio * 3.0
+                  + dark_ratio * 0.5
+              )
+
+
           def extract_from_rendered_page(
               pdf,
               recall_id,
               folder
           ):
-              render_folder = folder / "render"
+              render_folder = (
+                  folder /
+                  "render"
+              )
 
               render_folder.mkdir(
                   parents=True,
                   exist_ok=True
               )
 
-              prefix = render_folder / "page"
+              prefix = (
+                  render_folder /
+                  "page"
+              )
 
               run_command([
                   "pdftoppm",
-                  "-f", "1",
+                  "-f",
+                  "1",
                   "-singlefile",
-                  "-r", "200",
+                  "-r",
+                  "220",
                   "-png",
                   str(pdf),
                   str(prefix)
               ])
 
-              page_image = render_folder / "page.png"
+              page_image = (
+                  render_folder /
+                  "page.png"
+              )
 
               if not page_image.exists():
                   return ""
@@ -1089,33 +1181,132 @@ jobs:
               except Exception:
                   return ""
 
-              width, height = image.size
+              width, height = (
+                  image.size
+              )
 
               #
-              # Secondo tentativo:
-              # analizziamo la parte inferiore della
-              # prima pagina, dove normalmente sono
-              # collocate le foto del prodotto.
+              # Non usiamo più una grande fetta
+              # dell'intera pagina.
               #
-              zones = [
-                  (
-                      0,
-                      int(height * 0.55),
-                      width,
-                      height
-                  ),
-                  (
-                      0,
-                      int(height * 0.62),
-                      width,
-                      height
-                  )
+              # Generiamo invece piccoli riquadri
+              # candidati nella zona medio-bassa,
+              # dove nei moduli ufficiali vengono
+              # normalmente inserite le fotografie.
+              #
+              candidates_boxes = []
+
+              start_values = [
+                  0.42,
+                  0.50,
+                  0.58,
+                  0.66
               ]
+
+              for start_ratio in start_values:
+                  top = int(
+                      height * start_ratio
+                  )
+
+                  remaining = (
+                      height - top
+                  )
+
+                  #
+                  # Due colonne.
+                  #
+                  candidates_boxes.extend([
+                      (
+                          0,
+                          top,
+                          width // 2,
+                          height
+                      ),
+                      (
+                          width // 2,
+                          top,
+                          width,
+                          height
+                      )
+                  ])
+
+                  #
+                  # Tre colonne.
+                  #
+                  third = (
+                      width // 3
+                  )
+
+                  candidates_boxes.extend([
+                      (
+                          0,
+                          top,
+                          third,
+                          height
+                      ),
+                      (
+                          third,
+                          top,
+                          third * 2,
+                          height
+                      ),
+                      (
+                          third * 2,
+                          top,
+                          width,
+                          height
+                      )
+                  ])
+
+                  #
+                  # Fasce più compatte per evitare
+                  # di portarsi dietro troppo modulo.
+                  #
+                  compact_bottom = min(
+                      height,
+                      top + int(
+                          remaining * 0.62
+                      )
+                  )
+
+                  candidates_boxes.extend([
+                      (
+                          0,
+                          top,
+                          width // 2,
+                          compact_bottom
+                      ),
+                      (
+                          width // 2,
+                          top,
+                          width,
+                          compact_bottom
+                      )
+                  ])
 
               valid = []
 
-              for index, box in enumerate(zones):
-                  candidate = image.crop(box)
+              seen_boxes = set()
+
+              for index, box in enumerate(
+                  candidates_boxes
+              ):
+                  if box in seen_boxes:
+                      continue
+
+                  seen_boxes.add(
+                      box
+                  )
+
+                  candidate = image.crop(
+                      box
+                  )
+
+                  if (
+                      candidate.width < 280
+                      or candidate.height < 220
+                  ):
+                      continue
 
                   candidate_path = (
                       render_folder /
@@ -1127,28 +1318,45 @@ jobs:
                       "PNG"
                   )
 
-                  if (
-                      candidate.width < 250
-                      or candidate.height < 180
-                  ):
-                      continue
-
+                  #
+                  # Se il ritaglio contiene ancora
+                  # troppo testo tipico del modulo,
+                  # viene scartato.
+                  #
                   if image_looks_like_document(
                       candidate_path
                   ):
                       continue
 
                   try:
-                      size = candidate_path.stat().st_size
+                      file_size = (
+                          candidate_path
+                          .stat()
+                          .st_size
+                      )
                   except OSError:
                       continue
 
-                  if size < 20000:
+                  if file_size < 18000:
+                      continue
+
+                  score = (
+                      visual_score(
+                          candidate
+                      )
+                  )
+
+                  #
+                  # Un riquadro quasi tutto bianco
+                  # non è una vera foto utile.
+                  #
+                  if score < 0.45:
                       continue
 
                   valid.append(
                       (
-                          size,
+                          score,
+                          file_size,
                           candidate_path
                       )
                   )
@@ -1158,10 +1366,15 @@ jobs:
 
               valid.sort(
                   reverse=True,
-                  key=lambda item: item[0]
+                  key=lambda item: (
+                      item[0],
+                      item[1]
+                  )
               )
 
-              best = valid[0][1]
+              best = (
+                  valid[0][2]
+              )
 
               target = (
                   OUTPUT_IMAGE_DIR /
