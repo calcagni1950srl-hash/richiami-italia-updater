@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-01T16:31:40.312923Z",
+  "generatedAt": "2026-09-01T16:44:54.250094Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
@@ -105,13 +105,11 @@
       "dataPubblicazione": "28 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/trancia-di-verdesca-iwp",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20Happy%20gelo%201_1787943175.pdf",
-      "immagine": "",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/trancia-di-verdesca-iwp.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Immagine prodotto non estratta"
-      ]
+      "note": []
     },
     {
       "id": "gorgonzola-dolce-200g",
@@ -192,13 +190,11 @@
       "dataPubblicazione": "18 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/insalata-di-riso-3",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20di%20Richiamo_1787073042.pdf",
-      "immagine": "",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/insalata-di-riso-3.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Immagine prodotto non estratta"
-      ]
+      "note": []
     },
     {
       "id": "brie-mon-sir-60-1kg",
@@ -211,13 +207,11 @@
       "dataPubblicazione": "17 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/brie-mon-sir-60-1kg",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/cartello%20richiamo%20Brie%20Mon%20Sir%20_%20lotto%20ZUAD2_1786968497.pdf",
-      "immagine": "",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/brie-mon-sir-60-1kg.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Immagine prodotto non estratta"
-      ]
+      "note": []
     },
     {
       "id": "mdh-funugreek-leaves-kasuri-methi",
@@ -281,13 +275,11 @@
       "dataPubblicazione": "12 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/fichi-secchi-bianchi",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modulo%20di%20richiamo_1786545615.pdf",
-      "immagine": "",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/fichi-secchi-bianchi.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Immagine prodotto non estratta"
-      ]
+      "note": []
     },
     {
       "id": "filetti-di-pesce-spada-allolio-doliva-200g-0",
@@ -300,13 +292,11 @@
       "dataPubblicazione": "12 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/filetti-di-pesce-spada-allolio-doliva-200g-0",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello%20Richiamo_Drago__1786554624.pdf",
-      "immagine": "",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/filetti-di-pesce-spada-allolio-doliva-200g-0.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
-      "note": [
-        "Immagine prodotto non estratta"
-      ]
+      "note": []
     },
     {
       "id": "pop-corn-1",
@@ -336,13 +326,11 @@
       "dataPubblicazione": "8 agosto 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pop-corn-0",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modulo%20Richiamo%20Pop%20Corn_1786215096.pdf",
-      "immagine": "",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/pop-corn-0.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
-      "note": [
-        "Immagine prodotto non estratta"
-      ]
+      "note": []
     },
     {
       "id": "kalanit-forte",
