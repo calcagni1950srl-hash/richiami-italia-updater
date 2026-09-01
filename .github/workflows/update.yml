@@ -732,7 +732,7 @@ jobs:
           from datetime import datetime, timezone
           from pathlib import Path
 
-          from PIL import Image
+          from PIL import Image, ImageStat
 
 
           ROOT = Path("lavoro")
@@ -1134,6 +1134,287 @@ jobs:
               )
 
 
+          def tesseract_boxes(
+              image_path
+          ):
+              result = run_command([
+                  "tesseract",
+                  str(image_path),
+                  "stdout",
+                  "-l",
+                  "ita",
+                  "--psm",
+                  "11",
+                  "tsv"
+              ])
+
+              boxes = []
+
+              for line in (
+                  result.stdout
+                  .splitlines()[1:]
+              ):
+                  parts = line.split(
+                      "	"
+                  )
+
+                  if len(parts) < 12:
+                      continue
+
+                  try:
+                      confidence = float(
+                          parts[10]
+                      )
+
+                      left = int(
+                          parts[6]
+                      )
+
+                      top = int(
+                          parts[7]
+                      )
+
+                      width = int(
+                          parts[8]
+                      )
+
+                      height = int(
+                          parts[9]
+                      )
+                  except Exception:
+                      continue
+
+                  word = clean(
+                      parts[11]
+                  )
+
+                  if (
+                      not word
+                      or confidence < 20
+                      or width <= 0
+                      or height <= 0
+                  ):
+                      continue
+
+                  boxes.append(
+                      (
+                          left,
+                          top,
+                          left + width,
+                          top + height,
+                          word
+                      )
+                  )
+
+              return boxes
+
+
+          def intersection_area(
+              first,
+              second
+          ):
+              left = max(
+                  first[0],
+                  second[0]
+              )
+
+              top = max(
+                  first[1],
+                  second[1]
+              )
+
+              right = min(
+                  first[2],
+                  second[2]
+              )
+
+              bottom = min(
+                  first[3],
+                  second[3]
+              )
+
+              if (
+                  right <= left
+                  or bottom <= top
+              ):
+                  return 0
+
+              return (
+                  (right - left)
+                  * (bottom - top)
+              )
+
+
+          def text_density(
+              box,
+              text_boxes
+          ):
+              area = max(
+                  1,
+                  (
+                      box[2] - box[0]
+                  )
+                  * (
+                      box[3] - box[1]
+                  )
+              )
+
+              covered = 0
+
+              for text_box in text_boxes:
+                  covered += intersection_area(
+                      box,
+                      text_box[:4]
+                  )
+
+              return min(
+                  1.0,
+                  covered / area
+              )
+
+
+          def white_ratio(
+              image
+          ):
+              try:
+                  rgb = image.convert(
+                      "RGB"
+                  )
+              except Exception:
+                  return 1.0
+
+              small = rgb.resize(
+                  (
+                      max(
+                          1,
+                          rgb.width // 10
+                      ),
+                      max(
+                          1,
+                          rgb.height // 10
+                      )
+                  )
+              )
+
+              pixels = list(
+                  small.getdata()
+              )
+
+              if not pixels:
+                  return 1.0
+
+              white = sum(
+                  1
+                  for red, green, blue
+                  in pixels
+                  if (
+                      red >= 242
+                      and green >= 242
+                      and blue >= 242
+                  )
+              )
+
+              return (
+                  white / len(pixels)
+              )
+
+
+          def detail_score(
+              image
+          ):
+              try:
+                  gray = image.convert(
+                      "L"
+                  )
+                  stats = ImageStat.Stat(
+                      gray
+                  )
+                  stddev = (
+                      stats.stddev[0]
+                      if stats.stddev
+                      else 0.0
+                  )
+              except Exception:
+                  return 0.0
+
+              return min(
+                  1.0,
+                  stddev / 70.0
+              )
+
+
+          def trim_white_border(
+              image
+          ):
+              try:
+                  rgb = image.convert(
+                      "RGB"
+                  )
+              except Exception:
+                  return image
+
+              gray = rgb.convert(
+                  "L"
+              )
+
+              mask = gray.point(
+                  lambda pixel:
+                      255
+                      if pixel < 245
+                      else 0
+              )
+
+              bbox = mask.getbbox()
+
+              if not bbox:
+                  return image
+
+              left, top, right, bottom = bbox
+
+              margin_x = max(
+                  6,
+                  int(
+                      rgb.width * 0.015
+                  )
+              )
+
+              margin_y = max(
+                  6,
+                  int(
+                      rgb.height * 0.015
+                  )
+              )
+
+              left = max(
+                  0,
+                  left - margin_x
+              )
+
+              top = max(
+                  0,
+                  top - margin_y
+              )
+
+              right = min(
+                  rgb.width,
+                  right + margin_x
+              )
+
+              bottom = min(
+                  rgb.height,
+                  bottom + margin_y
+              )
+
+              return rgb.crop(
+                  (
+                      left,
+                      top,
+                      right,
+                      bottom
+                  )
+              )
+
+
           def extract_from_rendered_page(
               pdf,
               recall_id,
@@ -1175,161 +1456,265 @@ jobs:
                   return ""
 
               try:
-                  image = Image.open(
+                  page = Image.open(
                       page_image
                   ).convert("RGB")
               except Exception:
                   return ""
 
-              width, height = (
-                  image.size
+              page_width, page_height = (
+                  page.size
+              )
+
+              text_boxes = (
+                  tesseract_boxes(
+                      page_image
+                  )
               )
 
               #
-              # Non usiamo più una grande fetta
-              # dell'intera pagina.
+              # Analizziamo molte finestre della pagina.
+              # Non assumiamo più che la foto sia sempre
+              # in basso o in una posizione fissa.
               #
-              # Generiamo invece piccoli riquadri
-              # candidati nella zona medio-bassa,
-              # dove nei moduli ufficiali vengono
-              # normalmente inserite le fotografie.
-              #
-              candidates_boxes = []
-
-              start_values = [
-                  0.42,
-                  0.50,
-                  0.58,
-                  0.66
+              width_ratios = [
+                  0.28,
+                  0.34,
+                  0.40,
+                  0.48,
+                  0.56
               ]
 
-              for start_ratio in start_values:
-                  top = int(
-                      height * start_ratio
+              height_ratios = [
+                  0.20,
+                  0.26,
+                  0.32,
+                  0.40,
+                  0.48
+              ]
+
+              candidates = []
+
+              for width_ratio in width_ratios:
+                  window_width = int(
+                      page_width
+                      * width_ratio
                   )
 
-                  remaining = (
-                      height - top
-                  )
-
-                  #
-                  # Due colonne.
-                  #
-                  candidates_boxes.extend([
-                      (
-                          0,
-                          top,
-                          width // 2,
-                          height
-                      ),
-                      (
-                          width // 2,
-                          top,
-                          width,
-                          height
+                  for height_ratio in height_ratios:
+                      window_height = int(
+                          page_height
+                          * height_ratio
                       )
-                  ])
 
-                  #
-                  # Tre colonne.
-                  #
-                  third = (
-                      width // 3
-                  )
+                      if (
+                          window_width < 300
+                          or window_height < 220
+                      ):
+                          continue
 
-                  candidates_boxes.extend([
-                      (
-                          0,
-                          top,
-                          third,
-                          height
-                      ),
-                      (
-                          third,
-                          top,
-                          third * 2,
-                          height
-                      ),
-                      (
-                          third * 2,
-                          top,
-                          width,
-                          height
+                      step_x = max(
+                          80,
+                          int(
+                              window_width * 0.24
+                          )
                       )
-                  ])
 
-                  #
-                  # Fasce più compatte per evitare
-                  # di portarsi dietro troppo modulo.
-                  #
-                  compact_bottom = min(
-                      height,
-                      top + int(
-                          remaining * 0.62
+                      step_y = max(
+                          80,
+                          int(
+                              window_height * 0.24
+                          )
                       )
-                  )
 
-                  candidates_boxes.extend([
-                      (
-                          0,
-                          top,
-                          width // 2,
-                          compact_bottom
-                      ),
-                      (
-                          width // 2,
-                          top,
-                          width,
-                          compact_bottom
+                      #
+                      # Evitiamo i bordi estremi,
+                      # spesso pieni di intestazioni,
+                      # numeri pagina o margini.
+                      #
+                      start_x = int(
+                          page_width * 0.03
                       )
-                  ])
 
-              valid = []
+                      end_x = int(
+                          page_width * 0.97
+                      )
 
-              seen_boxes = set()
+                      start_y = int(
+                          page_height * 0.16
+                      )
 
-              for index, box in enumerate(
-                  candidates_boxes
+                      end_y = int(
+                          page_height * 0.98
+                      )
+
+                      y = start_y
+
+                      while (
+                          y + window_height
+                          <= end_y
+                      ):
+                          x = start_x
+
+                          while (
+                              x + window_width
+                              <= end_x
+                          ):
+                              box = (
+                                  x,
+                                  y,
+                                  x + window_width,
+                                  y + window_height
+                              )
+
+                              density = (
+                                  text_density(
+                                      box,
+                                      text_boxes
+                                  )
+                              )
+
+                              #
+                              # Una foto può contenere
+                              # testo sull'etichetta,
+                              # ma non deve essere una
+                              # zona dominata dal modulo.
+                              #
+                              if density > 0.105:
+                                  x += step_x
+                                  continue
+
+                              crop = page.crop(
+                                  box
+                              )
+
+                              whiteness = (
+                                  white_ratio(
+                                      crop
+                                  )
+                              )
+
+                              if whiteness > 0.74:
+                                  x += step_x
+                                  continue
+
+                              visual = (
+                                  visual_score(
+                                      crop
+                                  )
+                              )
+
+                              detail = (
+                                  detail_score(
+                                      crop
+                                  )
+                              )
+
+                              #
+                              # Premiamo aree visivamente
+                              # ricche e penalizziamo zone
+                              # bianche o con troppo testo.
+                              #
+                              score = (
+                                  visual
+                                  + detail * 1.8
+                                  - whiteness * 1.6
+                                  - density * 8.0
+                              )
+
+                              if score < 0.72:
+                                  x += step_x
+                                  continue
+
+                              candidates.append(
+                                  (
+                                      score,
+                                      box
+                                  )
+                              )
+
+                              x += step_x
+
+                          y += step_y
+
+              if not candidates:
+                  return ""
+
+              candidates.sort(
+                  reverse=True,
+                  key=lambda item:
+                      item[0]
+              )
+
+              #
+              # Proviamo solo i migliori candidati.
+              # Il controllo OCR finale resta obbligatorio.
+              #
+              for index, (
+                  score,
+                  box
+              ) in enumerate(
+                  candidates[:12]
               ):
-                  if box in seen_boxes:
-                      continue
-
-                  seen_boxes.add(
+                  crop = page.crop(
                       box
                   )
 
-                  candidate = image.crop(
-                      box
+                  crop = trim_white_border(
+                      crop
                   )
 
                   if (
-                      candidate.width < 280
-                      or candidate.height < 220
+                      crop.width < 280
+                      or crop.height < 200
                   ):
+                      continue
+
+                  ratio = max(
+                      crop.width
+                      / crop.height,
+                      crop.height
+                      / crop.width
+                  )
+
+                  if ratio > 4.2:
                       continue
 
                   candidate_path = (
                       render_folder /
-                      f"candidate-{index}.png"
+                      f"photo-candidate-{index}.png"
                   )
 
-                  candidate.save(
+                  crop.save(
                       candidate_path,
                       "PNG"
                   )
 
-                  #
-                  # Se il ritaglio contiene ancora
-                  # troppo testo tipico del modulo,
-                  # viene scartato.
-                  #
                   if image_looks_like_document(
                       candidate_path
                   ):
                       continue
 
+                  final_white = (
+                      white_ratio(
+                          crop
+                      )
+                  )
+
+                  final_detail = (
+                      detail_score(
+                          crop
+                      )
+                  )
+
+                  if (
+                      final_white > 0.70
+                      or final_detail < 0.22
+                  ):
+                      continue
+
                   try:
-                      file_size = (
+                      size = (
                           candidate_path
                           .stat()
                           .st_size
@@ -1337,62 +1722,38 @@ jobs:
                   except OSError:
                       continue
 
-                  if file_size < 18000:
+                  if size < 20000:
                       continue
 
-                  score = (
-                      visual_score(
-                          candidate
-                      )
+                  target = (
+                      OUTPUT_IMAGE_DIR /
+                      f"{recall_id}.png"
                   )
 
-                  #
-                  # Un riquadro quasi tutto bianco
-                  # non è una vera foto utile.
-                  #
-                  if score < 0.45:
-                      continue
+                  shutil.copy2(
+                      candidate_path,
+                      target
+                  )
 
-                  valid.append(
-                      (
+                  print(
+                      "✅ Foto recuperata dalla scansione:",
+                      recall_id,
+                      "score",
+                      round(
                           score,
-                          file_size,
-                          candidate_path
+                          3
                       )
                   )
 
-              if not valid:
-                  return ""
-
-              valid.sort(
-                  reverse=True,
-                  key=lambda item: (
-                      item[0],
-                      item[1]
+                  return (
+                      "https://raw.githubusercontent.com/"
+                      "calcagni1950srl-hash/"
+                      "richiami-italia-updater/"
+                      "refs/heads/main/images/"
+                      f"{recall_id}.png"
                   )
-              )
 
-              best = (
-                  valid[0][2]
-              )
-
-              target = (
-                  OUTPUT_IMAGE_DIR /
-                  f"{recall_id}.png"
-              )
-
-              shutil.copy2(
-                  best,
-                  target
-              )
-
-              return (
-                  "https://raw.githubusercontent.com/"
-                  "calcagni1950srl-hash/"
-                  "richiami-italia-updater/"
-                  "refs/heads/main/images/"
-                  f"{recall_id}.png"
-              )
+              return ""
 
 
           def extract_product_image(
@@ -1497,11 +1858,16 @@ jobs:
 
               if not candidates:
                   #
-                  # Nessuna immagine incorporata sufficientemente
-                  # sicura: non ritagliamo la pagina del richiamo.
-                  # Meglio nessuna foto che mostrare parti della scheda.
+                  # Nessuna immagine incorporata separatamente:
+                  # proviamo il riconoscimento fotografico sulla
+                  # pagina renderizzata. Se la confidenza non è
+                  # sufficiente, la funzione restituisce stringa vuota.
                   #
-                  return ""
+                  return extract_from_rendered_page(
+                      pdf,
+                      recall_id,
+                      folder
+                  )
 
               candidates.sort(
                   reverse=True,
