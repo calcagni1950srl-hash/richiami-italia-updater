@@ -1496,11 +1496,12 @@ jobs:
                   )
 
               if not candidates:
-                  return extract_from_rendered_page(
-                      pdf,
-                      recall_id,
-                      folder
-                  )
+                  #
+                  # Nessuna immagine incorporata sufficientemente
+                  # sicura: non ritagliamo la pagina del richiamo.
+                  # Meglio nessuna foto che mostrare parti della scheda.
+                  #
+                  return ""
 
               candidates.sort(
                   reverse=True,
