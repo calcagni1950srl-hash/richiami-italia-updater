@@ -1,0 +1,56 @@
+name: Test Firebase Notifica
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-notifica:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Installa Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installa Firebase Admin
+        run: |
+          pip install firebase-admin
+
+      - name: Invia notifica di prova
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          python - <<'PYEOF'
+          import os
+          import json
+          import firebase_admin
+
+          from firebase_admin import credentials
+          from firebase_admin import messaging
+
+          service_account = json.loads(
+              os.environ["FIREBASE_SERVICE_ACCOUNT"]
+          )
+
+          cred = credentials.Certificate(service_account)
+
+          firebase_admin.initialize_app(cred)
+
+          message = messaging.Message(
+              notification=messaging.Notification(
+                  title="Test Richiami Italia",
+                  body="Notifica inviata automaticamente da GitHub Actions."
+              ),
+              topic="richiami"
+          )
+
+          response = messaging.send(message)
+
+          print("")
+          print("======================================")
+          print("NOTIFICA FIREBASE INVIATA")
+          print("======================================")
+          print(response)
+          print("======================================")
+          PYEOF
