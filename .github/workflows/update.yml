@@ -18,6 +18,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Salva database precedente
+        run: |
+          if [ -f recalls.json ]; then
+            cp recalls.json recalls-precedenti.json
+            echo "Database precedente salvato per il confronto."
+          else
+            echo '{"recalls": []}' > recalls-precedenti.json
+            echo "Nessun database precedente trovato: confronto inizializzato vuoto."
+          fi
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -40,7 +50,7 @@ jobs:
             tesseract-ocr \
             tesseract-ocr-ita
 
-          python -m pip install pillow
+          python -m pip install pillow google-auth requests
 
           mkdir -p lavoro/pdf
           mkdir -p lavoro/testi
@@ -2808,6 +2818,193 @@ jobs:
             git commit -m "Aggiornamento automatico richiami alimentari"
             git push
           fi
+
+      - name: Invia notifica Firebase per nuovi richiami
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          python - <<'PYEOF'
+          import json
+          import os
+          import sys
+
+          import requests
+          from google.auth.transport.requests import Request
+          from google.oauth2 import service_account
+
+
+          def load_json(path):
+              with open(path, "r", encoding="utf-8") as file:
+                  return json.load(file)
+
+
+          previous = load_json("recalls-precedenti.json")
+          current = load_json("recalls.json")
+
+          previous_ids = {
+              str(item.get("id", "")).strip()
+              for item in previous.get("recalls", [])
+              if str(item.get("id", "")).strip()
+          }
+
+          new_recalls = [
+              item
+              for item in current.get("recalls", [])
+              if str(item.get("id", "")).strip()
+              and str(item.get("id", "")).strip() not in previous_ids
+          ]
+
+          print(
+              "Nuovi richiami trovati:",
+              len(new_recalls)
+          )
+
+          if not new_recalls:
+              print(
+                  "Nessun nuovo richiamo: "
+                  "notifica Firebase non inviata."
+              )
+              sys.exit(0)
+
+          service_account_json = os.environ.get(
+              "FIREBASE_SERVICE_ACCOUNT",
+              ""
+          ).strip()
+
+          if not service_account_json:
+              raise SystemExit(
+                  "ERRORE: secret FIREBASE_SERVICE_ACCOUNT mancante."
+              )
+
+          try:
+              service_account_info = json.loads(
+                  service_account_json
+              )
+          except json.JSONDecodeError as error:
+              raise SystemExit(
+                  "ERRORE: FIREBASE_SERVICE_ACCOUNT "
+                  "non contiene un JSON valido."
+              ) from error
+
+          project_id = str(
+              service_account_info.get(
+                  "project_id",
+                  ""
+              )
+          ).strip()
+
+          if not project_id:
+              raise SystemExit(
+                  "ERRORE: project_id assente "
+                  "nel service account Firebase."
+              )
+
+          credentials = (
+              service_account.Credentials
+              .from_service_account_info(
+                  service_account_info,
+                  scopes=[
+                      "https://www.googleapis.com/auth/firebase.messaging"
+                  ]
+              )
+          )
+
+          credentials.refresh(Request())
+
+          if len(new_recalls) == 1:
+              recall = new_recalls[0]
+
+              brand = str(
+                  recall.get("marca", "")
+              ).strip()
+
+              product = str(
+                  recall.get("prodotto", "")
+              ).strip()
+
+              description = " - ".join(
+                  value
+                  for value in [brand, product]
+                  if value
+              )
+
+              title = "Nuovo richiamo alimentare"
+
+              body = (
+                  description
+                  if description
+                  else
+                  "Apri Richiami Italia per controllare il nuovo richiamo."
+              )
+
+          else:
+              title = (
+                  f"{len(new_recalls)} nuovi richiami alimentari"
+              )
+
+              body = (
+                  "Apri Richiami Italia per controllarli."
+              )
+
+          endpoint = (
+              "https://fcm.googleapis.com/v1/projects/"
+              f"{project_id}/messages:send"
+          )
+
+          payload = {
+              "message": {
+                  "topic": "richiami",
+                  "notification": {
+                      "title": title,
+                      "body": body
+                  },
+                  "android": {
+                      "priority": "high",
+                      "notification": {
+                          "sound": "default"
+                      }
+                  },
+                  "data": {
+                      "tipo": "nuovi_richiami",
+                      "numero": str(len(new_recalls))
+                  }
+              }
+          }
+
+          response = requests.post(
+              endpoint,
+              headers={
+                  "Authorization": (
+                      "Bearer " + credentials.token
+                  ),
+                  "Content-Type": "application/json; charset=UTF-8"
+              },
+              json=payload,
+              timeout=30
+          )
+
+          if not response.ok:
+              print(
+                  "Risposta Firebase:",
+                  response.status_code,
+                  response.text
+              )
+              raise SystemExit(
+                  "ERRORE durante l'invio della notifica Firebase."
+              )
+
+          print(
+              "✅ Notifica Firebase inviata al topic richiami."
+          )
+          print(
+              "Titolo:",
+              title
+          )
+          print(
+              "Testo:",
+              body
+          )
+          PYEOF
 
       - name: Mostra riepilogo finale
         run: |
