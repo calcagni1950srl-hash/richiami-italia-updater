@@ -1,12 +1,29 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-07T12:39:52.657396Z",
+  "generatedAt": "2026-09-07T18:50:22.354263Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
   "pass": 18,
   "daVerificare": 2,
   "recalls": [
+    {
+      "id": "tranci-di-pesce-spada",
+      "marca": "Mobilpesca Surgelati srl",
+      "prodotto": "Tranci di pesce spada",
+      "lotto": "V15290",
+      "tmc": "31-01-2028",
+      "produttore": "IT B4U1U UE",
+      "motivo": "Richiamo per rischio chimico",
+      "dataPubblicazione": "7 settembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/tranci-di-pesce-spada",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/ModelloRichiamo_mobilpesca%20surgelati_%20tranci%20di%20pesce%20spada%20450g_Lotto%20V15290_1788782555.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/tranci-di-pesce-spada.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "OCR",
+      "note": []
+    },
     {
       "id": "coppa-di-testa-100g-l263323",
       "marca": "Il Mercato",
@@ -235,23 +252,6 @@
       "note": []
     },
     {
-      "id": "cozze-guscio-gr-500",
-      "marca": "ARBI",
-      "prodotto": "COZZE GUSCIO GR. 500",
-      "lotto": "KP221225",
-      "tmc": "22-12-2027",
-      "produttore": "N° autorizzazione: 10217",
-      "motivo": "Richiamo per rischio microbiologico",
-      "dataPubblicazione": "28 agosto 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/cozze-guscio-gr-500",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/AllegatoA_Modello_richiamo_o_revoca_ARBIDARIOSPA_1787928158.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/cozze-guscio-gr-500.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "OCR",
-      "note": []
-    },
-    {
       "id": "trancia-di-verdesca-iwp",
       "marca": "noriberica s.a.",
       "prodotto": "trancia di verdesca iwp",
@@ -266,6 +266,23 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
+      "note": []
+    },
+    {
+      "id": "cozze-guscio-gr-500",
+      "marca": "ARBI",
+      "prodotto": "COZZE GUSCIO GR. 500",
+      "lotto": "KP221225",
+      "tmc": "22-12-2027",
+      "produttore": "N° autorizzazione: 10217",
+      "motivo": "Richiamo per rischio microbiologico",
+      "dataPubblicazione": "28 agosto 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/cozze-guscio-gr-500",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/AllegatoA_Modello_richiamo_o_revoca_ARBIDARIOSPA_1788791617.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/cozze-guscio-gr-500.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "OCR",
       "note": []
     },
     {
@@ -334,23 +351,6 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
-      "note": []
-    },
-    {
-      "id": "insalata-di-riso-3",
-      "marca": "Insalate già pronte",
-      "prodotto": "Insalata di riso",
-      "lotto": "26016",
-      "tmc": "22-08-2026",
-      "produttore": "IT358LCE",
-      "motivo": "Richiamo per rischio microbiologico",
-      "dataPubblicazione": "18 agosto 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/insalata-di-riso-3",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20di%20Richiamo_1787073042.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/insalata-di-riso-3.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "TESTO_DIGITALE",
       "note": []
     }
   ]
