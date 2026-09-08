@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-07T18:50:22.354263Z",
+  "generatedAt": "2026-09-08T07:24:19.184512Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
@@ -252,23 +252,6 @@
       "note": []
     },
     {
-      "id": "trancia-di-verdesca-iwp",
-      "marca": "noriberica s.a.",
-      "prodotto": "trancia di verdesca iwp",
-      "lotto": "p26-124-51",
-      "tmc": "09-2027",
-      "produttore": "es 12.099051",
-      "motivo": "Richiamo per rischio chimico",
-      "dataPubblicazione": "28 agosto 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/trancia-di-verdesca-iwp",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20Happy%20gelo%201_1787943175.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/trancia-di-verdesca-iwp.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": []
-    },
-    {
       "id": "cozze-guscio-gr-500",
       "marca": "ARBI",
       "prodotto": "COZZE GUSCIO GR. 500",
@@ -283,6 +266,23 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
+      "note": []
+    },
+    {
+      "id": "trancia-di-verdesca-iwp",
+      "marca": "noriberica s.a.",
+      "prodotto": "trancia di verdesca iwp",
+      "lotto": "p26-124-51",
+      "tmc": "09-2027",
+      "produttore": "es 12.099051",
+      "motivo": "Richiamo per rischio chimico",
+      "dataPubblicazione": "28 agosto 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/trancia-di-verdesca-iwp",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20Happy%20gelo%201_1787943175.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/trancia-di-verdesca-iwp.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
       "note": []
     },
     {
