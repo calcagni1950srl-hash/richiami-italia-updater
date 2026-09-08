@@ -1,1 +1,235 @@
+name: Test RSS Leggero Richiami Italia
 
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-rss:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Installa Playwright
+        run: |
+          npm init -y
+          npm install playwright
+          npx playwright install --with-deps chromium
+
+      - name: Test controllo RSS
+        run: |
+          cat > test-feed.mjs <<'NODEEOF'
+          import { chromium } from "playwright";
+          import fs from "fs";
+
+          const FEED_URL =
+            "https://www.salute.gov.it/new/rss/RSS_avvisi_richiami_osa.xml";
+
+          function clean(value) {
+            return String(value || "")
+              .replace(/\u00a0/g, " ")
+              .replace(/[ \t]+/g, " ")
+              .trim();
+          }
+
+          function decodeXml(value) {
+            return String(value || "")
+              .replace(/&amp;/g, "&")
+              .replace(/&lt;/g, "<")
+              .replace(/&gt;/g, ">")
+              .replace(/&quot;/g, '"')
+              .replace(/&#39;/g, "'");
+          }
+
+          function extractTag(block, tag) {
+            const regex = new RegExp(
+              `<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${tag}>`,
+              "i"
+            );
+
+            const match = block.match(regex);
+
+            if (!match) {
+              return "";
+            }
+
+            let value = match[1];
+
+            value = value
+              .replace(/^<!\[CDATA\[/, "")
+              .replace(/\]\]>$/, "");
+
+            return clean(decodeXml(value));
+          }
+
+          function parseItems(xml) {
+            const blocks =
+              xml.match(/<item\b[\s\S]*?<\/item>/gi) || [];
+
+            const items = [];
+
+            for (const block of blocks) {
+              const title = extractTag(block, "title");
+              const link = extractTag(block, "link");
+              const pubDate = extractTag(block, "pubDate");
+
+              if (
+                link &&
+                link.includes("/ext-avviso-sicurezza-alimentare/")
+              ) {
+                items.push({ title, link, pubDate });
+              }
+            }
+
+            return items;
+          }
+
+          function safeId(urlString) {
+            try {
+              const url = new URL(urlString);
+              const parts = url.pathname.split("/").filter(Boolean);
+              let slug = parts[parts.length - 1] || "";
+
+              slug = slug
+                .toLowerCase()
+                .replace(/[^a-z0-9_-]/g, "-")
+                .replace(/-+/g, "-")
+                .replace(/^-|-$/g, "");
+
+              return slug;
+            } catch {
+              return "";
+            }
+          }
+
+          async function superaChallenge(page) {
+            for (let attempt = 0; attempt < 5; attempt++) {
+              await page.waitForTimeout(3500);
+
+              const body = await page
+                .locator("body")
+                .innerText()
+                .catch(() => "");
+
+              const blocked =
+                /browser validation|please enable javascript|please enable cookies/i
+                  .test(body);
+
+              if (!blocked) {
+                return true;
+              }
+
+              await page.reload({
+                waitUntil: "domcontentloaded",
+                timeout: 90000
+              });
+            }
+
+            return false;
+          }
+
+          const previous = fs.existsSync("recalls.json")
+            ? JSON.parse(fs.readFileSync("recalls.json", "utf8"))
+            : { recalls: [] };
+
+          const previousIds = new Set(
+            (previous.recalls || [])
+              .map(item => String(item.id || "").trim())
+              .filter(Boolean)
+          );
+
+          const browser = await chromium.launch({ headless: true });
+
+          try {
+            const context = await browser.newContext({
+              locale: "it-IT",
+              viewport: { width: 1400, height: 1000 },
+              userAgent:
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+                "AppleWebKit/537.36 (KHTML, like Gecko) " +
+                "Chrome/131.0.0.0 Safari/537.36"
+            });
+
+            const page = await context.newPage();
+
+            await page.goto("https://www.salute.gov.it/", {
+              waitUntil: "domcontentloaded",
+              timeout: 90000
+            });
+
+            if (!(await superaChallenge(page))) {
+              throw new Error("Protezione Ministero non superata");
+            }
+
+            const result = await page.evaluate(async url => {
+              const response = await fetch(url, {
+                credentials: "include"
+              });
+
+              return {
+                ok: response.ok,
+                status: response.status,
+                text: await response.text()
+              };
+            }, FEED_URL);
+
+            if (!result.ok || result.status !== 200) {
+              throw new Error(`Feed HTTP ${result.status}`);
+            }
+
+            if (!result.text.includes("<item")) {
+              throw new Error("Il feed non contiene elementi RSS");
+            }
+
+            const items = parseItems(result.text);
+            const feedIds = items.map(item => safeId(item.link)).filter(Boolean);
+            const newIds = feedIds.filter(id => !previousIds.has(id));
+
+            console.log("");
+            console.log("======================================");
+            console.log("TEST RSS LEGGERO COMPLETATO");
+            console.log("======================================");
+            console.log("HTTP feed:", result.status);
+            console.log("Richiami nel feed:", items.length);
+            console.log("Richiami nel database:", previousIds.size);
+            console.log("Nuovi ID rispetto al database:", newIds.length);
+            console.log("");
+
+            for (const item of items.slice(0, 5)) {
+              console.log("-", item.title);
+              console.log(" ", item.pubDate);
+              console.log(" ", safeId(item.link));
+            }
+
+            if (newIds.length > 0) {
+              console.log("");
+              console.log("NUOVI ID:");
+              for (const id of newIds) {
+                console.log("-", id);
+              }
+            }
+
+            console.log("======================================");
+            console.log("NESSUN FILE MODIFICATO");
+            console.log("NESSUNA NOTIFICA INVIATA");
+            console.log("======================================");
+
+            await page.close();
+            await context.close();
+          } finally {
+            await browser.close();
+          }
+          NODEEOF
+
+          node --check test-feed.mjs
+          node test-feed.mjs
