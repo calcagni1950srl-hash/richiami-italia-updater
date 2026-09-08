@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
   schedule:
-    - cron: "17 6,10,14,18 * * *"
+    - cron: "23 * * * *"
 
 permissions:
   contents: write
@@ -38,12 +38,250 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Installa strumenti
+      - name: Installa controllo RSS leggero
         run: |
           npm init -y
           npm install playwright
           npx playwright install --with-deps chromium
 
+      - name: Controlla se serve aggiornamento completo
+        id: controllo_rss
+        run: |
+          cat > controlla-feed.mjs <<'EOF'
+          import { chromium } from "playwright";
+          import fs from "fs";
+
+          const FEED_URL =
+            "https://www.salute.gov.it/new/rss/RSS_avvisi_richiami_osa.xml";
+
+          function clean(value) {
+            return String(value || "")
+              .replace(/\u00a0/g, " ")
+              .replace(/[ \t]+/g, " ")
+              .trim();
+          }
+
+          function decodeXml(value) {
+            return String(value || "")
+              .replace(/&amp;/g, "&")
+              .replace(/&lt;/g, "<")
+              .replace(/&gt;/g, ">")
+              .replace(/&quot;/g, '"')
+              .replace(/&#39;/g, "'");
+          }
+
+          function extractTag(block, tag) {
+            const regex = new RegExp(
+              `<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${tag}>`,
+              "i"
+            );
+
+            const match = block.match(regex);
+
+            if (!match) {
+              return "";
+            }
+
+            let value = match[1];
+
+            value = value
+              .replace(/^<!\[CDATA\[/, "")
+              .replace(/\]\]>$/, "");
+
+            return clean(decodeXml(value));
+          }
+
+          function parseLinks(xml) {
+            const blocks =
+              xml.match(/<item\b[\s\S]*?<\/item>/gi) || [];
+
+            const links = [];
+
+            for (const block of blocks) {
+              const link = extractTag(block, "link");
+
+              if (
+                link &&
+                link.includes("/ext-avviso-sicurezza-alimentare/")
+              ) {
+                links.push(link);
+              }
+            }
+
+            return [...new Set(links)];
+          }
+
+          function safeId(urlString) {
+            try {
+              const url = new URL(urlString);
+              const parts = url.pathname.split("/").filter(Boolean);
+              let slug = parts[parts.length - 1] || "";
+
+              slug = slug
+                .toLowerCase()
+                .replace(/[^a-z0-9_-]/g, "-")
+                .replace(/-+/g, "-")
+                .replace(/^-|-$/g, "");
+
+              return slug;
+            } catch {
+              return "";
+            }
+          }
+
+          async function superaChallenge(page) {
+            for (let attempt = 0; attempt < 5; attempt++) {
+              await page.waitForTimeout(3500);
+
+              const body = await page
+                .locator("body")
+                .innerText()
+                .catch(() => "");
+
+              const blocked =
+                /browser validation|please enable javascript|please enable cookies/i
+                  .test(body);
+
+              if (!blocked) {
+                return true;
+              }
+
+              await page.reload({
+                waitUntil: "domcontentloaded",
+                timeout: 90000
+              });
+            }
+
+            return false;
+          }
+
+          let forceFull = false;
+          let reason = "";
+
+          try {
+            if (!fs.existsSync("recalls.json")) {
+              forceFull = true;
+              reason = "recalls.json assente";
+            }
+
+            let previous = { recalls: [], generatedAt: "" };
+
+            if (!forceFull) {
+              previous = JSON.parse(
+                fs.readFileSync("recalls.json", "utf8")
+              );
+
+              const generatedAt = Date.parse(previous.generatedAt || "");
+
+              if (
+                !Number.isFinite(generatedAt) ||
+                Date.now() - generatedAt >= 12 * 60 * 60 * 1000
+              ) {
+                forceFull = true;
+                reason = "aggiornamento completo di sicurezza dopo 12 ore";
+              }
+            }
+
+            if (!forceFull) {
+              const browser = await chromium.launch({ headless: true });
+
+              try {
+                const context = await browser.newContext({
+                  locale: "it-IT",
+                  viewport: { width: 1400, height: 1000 },
+                  userAgent:
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+                    "AppleWebKit/537.36 (KHTML, like Gecko) " +
+                    "Chrome/131.0.0.0 Safari/537.36"
+                });
+
+                const page = await context.newPage();
+
+                await page.goto("https://www.salute.gov.it/", {
+                  waitUntil: "domcontentloaded",
+                  timeout: 90000
+                });
+
+                if (!(await superaChallenge(page))) {
+                  throw new Error("Protezione Ministero non superata");
+                }
+
+                const result = await page.evaluate(async url => {
+                  const response = await fetch(url, {
+                    credentials: "include"
+                  });
+
+                  return {
+                    ok: response.ok,
+                    status: response.status,
+                    text: await response.text()
+                  };
+                }, FEED_URL);
+
+                if (
+                  !result.ok ||
+                  result.status !== 200 ||
+                  !result.text.includes("<item")
+                ) {
+                  throw new Error(`Feed non valido HTTP ${result.status}`);
+                }
+
+                const feedIds = parseLinks(result.text)
+                  .map(safeId)
+                  .filter(Boolean);
+
+                const previousIds = new Set(
+                  previous.recalls
+                    .map(item => String(item.id || "").trim())
+                    .filter(Boolean)
+                );
+
+                const newIds = feedIds.filter(id => !previousIds.has(id));
+
+                console.log("Richiami nel feed:", feedIds.length);
+                console.log("Nuovi ID nel feed:", newIds.length);
+
+                if (newIds.length > 0) {
+                  forceFull = true;
+                  reason = `${newIds.length} nuovo/i richiamo/i nel feed`;
+                } else {
+                  reason = "nessun nuovo richiamo nel feed";
+                }
+
+                await page.close();
+                await context.close();
+              } finally {
+                await browser.close();
+              }
+            }
+          } catch (error) {
+            // Fail-safe: se il controllo leggero non riesce, eseguiamo
+            // l'aggiornamento completo invece di rischiare di perdere richiami.
+            forceFull = true;
+            reason =
+              "controllo RSS non riuscito: " +
+              String(error?.message || error);
+          }
+
+          console.log("Decisione:", forceFull ? "AGGIORNA" : "STOP");
+          console.log("Motivo:", reason);
+
+          fs.appendFileSync(
+            process.env.GITHUB_OUTPUT,
+            `aggiorna=${forceFull ? "true" : "false"}\n`
+          );
+          EOF
+
+          node controlla-feed.mjs
+
+      - name: Nessuna novità - termina controllo leggero
+        if: steps.controllo_rss.outputs.aggiorna != 'true'
+        run: |
+          echo "Nessun nuovo richiamo: il controllo termina senza accedere alle schede o ai PDF del Ministero."
+
+      - name: Installa strumenti
+        if: steps.controllo_rss.outputs.aggiorna == 'true'
+        run: |
           sudo apt-get update
           sudo apt-get install -y \
             poppler-utils \
@@ -60,6 +298,7 @@ jobs:
           mkdir -p output/images
 
       - name: Crea acquisizione Ministero
+        if: steps.controllo_rss.outputs.aggiorna == 'true'
         run: |
           cat > acquisisci.mjs <<'EOF'
           import { chromium } from "playwright";
@@ -730,9 +969,11 @@ jobs:
           EOF
 
       - name: Acquisisci richiami
+        if: steps.controllo_rss.outputs.aggiorna == 'true'
         run: node acquisisci.mjs
 
       - name: Crea estrattore
+        if: steps.controllo_rss.outputs.aggiorna == 'true'
         run: |
           cat > estrai.py <<'PYEOF'
           import json
@@ -2745,12 +2986,15 @@ jobs:
           PYEOF
 
       - name: Controlla sintassi
+        if: steps.controllo_rss.outputs.aggiorna == 'true'
         run: python -m py_compile estrai.py
 
       - name: Genera recalls.json
+        if: steps.controllo_rss.outputs.aggiorna == 'true'
         run: python estrai.py
 
       - name: Controlla database
+        if: steps.controllo_rss.outputs.aggiorna == 'true'
         run: |
           python - <<'PYEOF'
           import json
@@ -2788,6 +3032,7 @@ jobs:
           PYEOF
 
       - name: Copia database e immagini nel repository
+        if: steps.controllo_rss.outputs.aggiorna == 'true'
         run: |
           cp output/recalls.json recalls.json
           rm -rf images
@@ -2795,6 +3040,7 @@ jobs:
           cp -r output/images/. images/ 2>/dev/null || true
 
       - name: Salva artifact
+        if: steps.controllo_rss.outputs.aggiorna == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: recalls-json
@@ -2803,9 +3049,10 @@ jobs:
             output/images/
             recalls.json
             images/
-          retention-days: 30
+          retention-days: 1
 
       - name: Aggiorna recalls.json nel repository
+        if: steps.controllo_rss.outputs.aggiorna == 'true'
         run: |
           git config user.name "Richiami Italia Bot"
           git config user.email "actions@github.com"
@@ -2820,6 +3067,7 @@ jobs:
           fi
 
       - name: Invia notifica Firebase per nuovi richiami
+        if: steps.controllo_rss.outputs.aggiorna == 'true'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
@@ -3007,6 +3255,7 @@ jobs:
           PYEOF
 
       - name: Mostra riepilogo finale
+        if: steps.controllo_rss.outputs.aggiorna == 'true'
         run: |
           python - <<'PYEOF'
           import json
