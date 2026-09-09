@@ -1,12 +1,29 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-09T11:39:45.151592Z",
+  "generatedAt": "2026-09-09T19:57:19.129767Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
   "pass": 18,
   "daVerificare": 2,
   "recalls": [
+    {
+      "id": "caciotta-di-pecora-primo-sale",
+      "marca": "Ditta Sabino Francesco - UE IT 17 4",
+      "prodotto": "Caciotta di Pecora primo sale",
+      "lotto": "432_01/06/2026",
+      "tmc": "TMC 17/12/2026",
+      "produttore": "UE IT 17 4",
+      "motivo": "Richiamo per rischio microbiologico",
+      "dataPubblicazione": "9 settembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/caciotta-di-pecora-primo-sale",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Sabino%20Francesco%20modello%20richiamo_alert_09set26_1788973411.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/caciotta-di-pecora-primo-sale.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": []
+    },
     {
       "id": "duble-5",
       "marca": "CAPRISS",
@@ -334,23 +351,6 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
-      "note": []
-    },
-    {
-      "id": "formaggio-gorgonzola-dolce-200g",
-      "marca": "IDAL",
-      "prodotto": "Formaggio Gorgonzola Dolce 200g",
-      "lotto": "126G22",
-      "tmc": "05/09/26",
-      "produttore": "IT T616G UE",
-      "motivo": "Richiamo per rischio microbiologico",
-      "dataPubblicazione": "29 agosto 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/formaggio-gorgonzola-dolce-200g",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Allegato%202%20Richiamo%20_%20Gorgonzola%20200g%20IDAL_1788013614.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/formaggio-gorgonzola-dolce-200g.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "TESTO_DIGITALE",
       "note": []
     }
   ]
