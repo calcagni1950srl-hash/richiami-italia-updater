@@ -1,12 +1,46 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-11T01:17:55.081382Z",
+  "generatedAt": "2026-09-11T16:43:16.645944Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
-  "pass": 18,
-  "daVerificare": 2,
+  "pass": 19,
+  "daVerificare": 1,
   "recalls": [
+    {
+      "id": "cenestro",
+      "marca": "IL FIENILE - DI CECCA LUIGI SRL",
+      "prodotto": "CENESTRO",
+      "lotto": "432",
+      "tmc": "TMC 17/12/2026",
+      "produttore": "UE IT F7V54",
+      "motivo": "Richiamo per rischio microbiologico",
+      "dataPubblicazione": "11 settembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/cenestro",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/avviso%20di%20richiamo_1789128144.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/cenestro.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "OCR",
+      "note": []
+    },
+    {
+      "id": "canestro",
+      "marca": "IL FIENILE - DI CECCA LUIGI SRL",
+      "prodotto": "CANESTRO",
+      "lotto": "432",
+      "tmc": "TMC 17/12/2026",
+      "produttore": "UE IT F7V54",
+      "motivo": "Richiamo per rischio microbiologico",
+      "dataPubblicazione": "11 settembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/canestro",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/avviso%20di%20richiamo_1789128146.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/canestro.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "OCR",
+      "note": []
+    },
     {
       "id": "caciotta-di-pecora-primo-sale",
       "marca": "Ditta Sabino Francesco - UE IT 17 4",
@@ -315,42 +349,6 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
-      "note": []
-    },
-    {
-      "id": "formaggio-nostrano-formazza",
-      "marca": "Formazza",
-      "prodotto": "FORMAGGIO NOSTRANO FORMAZZA",
-      "lotto": "12/04/26 – 14/04/26 – 15/04/26 – 18/04/26 LOTTO 2428",
-      "tmc": "VEDI ETICHETTA",
-      "produttore": "IT 01 844",
-      "motivo": "Richiamo per rischio microbiologico",
-      "dataPubblicazione": "31 agosto 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/formaggio-nostrano-formazza",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/CARTELLO_RICHIAMO_FORMAZZA_LOTTO_2428_1788168796.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/formaggio-nostrano-formazza.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "TMC da verificare"
-      ]
-    },
-    {
-      "id": "salame-galbanetto",
-      "marca": "Galbani",
-      "prodotto": "Salame Galbanetto",
-      "lotto": "L264173 e L265173",
-      "tmc": "23-24/10/26",
-      "produttore": "IT 32 L UE",
-      "motivo": "Richiamo per rischio fisico",
-      "dataPubblicazione": "29 agosto 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salame-galbanetto",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modulo_di_%20richiamo_TMC_%2023_24.10.2026_1788013508.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salame-galbanetto.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "OCR",
       "note": []
     }
   ]
