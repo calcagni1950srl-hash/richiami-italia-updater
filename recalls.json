@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-15T17:44:51.545861Z",
+  "generatedAt": "2026-09-15T21:20:36.952323Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
-  "pass": 19,
-  "daVerificare": 1,
+  "pass": 18,
+  "daVerificare": 2,
   "recalls": [
     {
       "id": "pancetta-affumicata-sottovuoto",
@@ -61,6 +61,42 @@
       "note": [
         "Immagine prodotto non estratta"
       ]
+    },
+    {
+      "id": "amaretti-gallini",
+      "marca": "Amaretti Gallina",
+      "prodotto": "Amaretti Gallini",
+      "lotto": "20/07/2027",
+      "tmc": "j12 MESI",
+      "produttore": ",AMARETTI GALLINA",
+      "motivo": "Richiamo per rischio presenza di allergeni",
+      "dataPubblicazione": "15 settembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/amaretti-gallini",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20di%20richiamo%20750g_1789492194.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/amaretti-gallini.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "OCR",
+      "note": [
+        "TMC da verificare"
+      ]
+    },
+    {
+      "id": "amaretti-gallina",
+      "marca": "Amaretti Gallina",
+      "prodotto": "Amaretti Gallina",
+      "lotto": "23/01/2027-08/03/2027-21/06/2027-1 9/07/2027-20/07/2027",
+      "tmc": "12 MESI",
+      "produttore": "AMARETTI GALLINA",
+      "motivo": "Richiamo per rischio presenza di allergeni",
+      "dataPubblicazione": "15 settembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/amaretti-gallina",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20di%20richiamo%20confezioni%20da%20500g%20e%20310g_1789492304.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/amaretti-gallina.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "OCR",
+      "note": []
     },
     {
       "id": "uova-medie-di-cat-da-allevamento-terra-abf-despar",
@@ -312,40 +348,6 @@
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/atio-2",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/revoca%20richiamo%20atio%20scad%2002.08.26_1788887691.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/atio-2.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": []
-    },
-    {
-      "id": "capreggio-0",
-      "marca": "CAPRISS",
-      "prodotto": "Capreggio",
-      "lotto": "15/06/2026",
-      "tmc": "01-08-2026",
-      "produttore": "IT N 275 U CE",
-      "motivo": "Revoca per scadenza prodotto",
-      "dataPubblicazione": "8 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/capreggio-0",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/revoca%20richiamo%20capreggio%20scad%2001.08.26_1788887728.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/capreggio-0.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": []
-    },
-    {
-      "id": "duble-4",
-      "marca": "CAPRISS",
-      "prodotto": "Dublè",
-      "lotto": "04/06/2026",
-      "tmc": "01-08-2026",
-      "produttore": "IT N 275 U CE",
-      "motivo": "Revoca per scadenza prodotto",
-      "dataPubblicazione": "8 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/duble-4",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Revoca%20richiamo%20dubl%C3%A8%20scad%2001.08.26_1788887766.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/duble-4.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
