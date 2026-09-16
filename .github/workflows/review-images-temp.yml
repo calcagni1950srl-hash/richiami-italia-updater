@@ -20,13 +20,28 @@ permissions:
 jobs:
   review:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
         with:
           ref: main
 
-      - name: Prepara pacchetto immagini
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Prepara downloader PDF
+        run: |
+          npm init -y
+          npm install playwright
+          npx playwright install --with-deps chromium
+
+      - name: Scarica PDF per revisione
+        run: node scripts/download_recall_pdfs.mjs
+
+      - name: Elenca immagini
         run: |
           test -d images
           find images -maxdepth 1 -type f -name '*.png' -print | sort
@@ -36,5 +51,13 @@ jobs:
         with:
           name: recall-images-review
           path: images/*.png
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Carica PDF per revisione
+        uses: actions/upload-artifact@v4
+        with:
+          name: recall-pdfs-review
+          path: .quality/pdf/*.pdf
           if-no-files-found: error
           retention-days: 1
