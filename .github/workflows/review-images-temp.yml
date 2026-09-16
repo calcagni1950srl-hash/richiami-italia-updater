@@ -1,0 +1,39 @@
+name: Revisione temporanea immagini richiami
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "images/**"
+      - "recalls.json"
+  workflow_run:
+    workflows:
+      - "Controlla qualità immagini richiami"
+    types:
+      - completed
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Prepara pacchetto immagini
+        run: |
+          test -d images
+          find images -maxdepth 1 -type f -name '*.png' -print | sort
+
+      - name: Carica immagini per revisione
+        uses: actions/upload-artifact@v4
+        with:
+          name: recall-images-review
+          path: images/*.png
+          if-no-files-found: error
+          retention-days: 1
