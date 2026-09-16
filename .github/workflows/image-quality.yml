@@ -1,0 +1,125 @@
+name: Controlla qualità immagini richiami
+
+on:
+  workflow_dispatch:
+
+  workflow_run:
+    workflows:
+      - "Aggiorna Database Richiami Italia"
+    types:
+      - completed
+
+permissions:
+  contents: write
+
+concurrency:
+  group: richiami-image-quality
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installa strumenti immagini
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            poppler-utils \
+            tesseract-ocr \
+            tesseract-ocr-ita
+
+          python -m pip install pillow
+
+          npm init -y
+          npm install playwright
+          npx playwright install --with-deps chromium
+
+      - name: Controlla sintassi script
+        run: |
+          python -m py_compile scripts/rebuild_recall_images.py
+          node --check scripts/download_recall_pdfs.mjs
+
+      - name: Scarica PDF ufficiali
+        run: node scripts/download_recall_pdfs.mjs
+
+      - name: Ricostruisci solo immagini affidabili
+        run: python scripts/rebuild_recall_images.py
+
+      - name: Verifica database dopo controllo immagini
+        run: |
+          python - <<'PYEOF'
+          import json
+          from pathlib import Path
+
+          data = json.loads(
+              Path("recalls.json").read_text(
+                  encoding="utf-8"
+              )
+          )
+
+          recalls = data.get("recalls", [])
+
+          if not recalls:
+              raise SystemExit(
+                  "ERRORE: recalls.json non contiene richiami"
+              )
+
+          valid_images = 0
+          missing_images = 0
+
+          for recall in recalls:
+              image = str(
+                  recall.get("immagine", "") or ""
+              ).strip()
+
+              if image:
+                  valid_images += 1
+
+                  if "/images/" not in image:
+                      raise SystemExit(
+                          "ERRORE: URL immagine non valido per "
+                          + str(recall.get("id", ""))
+                      )
+              else:
+                  missing_images += 1
+
+          print("Richiami:", len(recalls))
+          print("Foto accettate:", valid_images)
+          print("Foto non pubblicate:", missing_images)
+          print("✅ Database immagini valido")
+          PYEOF
+
+      - name: Salva immagini controllate
+        run: |
+          git config user.name "Richiami Italia Image Bot"
+          git config user.email "actions@github.com"
+
+          git add recalls.json images
+
+          if git diff --cached --quiet; then
+            echo "Nessuna modifica alle immagini."
+          else
+            git commit -m "Controllo qualità immagini richiami"
+            git push
+          fi
