@@ -49,7 +49,7 @@ jobs:
             tesseract-ocr \
             tesseract-ocr-ita
 
-          python -m pip install pillow
+          python -m pip install pillow numpy opencv-python-headless
 
           npm init -y
           npm install playwright
@@ -63,10 +63,10 @@ jobs:
       - name: Scarica PDF ufficiali
         run: node scripts/download_recall_pdfs.mjs
 
-      - name: Ricostruisci immagini complete senza ritagli
+      - name: Estrai solo le foto prodotto senza pagine testuali
         run: python scripts/rebuild_recall_images.py
 
-      - name: Verifica immagini complete
+      - name: Verifica foto prodotto
         run: |
           python - <<'PYEOF'
           import json
@@ -112,22 +112,22 @@ jobs:
                   )
 
           print("Richiami:", len(recalls))
-          print("Richiami con immagine:", images)
-          print("Richiami senza immagine:", len(missing))
+          print("Richiami con foto prodotto:", images)
+          print("Richiami senza foto prodotto:", len(missing))
 
           if missing:
-              print("Mancano immagini per:")
+              print("Foto non individuata per:")
               for item in missing:
                   print(" -", item)
 
               raise SystemExit(
-                  "ERRORE: alcuni richiami con PDF ufficiale sono ancora senza immagine"
+                  "ERRORE: alcuni PDF richiedono un'ulteriore estrazione fotografica"
               )
 
-          print("✅ Tutti i richiami con PDF hanno un'immagine completa")
+          print("✅ Tutti i richiami hanno solo foto prodotto, senza pagine testuali")
           PYEOF
 
-      - name: Salva immagini complete
+      - name: Salva foto prodotto
         run: |
           git config user.name "Richiami Italia Image Bot"
           git config user.email "actions@github.com"
@@ -137,6 +137,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "Nessuna modifica alle immagini."
           else
-            git commit -m "Immagini complete richiami senza ritagli"
+            git commit -m "Estrae solo foto prodotto dai richiami"
             git push
           fi
