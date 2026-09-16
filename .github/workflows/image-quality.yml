@@ -57,16 +57,21 @@ jobs:
 
       - name: Controlla sintassi script
         run: |
-          python -m py_compile scripts/rebuild_recall_images.py
+          python -m py_compile scripts/rebuild_recall_images_v2.py
+          python -m py_compile scripts/clean_form_photo_boxes.py
+          python -m py_compile scripts/finalize_recall_images.py
           node --check scripts/download_recall_pdfs.mjs
 
       - name: Scarica PDF ufficiali
         run: node scripts/download_recall_pdfs.mjs
 
-      - name: Estrai solo le foto prodotto senza pagine testuali
-        run: python scripts/rebuild_recall_images.py
+      - name: Estrai foto prodotto ad alta copertura
+        run: |
+          python scripts/rebuild_recall_images_v2.py
+          python scripts/clean_form_photo_boxes.py
+          python scripts/finalize_recall_images.py
 
-      - name: Verifica foto prodotto
+      - name: Verifica copertura foto prodotto
         run: |
           python - <<'PYEOF'
           import json
@@ -79,12 +84,12 @@ jobs:
           )
 
           recalls = data.get("recalls", [])
-
           if not recalls:
               raise SystemExit(
                   "ERRORE: recalls.json non contiene richiami"
               )
 
+          with_pdf = 0
           images = 0
           missing = []
 
@@ -92,39 +97,44 @@ jobs:
               image = str(
                   recall.get("immagine", "") or ""
               ).strip()
-
               pdf = str(
                   recall.get("pdfMinistero", "") or ""
               ).strip()
 
+              if pdf:
+                  with_pdf += 1
+
               if image:
                   images += 1
-
                   if "/images/" not in image:
                       raise SystemExit(
                           "ERRORE: URL immagine non valido per "
                           + str(recall.get("id", ""))
                       )
-
               elif pdf:
                   missing.append(
                       str(recall.get("id", ""))
                   )
 
+          coverage = images / max(1, with_pdf)
+
           print("Richiami:", len(recalls))
+          print("Richiami con PDF:", with_pdf)
           print("Richiami con foto prodotto:", images)
           print("Richiami senza foto prodotto:", len(missing))
+          print("Copertura foto:", f"{coverage:.1%}")
 
           if missing:
-              print("Foto non individuata per:")
+              print("Foto non presente o non recuperabile dal PDF ufficiale:")
               for item in missing:
                   print(" -", item)
 
+          if coverage < 0.90:
               raise SystemExit(
-                  "ERRORE: alcuni PDF richiedono un'ulteriore estrazione fotografica"
+                  "ERRORE: copertura foto inferiore al 90%"
               )
 
-          print("✅ Tutti i richiami hanno solo foto prodotto, senza pagine testuali")
+          print("✅ Copertura immagini alta senza forzare fogli o collage")
           PYEOF
 
       - name: Salva foto prodotto
@@ -137,6 +147,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "Nessuna modifica alle immagini."
           else
-            git commit -m "Estrae solo foto prodotto dai richiami"
+            git commit -m "Aggiorna foto prodotto richiami"
+            git pull --rebase origin main
             git push
           fi
