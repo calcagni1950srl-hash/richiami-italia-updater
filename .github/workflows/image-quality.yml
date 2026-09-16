@@ -3,6 +3,12 @@ name: Controlla qualità immagini richiami
 on:
   workflow_dispatch:
 
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/image-quality.yml"
+
   workflow_run:
     workflows:
       - "Aggiorna Database Richiami Italia"
@@ -20,6 +26,7 @@ jobs:
   quality:
     if: >-
       github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'push' ||
       github.event.workflow_run.conclusion == 'success'
 
     runs-on: ubuntu-latest
