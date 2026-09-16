@@ -5,14 +5,9 @@ on:
     branches:
       - main
     paths:
-      - "images/**"
-      - "recalls.json"
+      - "scripts/rebuild_recall_images_v2.py"
       - ".github/workflows/review-images-temp.yml"
-  workflow_run:
-    workflows:
-      - "Controlla qualità immagini richiami"
-    types:
-      - completed
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -20,7 +15,7 @@ permissions:
 jobs:
   review:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
@@ -32,32 +27,40 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Prepara downloader PDF
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installa strumenti
         run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils tesseract-ocr tesseract-ocr-ita
+          python -m pip install pillow numpy opencv-python-headless
           npm init -y
           npm install playwright
           npx playwright install --with-deps chromium
 
+      - name: Controlla sintassi
+        run: python -m py_compile scripts/rebuild_recall_images_v2.py
+
       - name: Scarica PDF per revisione
         run: node scripts/download_recall_pdfs.mjs
 
-      - name: Elenca immagini
-        run: |
-          test -d images
-          find images -maxdepth 1 -type f -name '*.png' -print | sort
+      - name: Genera immagini v2 solo per revisione
+        run: python scripts/rebuild_recall_images_v2.py
 
-      - name: Carica immagini per revisione
+      - name: Carica immagini v2
         uses: actions/upload-artifact@v4
         with:
-          name: recall-images-review
+          name: recall-images-v2-review
           path: images/*.png
           if-no-files-found: error
           retention-days: 1
 
-      - name: Carica PDF per revisione
+      - name: Carica log database v2
         uses: actions/upload-artifact@v4
         with:
-          name: recall-pdfs-review
-          path: .quality/pdf/*.pdf
-          if-no-files-found: error
+          name: recalls-v2-review
+          path: recalls.json
           retention-days: 1
