@@ -351,6 +351,19 @@ def current_image_path(recall):
     return path if path.exists() else None
 
 
+def already_versioned(path):
+    if path is None:
+        return False
+
+    return bool(
+        re.search(
+            r"-[0-9a-f]{10}\.png$",
+            path.name,
+            re.I,
+        )
+    )
+
+
 with RECALLS_FILE.open("r", encoding="utf-8") as handle:
     database = json.load(handle)
 
@@ -367,6 +380,7 @@ for recall in recalls:
 
     pdf = PDF_DIR / f"{recall_id}.pdf"
     chosen = None
+    existing_source = None
 
     if pdf.exists():
         candidates = extract_embedded_images(
@@ -395,6 +409,7 @@ for recall in recalls:
                 )
             ):
                 chosen = candidate
+                existing_source = existing
 
     old_url = str(recall.get("immagine", "") or "")
 
@@ -411,6 +426,25 @@ for recall in recalls:
             changed = True
 
         print("🚫 Foto scartata:", recall_id)
+        continue
+
+    # Se stiamo usando una foto già validata e versionata perché il PDF
+    # non era temporaneamente raggiungibile, la conserviamo senza ricomporla:
+    # così non aggiungiamo nuovi margini ad ogni controllo successivo.
+    if existing_source is not None and already_versioned(existing_source):
+        accepted_names.add(existing_source.name)
+
+        notes = recall.setdefault("note", [])
+        bad_marker = "Immagine scartata dal controllo qualità"
+
+        if bad_marker in notes:
+            notes.remove(bad_marker)
+            changed = True
+
+        print(
+            "✅ Foto già validata mantenuta:",
+            recall_id,
+        )
         continue
 
     centered = make_centered_square(
