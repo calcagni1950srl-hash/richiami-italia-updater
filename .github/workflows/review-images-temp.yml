@@ -7,6 +7,7 @@ on:
     paths:
       - "images/**"
       - "recalls.json"
+      - ".github/workflows/review-images-temp.yml"
   workflow_run:
     workflows:
       - "Controlla qualità immagini richiami"
