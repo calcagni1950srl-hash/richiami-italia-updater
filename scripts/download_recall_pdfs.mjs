@@ -2,12 +2,8 @@ import { chromium } from "playwright";
 import fs from "fs";
 import path from "path";
 
-
 const data = JSON.parse(
-  fs.readFileSync(
-    "recalls.json",
-    "utf8"
-  )
+  fs.readFileSync("recalls.json", "utf8")
 );
 
 const recalls = Array.isArray(data.recalls)
@@ -15,25 +11,15 @@ const recalls = Array.isArray(data.recalls)
   : [];
 
 const outDir = ".quality/pdf";
-
-fs.mkdirSync(
-  outDir,
-  { recursive: true }
-);
-
+fs.mkdirSync(outDir, { recursive: true });
 
 function clean(value) {
   return String(value || "").trim();
 }
 
-
 async function challengeOk(page) {
-  for (
-    let attempt = 0;
-    attempt < 5;
-    attempt++
-  ) {
-    await page.waitForTimeout(3000);
+  for (let attempt = 0; attempt < 5; attempt++) {
+    await page.waitForTimeout(2500);
 
     const body = await page
       .locator("body")
@@ -57,6 +43,62 @@ async function challengeOk(page) {
   return false;
 }
 
+async function refreshSession(page) {
+  await page.goto(
+    "https://www.salute.gov.it/",
+    {
+      waitUntil: "domcontentloaded",
+      timeout: 90000,
+    }
+  );
+
+  if (!(await challengeOk(page))) {
+    throw new Error("Protezione Ministero non superata");
+  }
+}
+
+async function downloadPdf(context, page, pdfUrl) {
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const response = await context.request.get(
+        pdfUrl,
+        {
+          timeout: 90000,
+          failOnStatusCode: false,
+        }
+      );
+
+      const buffer = Buffer.from(
+        await response.body()
+      );
+
+      if (
+        response.ok() &&
+        response.status() === 200 &&
+        buffer.length >= 1000 &&
+        buffer.subarray(0, 5).toString() === "%PDF-"
+      ) {
+        return buffer;
+      }
+
+      lastError = new Error(
+        `PDF non valido HTTP ${response.status()}`
+      );
+
+    } catch (error) {
+      lastError = error;
+    }
+
+    if (attempt < 3) {
+      await refreshSession(page);
+      await page.waitForTimeout(1200 * attempt);
+    }
+  }
+
+  throw lastError || new Error("Download PDF fallito");
+}
 
 const browser = await chromium.launch({
   headless: true,
@@ -70,23 +112,9 @@ const context = await browser.newContext({
     "Chrome/131.0.0.0 Safari/537.36",
 });
 
-
 try {
   const page = await context.newPage();
-
-  await page.goto(
-    "https://www.salute.gov.it/",
-    {
-      waitUntil: "domcontentloaded",
-      timeout: 90000,
-    }
-  );
-
-  if (!(await challengeOk(page))) {
-    throw new Error(
-      "Protezione Ministero non superata"
-    );
-  }
+  await refreshSession(page);
 
   let downloaded = 0;
   let skipped = 0;
@@ -94,9 +122,7 @@ try {
 
   for (const recall of recalls) {
     const id = clean(recall.id);
-    const pdfUrl = clean(
-      recall.pdfMinistero
-    );
+    const pdfUrl = clean(recall.pdfMinistero);
 
     if (!id || !pdfUrl) {
       skipped++;
@@ -109,55 +135,16 @@ try {
     );
 
     try {
-      const result = await page.evaluate(
-        async (url) => {
-          const response = await fetch(
-            url,
-            {
-              credentials: "include",
-            }
-          );
-
-          const bytes = new Uint8Array(
-            await response.arrayBuffer()
-          );
-
-          return {
-            ok: response.ok,
-            status: response.status,
-            bytes: Array.from(bytes),
-          };
-        },
+      const buffer = await downloadPdf(
+        context,
+        page,
         pdfUrl
       );
 
-      const buffer = Buffer.from(
-        result.bytes || []
-      );
-
-      if (
-        !result.ok ||
-        result.status !== 200 ||
-        buffer.length < 1000 ||
-        buffer.subarray(0, 5).toString()
-          !== "%PDF-"
-      ) {
-        throw new Error(
-          `PDF non valido HTTP ${result.status}`
-        );
-      }
-
-      fs.writeFileSync(
-        target,
-        buffer
-      );
-
+      fs.writeFileSync(target, buffer);
       downloaded++;
 
-      console.log(
-        "✅ PDF qualità:",
-        id
-      );
+      console.log("✅ PDF immagini:", id);
 
     } catch (error) {
       failed++;
@@ -165,26 +152,15 @@ try {
       console.log(
         "⚠️ PDF non scaricato:",
         id,
-        String(
-          error?.message || error
-        )
+        String(error?.message || error)
       );
     }
   }
 
   console.log("");
-  console.log(
-    "PDF scaricati:",
-    downloaded
-  );
-  console.log(
-    "PDF senza URL/saltati:",
-    skipped
-  );
-  console.log(
-    "PDF falliti:",
-    failed
-  );
+  console.log("PDF scaricati:", downloaded);
+  console.log("PDF senza URL/saltati:", skipped);
+  console.log("PDF falliti:", failed);
 
 } finally {
   await context.close().catch(() => {});
