@@ -1,3 +1,4 @@
+import csv
 import hashlib
 import io
 import json
@@ -7,6 +8,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+import cv2
+import numpy as np
 from PIL import Image, ImageOps, ImageStat
 
 
@@ -31,61 +34,6 @@ def run(command):
     )
 
 
-def current_image_path(recall):
-    url = str(recall.get("immagine", "") or "")
-    match = re.search(r"/images/([^?/#]+\.png)", url)
-
-    if not match:
-        return None
-
-    path = IMAGES_DIR / match.group(1)
-    return path if path.exists() else None
-
-
-def image_candidate(path):
-    try:
-        original = Image.open(path)
-        width, height = original.size
-    except Exception:
-        return None
-
-    if width < 140 or height < 100:
-        return None
-
-    area = width * height
-
-    if area < 50_000:
-        return None
-
-    ratio = max(width / height, height / width)
-
-    if ratio > 6.0:
-        return None
-
-    try:
-        if path.stat().st_size < 4_000:
-            return None
-    except OSError:
-        return None
-
-    # Scartiamo soltanto maschere quasi uniformi. Non imponiamo controlli
-    # severi su marca, OCR, colore o nitidezza: l'obiettivo è mostrare
-    # tutte le foto ufficiali per intero, senza ritagliarle.
-    gray = original.convert("L")
-    stddev = ImageStat.Stat(gray).stddev[0]
-
-    if stddev < 4.0:
-        return None
-
-    image = original.convert("RGB")
-
-    return {
-        "path": path,
-        "image": image,
-        "area": area,
-    }
-
-
 def normalized_digest(image):
     canvas = Image.new("RGB", (96, 96), "white")
     fitted = ImageOps.contain(
@@ -99,8 +47,171 @@ def normalized_digest(image):
     return hashlib.sha256(canvas.tobytes()).hexdigest()
 
 
+def image_stats(image):
+    rgb = image.convert("RGB")
+    width, height = rgb.size
+
+    sample = rgb.copy()
+    sample.thumbnail((500, 500))
+    arr = np.asarray(sample)
+
+    gray = cv2.cvtColor(arr, cv2.COLOR_RGB2GRAY)
+    hsv = cv2.cvtColor(arr, cv2.COLOR_RGB2HSV)
+
+    white_ratio = float(np.mean(np.all(arr >= 242, axis=2)))
+    color_ratio = float(np.mean(hsv[:, :, 1] >= 24))
+    contrast = float(gray.std())
+
+    return {
+        "width": width,
+        "height": height,
+        "area": width * height,
+        "white_ratio": white_ratio,
+        "color_ratio": color_ratio,
+        "contrast": contrast,
+    }
+
+
+def ocr_layout(path):
+    result = run([
+        "tesseract",
+        str(path),
+        "stdout",
+        "-l",
+        "ita",
+        "--psm",
+        "11",
+        "tsv",
+    ])
+
+    words = []
+
+    if not result.stdout.strip():
+        return words
+
+    reader = csv.DictReader(
+        io.StringIO(result.stdout),
+        delimiter="\t",
+    )
+
+    for row in reader:
+        text = str(row.get("text", "") or "").strip()
+
+        if not text:
+            continue
+
+        try:
+            confidence = float(row.get("conf", "-1") or -1)
+            left = int(row.get("left", "0") or 0)
+            top = int(row.get("top", "0") or 0)
+            width = int(row.get("width", "0") or 0)
+            height = int(row.get("height", "0") or 0)
+        except (TypeError, ValueError):
+            continue
+
+        if confidence < 18 or width <= 0 or height <= 0:
+            continue
+
+        words.append({
+            "text": text,
+            "left": left,
+            "top": top,
+            "width": width,
+            "height": height,
+            "confidence": confidence,
+        })
+
+    return words
+
+
+def text_metrics(path, image):
+    width, height = image.size
+    words = ocr_layout(path)
+
+    chars = sum(len(item["text"]) for item in words)
+    box_area = sum(item["width"] * item["height"] for item in words)
+    coverage = box_area / max(1, width * height)
+
+    return words, chars, coverage
+
+
+def looks_like_document(path, image):
+    stats = image_stats(image)
+    width = stats["width"]
+    height = stats["height"]
+    portrait_ratio = max(width, height) / max(1, min(width, height))
+
+    words, chars, coverage = text_metrics(path, image)
+
+    a4_like = 1.25 <= portrait_ratio <= 1.70
+
+    document = (
+        chars >= 220
+        or coverage >= 0.12
+        or (
+            a4_like
+            and stats["white_ratio"] >= 0.42
+            and chars >= 80
+        )
+        or (
+            stats["white_ratio"] >= 0.68
+            and chars >= 60
+        )
+    )
+
+    return document, words, chars, coverage, stats
+
+
+def embedded_candidate(path):
+    try:
+        image = Image.open(path).convert("RGB")
+    except Exception:
+        return None
+
+    stats = image_stats(image)
+
+    if stats["width"] < 140 or stats["height"] < 100:
+        return None
+
+    if stats["area"] < 50_000:
+        return None
+
+    ratio = max(
+        stats["width"] / stats["height"],
+        stats["height"] / stats["width"],
+    )
+
+    if ratio > 6.0:
+        return None
+
+    if stats["contrast"] < 4.0:
+        return None
+
+    document, _, chars, coverage, stats = looks_like_document(
+        path,
+        image,
+    )
+
+    if document:
+        print(
+            "   ↪ scartata pagina/modulo:",
+            path.name,
+            "testo=",
+            chars,
+            "copertura=",
+            round(coverage, 3),
+        )
+        return None
+
+    return {
+        "image": image,
+        "area": stats["area"],
+        "color_ratio": stats["color_ratio"],
+    }
+
+
 def extract_embedded_images(pdf, recall_id):
-    folder = WORK_DIR / recall_id
+    folder = WORK_DIR / recall_id / "embedded"
 
     if folder.exists():
         shutil.rmtree(folder)
@@ -121,7 +232,8 @@ def extract_embedded_images(pdf, recall_id):
     candidates = []
 
     for path in sorted(folder.glob("img-*.png")):
-        item = image_candidate(path)
+        item = embedded_candidate(path)
+
         if item:
             candidates.append(item)
 
@@ -129,18 +241,19 @@ def extract_embedded_images(pdf, recall_id):
         return []
 
     candidates.sort(
-        key=lambda item: item["area"],
+        key=lambda item: (
+            item["area"],
+            item["color_ratio"],
+        ),
         reverse=True,
     )
 
     largest_area = candidates[0]["area"]
 
-    # Manteniamo tutte le immagini di dimensioni significative rispetto
-    # alla foto principale; questo elimina soprattutto piccoli loghi e icone.
     meaningful = [
         item
         for item in candidates
-        if item["area"] >= max(50_000, int(largest_area * 0.10))
+        if item["area"] >= max(45_000, int(largest_area * 0.08))
     ]
 
     unique = []
@@ -155,16 +268,18 @@ def extract_embedded_images(pdf, recall_id):
         seen.add(digest)
         unique.append(item["image"])
 
-        # Evita collage ingestibili in casi anomali, ma conserva normalmente
-        # tutte le viste prodotto utili presenti nei moduli ufficiali.
         if len(unique) >= 8:
             break
 
     return unique
 
 
-def render_full_first_page(pdf, recall_id):
-    folder = WORK_DIR / recall_id / "fallback"
+def render_pages(pdf, recall_id):
+    folder = WORK_DIR / recall_id / "pages"
+
+    if folder.exists():
+        shutil.rmtree(folder)
+
     folder.mkdir(parents=True, exist_ok=True)
     prefix = folder / "page"
 
@@ -172,23 +287,222 @@ def render_full_first_page(pdf, recall_id):
         "pdftoppm",
         "-f",
         "1",
-        "-singlefile",
+        "-l",
+        "2",
         "-r",
-        "200",
+        "180",
         "-png",
         str(pdf),
         str(prefix),
     ])
 
-    page = folder / "page.png"
-
-    if result.returncode != 0 or not page.exists():
+    if result.returncode != 0:
         return []
 
-    try:
-        return [Image.open(page).convert("RGB")]
-    except Exception:
-        return []
+    return sorted(folder.glob("page-*.png"))
+
+
+def word_mask(shape, words):
+    height, width = shape[:2]
+    mask = np.zeros((height, width), dtype=np.uint8)
+
+    for item in words:
+        x1 = max(0, item["left"] - 8)
+        y1 = max(0, item["top"] - 6)
+        x2 = min(width, item["left"] + item["width"] + 8)
+        y2 = min(height, item["top"] + item["height"] + 6)
+
+        cv2.rectangle(
+            mask,
+            (x1, y1),
+            (x2, y2),
+            255,
+            -1,
+        )
+
+    if np.any(mask):
+        kernel = cv2.getStructuringElement(
+            cv2.MORPH_RECT,
+            (9, 5),
+        )
+        mask = cv2.dilate(mask, kernel, iterations=1)
+
+    return mask
+
+
+def box_iou(a, b):
+    ax1, ay1, ax2, ay2 = a
+    bx1, by1, bx2, by2 = b
+
+    ix1 = max(ax1, bx1)
+    iy1 = max(ay1, by1)
+    ix2 = min(ax2, bx2)
+    iy2 = min(ay2, by2)
+
+    if ix2 <= ix1 or iy2 <= iy1:
+        return 0.0
+
+    intersection = (ix2 - ix1) * (iy2 - iy1)
+    area_a = (ax2 - ax1) * (ay2 - ay1)
+    area_b = (bx2 - bx1) * (by2 - by1)
+
+    return intersection / max(1, area_a + area_b - intersection)
+
+
+def photo_regions_from_page(page_path):
+    pil = Image.open(page_path).convert("RGB")
+    rgb = np.asarray(pil)
+    height, width = rgb.shape[:2]
+    page_area = width * height
+
+    words = ocr_layout(page_path)
+    text = word_mask(rgb.shape, words)
+
+    hsv = cv2.cvtColor(rgb, cv2.COLOR_RGB2HSV)
+    gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
+
+    saturation = hsv[:, :, 1]
+    colorful = (saturation >= 18).astype(np.uint8) * 255
+
+    lap = cv2.Laplacian(gray, cv2.CV_32F)
+    texture = (np.abs(lap) >= 12).astype(np.uint8) * 255
+
+    nonwhite = (gray <= 246).astype(np.uint8) * 255
+
+    visual = cv2.bitwise_or(
+        colorful,
+        cv2.bitwise_and(texture, nonwhite),
+    )
+
+    visual[text > 0] = 0
+
+    visual = cv2.morphologyEx(
+        visual,
+        cv2.MORPH_CLOSE,
+        cv2.getStructuringElement(cv2.MORPH_RECT, (31, 31)),
+        iterations=2,
+    )
+    visual = cv2.dilate(
+        visual,
+        cv2.getStructuringElement(cv2.MORPH_RECT, (19, 19)),
+        iterations=1,
+    )
+
+    contours, _ = cv2.findContours(
+        visual,
+        cv2.RETR_EXTERNAL,
+        cv2.CHAIN_APPROX_SIMPLE,
+    )
+
+    boxes = []
+
+    for contour in contours:
+        x, y, w, h = cv2.boundingRect(contour)
+        area = w * h
+
+        if w < 240 or h < 170:
+            continue
+
+        if area < page_area * 0.025:
+            continue
+
+        if area > page_area * 0.68:
+            continue
+
+        ratio = max(w / h, h / w)
+
+        if ratio > 4.5:
+            continue
+
+        margin = max(12, int(min(w, h) * 0.025))
+        x1 = max(0, x - margin)
+        y1 = max(0, y - margin)
+        x2 = min(width, x + w + margin)
+        y2 = min(height, y + h + margin)
+
+        crop = pil.crop((x1, y1, x2, y2)).convert("RGB")
+        stats = image_stats(crop)
+
+        if stats["contrast"] < 8.0:
+            continue
+
+        # Una zona fotografica può contenere testo della confezione, ma non
+        # deve essere soprattutto una porzione del modulo con righe e scritte.
+        temp_path = page_path.parent / (
+            page_path.stem
+            + f"-crop-{len(boxes):02d}.png"
+        )
+        crop.save(temp_path)
+
+        _, chars, coverage = text_metrics(temp_path, crop)
+
+        if (
+            stats["white_ratio"] > 0.70
+            and chars > 70
+        ):
+            temp_path.unlink(missing_ok=True)
+            continue
+
+        if coverage > 0.16 and chars > 90:
+            temp_path.unlink(missing_ok=True)
+            continue
+
+        score = (
+            area / page_area
+            + stats["color_ratio"] * 1.7
+            + min(stats["contrast"] / 80.0, 1.0)
+            - stats["white_ratio"] * 0.35
+        )
+
+        boxes.append({
+            "box": (x1, y1, x2, y2),
+            "image": crop,
+            "score": score,
+            "temp": temp_path,
+        })
+
+    boxes.sort(key=lambda item: item["score"], reverse=True)
+
+    selected = []
+
+    for item in boxes:
+        if any(
+            box_iou(item["box"], other["box"]) > 0.45
+            for other in selected
+        ):
+            item["temp"].unlink(missing_ok=True)
+            continue
+
+        selected.append(item)
+
+        if len(selected) >= 6:
+            break
+
+    for item in boxes:
+        if item not in selected:
+            item["temp"].unlink(missing_ok=True)
+
+    return [item["image"] for item in selected]
+
+
+def extract_scanned_photo_regions(pdf, recall_id):
+    images = []
+    seen = set()
+
+    for page_path in render_pages(pdf, recall_id):
+        for image in photo_regions_from_page(page_path):
+            digest = normalized_digest(image)
+
+            if digest in seen:
+                continue
+
+            seen.add(digest)
+            images.append(image)
+
+            if len(images) >= 8:
+                return images
+
+    return images
 
 
 def make_full_image_sheet(images):
@@ -290,40 +604,20 @@ for recall in recalls:
         )
 
         if source_images:
-            source_label = "immagini incorporate"
+            source_label = "foto incorporate"
         else:
-            # Se il PDF è una scansione unica e non contiene immagini
-            # separabili, mostriamo l'intera prima pagina. In questo modo
-            # la foto resta comunque visibile e non viene tagliata.
-            source_images = render_full_first_page(
+            source_images = extract_scanned_photo_regions(
                 pdf,
                 recall_id,
             )
-            source_label = "pagina PDF completa"
-
-    if not source_images:
-        existing = current_image_path(recall)
-
-        if existing:
-            try:
-                source_images = [
-                    Image.open(existing).convert("RGB")
-                ]
-                source_label = "immagine precedente"
-            except Exception:
-                source_images = []
+            source_label = "foto estratte dalla scansione"
 
     old_url = str(recall.get("immagine", "") or "")
     notes = recall.setdefault("note", [])
 
-    remove_note(
-        notes,
-        "Immagine scartata dal controllo qualità",
-    )
-    remove_note(
-        notes,
-        "Immagine prodotto non estratta",
-    )
+    remove_note(notes, "Immagine scartata dal controllo qualità")
+    remove_note(notes, "Immagine prodotto non estratta")
+    remove_note(notes, "Immagine non disponibile nel PDF ufficiale")
 
     sheet = make_full_image_sheet(source_images)
 
@@ -332,19 +626,16 @@ for recall in recalls:
             recall["immagine"] = ""
             changed = True
 
-        marker = "Immagine non disponibile nel PDF ufficiale"
+        marker = "Foto prodotto non individuata nel PDF ufficiale"
 
         if marker not in notes:
             notes.append(marker)
             changed = True
 
-        print("⚠️ Nessuna immagine disponibile:", recall_id)
+        print("⚠️ Nessuna foto prodotto individuata:", recall_id)
         continue
 
-    remove_note(
-        notes,
-        "Immagine non disponibile nel PDF ufficiale",
-    )
+    remove_note(notes, "Foto prodotto non individuata nel PDF ufficiale")
 
     filename, png_bytes = versioned_filename(
         recall_id,
@@ -368,7 +659,7 @@ for recall in recalls:
         changed = True
 
     print(
-        "✅ Immagine completa:",
+        "✅ Foto prodotto:",
         recall_id,
         "-",
         source_label,
@@ -393,6 +684,6 @@ if changed:
         encoding="utf-8",
     )
 
-    print("✅ Immagini complete aggiornate.")
+    print("✅ Foto prodotto aggiornate senza pagine testuali.")
 else:
-    print("✅ Nessuna modifica necessaria alle immagini.")
+    print("✅ Nessuna modifica necessaria alle foto prodotto.")
