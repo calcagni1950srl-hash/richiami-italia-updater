@@ -63,10 +63,10 @@ jobs:
       - name: Scarica PDF ufficiali
         run: node scripts/download_recall_pdfs.mjs
 
-      - name: Ricostruisci solo immagini affidabili
+      - name: Ricostruisci immagini complete senza ritagli
         run: python scripts/rebuild_recall_images.py
 
-      - name: Verifica database dopo controllo immagini
+      - name: Verifica immagini complete
         run: |
           python - <<'PYEOF'
           import json
@@ -85,32 +85,49 @@ jobs:
                   "ERRORE: recalls.json non contiene richiami"
               )
 
-          valid_images = 0
-          missing_images = 0
+          images = 0
+          missing = []
 
           for recall in recalls:
               image = str(
                   recall.get("immagine", "") or ""
               ).strip()
 
+              pdf = str(
+                  recall.get("pdfMinistero", "") or ""
+              ).strip()
+
               if image:
-                  valid_images += 1
+                  images += 1
 
                   if "/images/" not in image:
                       raise SystemExit(
                           "ERRORE: URL immagine non valido per "
                           + str(recall.get("id", ""))
                       )
-              else:
-                  missing_images += 1
+
+              elif pdf:
+                  missing.append(
+                      str(recall.get("id", ""))
+                  )
 
           print("Richiami:", len(recalls))
-          print("Foto accettate:", valid_images)
-          print("Foto non pubblicate:", missing_images)
-          print("✅ Database immagini valido")
+          print("Richiami con immagine:", images)
+          print("Richiami senza immagine:", len(missing))
+
+          if missing:
+              print("Mancano immagini per:")
+              for item in missing:
+                  print(" -", item)
+
+              raise SystemExit(
+                  "ERRORE: alcuni richiami con PDF ufficiale sono ancora senza immagine"
+              )
+
+          print("✅ Tutti i richiami con PDF hanno un'immagine completa")
           PYEOF
 
-      - name: Salva immagini controllate
+      - name: Salva immagini complete
         run: |
           git config user.name "Richiami Italia Image Bot"
           git config user.email "actions@github.com"
@@ -120,6 +137,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "Nessuna modifica alle immagini."
           else
-            git commit -m "Controllo qualità immagini richiami"
+            git commit -m "Immagini complete richiami senza ritagli"
             git push
           fi
