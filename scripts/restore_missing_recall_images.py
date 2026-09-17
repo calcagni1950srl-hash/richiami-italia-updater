@@ -49,9 +49,17 @@ def backup_candidate_for(recall_id, all_ids):
     if not exact_candidates:
         return None
 
-    # Il backup contiene normalmente un solo file per ID; se ce ne fossero
-    # più di uno scegliamo il più recente per mtime.
     return max(exact_candidates, key=lambda path: path.stat().st_mtime)
+
+
+def current_referenced_files(recalls):
+    refs = set()
+    for recall in recalls:
+        key = image_key(recall)
+        name = filename_from_url(recall.get(key, ''))
+        if name:
+            refs.add(name)
+    return refs
 
 
 data = json.loads(RECALLS_FILE.read_text(encoding='utf-8'))
@@ -81,7 +89,6 @@ for recall in recalls:
     if target.exists():
         continue
 
-    # Primo tentativo: stesso identico filename nel backup.
     backup = BACKUP_DIR / filename
     if backup.exists():
         IMAGES_DIR.mkdir(parents=True, exist_ok=True)
@@ -90,9 +97,6 @@ for recall in recalls:
         print(f'✅ Ripristinata foto cancellata: {rid} -> {filename}')
         continue
 
-    # Secondo tentativo: la pulizia ha creato un nuovo hash e poi un ID
-    # padre lo ha cancellato. Torniamo alla foto valida generata subito
-    # prima della pulizia e riallineiamo anche recalls.json a quel filename.
     candidate = backup_candidate_for(rid, all_ids)
     if candidate is not None:
         IMAGES_DIR.mkdir(parents=True, exist_ok=True)
@@ -119,8 +123,18 @@ if changed:
         encoding='utf-8',
     )
 
+# Pulizia sicura: eliminiamo solo i PNG che non sono referenziati da
+# nessun richiamo nel JSON finale. Non usiamo mai prefissi di ID.
+referenced = current_referenced_files(recalls)
+removed = 0
+for path in IMAGES_DIR.glob('*.png'):
+    if path.name not in referenced:
+        path.unlink(missing_ok=True)
+        removed += 1
+
 print(f'Foto ripristinate con stesso filename: {restored}')
 print(f'Foto recuperate con URL riallineato: {relinked}')
+print(f'PNG obsoleti rimossi in sicurezza: {removed}')
 if unresolved:
     print('⚠️ URL immagini ancora senza file locale:')
     for rid, filename in unresolved:
