@@ -82,6 +82,23 @@ jobs:
           mkdir -p .quality/images-before-clean
           cp -a images/. .quality/images-before-clean/
 
+          # La vecchia pulizia usava glob "ID-*.png": con ID come
+          # amaretti-gallina cancellava anche le foto dei richiami
+          # amaretti-gallina-0/-1/-2. La disattiviamo nel runner e la
+          # sostituiamo con la pulizia esatta basata sui riferimenti JSON.
+          python - <<'PYEOF'
+          from pathlib import Path
+
+          path = Path('scripts/clean_form_photo_boxes.py')
+          text = path.read_text(encoding='utf-8')
+          dangerous = """    for old in IMAGES_DIR.glob(f'{rid}-*.png'):\n        if old.name != filename:\n            old.unlink(missing_ok=True)\n"""
+          if dangerous not in text:
+              raise SystemExit('ERRORE: blocco di cancellazione per prefisso non trovato')
+          text = text.replace(dangerous, '')
+          path.write_text(text, encoding='utf-8')
+          print('✅ Cancellazione per prefisso ID disattivata')
+          PYEOF
+
           python scripts/clean_form_photo_boxes.py
           python scripts/finalize_recall_images.py
           python scripts/restore_missing_recall_images.py
