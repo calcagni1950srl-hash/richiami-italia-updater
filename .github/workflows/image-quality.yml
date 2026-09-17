@@ -3,6 +3,13 @@ name: Controlla qualità immagini richiami
 on:
   workflow_dispatch:
 
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/image-quality.yml"
+      - "scripts/restore_missing_recall_images.py"
+
   workflow_run:
     workflows:
       - "Aggiorna Database Richiami Italia"
@@ -20,6 +27,7 @@ jobs:
   quality:
     if: >-
       github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'push' ||
       github.event.workflow_run.conclusion == 'success'
 
     runs-on: ubuntu-latest
@@ -60,6 +68,7 @@ jobs:
           python -m py_compile scripts/rebuild_recall_images_v2.py
           python -m py_compile scripts/clean_form_photo_boxes.py
           python -m py_compile scripts/finalize_recall_images.py
+          python -m py_compile scripts/restore_missing_recall_images.py
           node --check scripts/download_recall_pdfs.mjs
 
       - name: Scarica PDF ufficiali
@@ -68,14 +77,21 @@ jobs:
       - name: Estrai foto prodotto ad alta copertura
         run: |
           python scripts/rebuild_recall_images_v2.py
+
+          rm -rf .quality/images-before-clean
+          mkdir -p .quality/images-before-clean
+          cp -a images/. .quality/images-before-clean/
+
           python scripts/clean_form_photo_boxes.py
           python scripts/finalize_recall_images.py
+          python scripts/restore_missing_recall_images.py
 
-      - name: Verifica copertura foto prodotto
+      - name: Verifica copertura e integrità foto prodotto
         run: |
           python - <<'PYEOF'
           import json
           from pathlib import Path
+          from urllib.parse import urlparse
 
           data = json.loads(
               Path("recalls.json").read_text(
@@ -92,8 +108,10 @@ jobs:
           with_pdf = 0
           images = 0
           missing = []
+          broken = []
 
           for recall in recalls:
+              rid = str(recall.get("id", "") or "")
               image = str(
                   recall.get("immagine", "") or ""
               ).strip()
@@ -105,36 +123,48 @@ jobs:
                   with_pdf += 1
 
               if image:
-                  images += 1
                   if "/images/" not in image:
-                      raise SystemExit(
-                          "ERRORE: URL immagine non valido per "
-                          + str(recall.get("id", ""))
-                      )
+                      broken.append((rid, "URL non valido"))
+                      continue
+
+                  filename = Path(urlparse(image).path).name
+                  local = Path("images") / filename
+                  if not filename or not local.exists():
+                      broken.append((rid, filename or image))
+                      continue
+
+                  images += 1
               elif pdf:
-                  missing.append(
-                      str(recall.get("id", ""))
-                  )
+                  missing.append(rid)
 
           coverage = images / max(1, with_pdf)
 
           print("Richiami:", len(recalls))
           print("Richiami con PDF:", with_pdf)
-          print("Richiami con foto prodotto:", images)
+          print("Richiami con foto realmente presente:", images)
           print("Richiami senza foto prodotto:", len(missing))
-          print("Copertura foto:", f"{coverage:.1%}")
+          print("URL immagine senza file:", len(broken))
+          print("Copertura foto reale:", f"{coverage:.1%}")
 
           if missing:
               print("Foto non presente o non recuperabile dal PDF ufficiale:")
               for item in missing:
                   print(" -", item)
 
-          if coverage < 0.90:
+          if broken:
+              print("ERRORE - URL che puntano a file inesistenti:")
+              for rid, filename in broken:
+                  print(" -", rid, "->", filename)
               raise SystemExit(
-                  "ERRORE: copertura foto inferiore al 90%"
+                  "ERRORE: il database contiene URL immagini senza PNG corrispondente"
               )
 
-          print("✅ Copertura immagini alta senza forzare fogli o collage")
+          if coverage < 0.90:
+              raise SystemExit(
+                  "ERRORE: copertura foto reale inferiore al 90%"
+              )
+
+          print("✅ Foto integre: nessun URL orfano e copertura alta")
           PYEOF
 
       - name: Salva foto prodotto
@@ -147,7 +177,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "Nessuna modifica alle immagini."
           else
-            git commit -m "Aggiorna foto prodotto richiami"
+            git commit -m "Ripara foto richiami e URL immagini"
             git pull --rebase origin main
             git push
           fi
