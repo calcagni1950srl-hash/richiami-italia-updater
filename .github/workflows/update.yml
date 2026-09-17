@@ -3031,13 +3031,59 @@ jobs:
           print("✅ recalls.json valido")
           PYEOF
 
-      - name: Copia database e immagini nel repository
+      - name: Copia database preservando foto validate
         if: steps.controllo_rss.outputs.aggiorna == 'true'
         run: |
           cp output/recalls.json recalls.json
-          rm -rf images
-          mkdir -p images
-          cp -r output/images/. images/ 2>/dev/null || true
+
+          python - <<'PYMERGE'
+          import json
+          from pathlib import Path
+          from urllib.parse import urlparse
+
+          current_path = Path('recalls.json')
+          previous_path = Path('recalls-precedenti.json')
+
+          current = json.loads(current_path.read_text(encoding='utf-8'))
+          previous = (
+              json.loads(previous_path.read_text(encoding='utf-8'))
+              if previous_path.exists()
+              else {'recalls': []}
+          )
+
+          previous_by_id = {
+              str(item.get('id', '') or '').strip(): item
+              for item in previous.get('recalls', [])
+              if str(item.get('id', '') or '').strip()
+          }
+
+          preserved = 0
+          awaiting_quality = 0
+
+          for item in current.get('recalls', []):
+              rid = str(item.get('id', '') or '').strip()
+              old_item = previous_by_id.get(rid)
+              old_url = str((old_item or {}).get('immagine', '') or '').strip()
+
+              if old_url and '/images/' in old_url:
+                  filename = Path(urlparse(old_url).path).name
+                  if filename and (Path('images') / filename).exists():
+                      item['immagine'] = old_url
+                      preserved += 1
+                      continue
+
+              item['immagine'] = ''
+              awaiting_quality += 1
+
+          current_path.write_text(
+              json.dumps(current, ensure_ascii=False, indent=2) + '
+',
+              encoding='utf-8'
+          )
+
+          print('Foto validate preservate:', preserved)
+          print('Foto in attesa del controllo qualità:', awaiting_quality)
+          PYMERGE
 
       - name: Salva artifact
         if: steps.controllo_rss.outputs.aggiorna == 'true'
