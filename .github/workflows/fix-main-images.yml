@@ -1,0 +1,133 @@
+name: Correggi gestione immagini updater
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/fix-main-images.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Correggi updater principale
+        run: |
+          python - <<'PYEOF'
+          from pathlib import Path
+
+          path = Path('.github/workflows/update.yml')
+          text = path.read_text(encoding='utf-8')
+
+          old = """      - name: Copia database e immagini nel repository
+                  if: steps.controllo_rss.outputs.aggiorna == 'true'
+                  run: |
+                    cp output/recalls.json recalls.json
+                    rm -rf images
+                    mkdir -p images
+                    cp -r output/images/. images/ 2>/dev/null || true
+          """
+
+          new = """      - name: Copia database preservando foto validate
+                  if: steps.controllo_rss.outputs.aggiorna == 'true'
+                  run: |
+                    cp output/recalls.json recalls.json
+
+                    python - <<'PYMERGE'
+                    import json
+                    from pathlib import Path
+                    from urllib.parse import urlparse
+
+                    current_path = Path('recalls.json')
+                    previous_path = Path('recalls-precedenti.json')
+
+                    current = json.loads(current_path.read_text(encoding='utf-8'))
+                    previous = (
+                        json.loads(previous_path.read_text(encoding='utf-8'))
+                        if previous_path.exists()
+                        else {'recalls': []}
+                    )
+
+                    previous_by_id = {
+                        str(item.get('id', '') or '').strip(): item
+                        for item in previous.get('recalls', [])
+                        if str(item.get('id', '') or '').strip()
+                    }
+
+                    preserved = 0
+                    awaiting_quality = 0
+
+                    for item in current.get('recalls', []):
+                        rid = str(item.get('id', '') or '').strip()
+                        old_item = previous_by_id.get(rid)
+                        old_url = str((old_item or {}).get('immagine', '') or '').strip()
+
+                        if old_url and '/images/' in old_url:
+                            filename = Path(urlparse(old_url).path).name
+                            if filename and (Path('images') / filename).exists():
+                                item['immagine'] = old_url
+                                preserved += 1
+                                continue
+
+                        # Le immagini grezze create dall'updater principale non
+                        # vengono più pubblicate. Un richiamo nuovo resta senza
+                        # foto finché il workflow qualità non la valida.
+                        item['immagine'] = ''
+                        awaiting_quality += 1
+
+                    current_path.write_text(
+                        json.dumps(current, ensure_ascii=False, indent=2) + '\n',
+                        encoding='utf-8'
+                    )
+
+                    print('Foto validate preservate:', preserved)
+                    print('Foto in attesa del controllo qualità:', awaiting_quality)
+                    PYMERGE
+          """
+
+          if old not in text:
+              raise SystemExit('ERRORE: blocco immagini originale non trovato; nessuna modifica applicata')
+
+          text = text.replace(old, new, 1)
+          path.write_text(text, encoding='utf-8')
+          print('✅ Updater principale corretto: immagini validate non vengono più eliminate')
+          PYEOF
+
+      - name: Verifica correzione
+        run: |
+          python - <<'PYEOF'
+          from pathlib import Path
+
+          text = Path('.github/workflows/update.yml').read_text(encoding='utf-8')
+          marker = '- name: Copia database preservando foto validate'
+          if marker not in text:
+              raise SystemExit('ERRORE: nuovo blocco non presente')
+
+          start = text.index(marker)
+          chunk = text[start:start + 5000]
+          if 'rm -rf images' in chunk:
+              raise SystemExit('ERRORE: cancellazione distruttiva images ancora presente nel blocco finale')
+          if "item['immagine'] = old_url" not in chunk:
+              raise SystemExit('ERRORE: preservazione URL validati non presente')
+
+          print('✅ Verifica superata: nessuna cancellazione immagini e URL validati preservati')
+          PYEOF
+
+      - name: Salva correzione e rimuovi workflow temporaneo
+        run: |
+          git config user.name "Richiami Italia Fix Bot"
+          git config user.email "actions@github.com"
+
+          rm -f .github/workflows/fix-main-images.yml
+          git add -A
+          git commit -m "Preserva foto validate durante aggiornamento richiami"
+          git push
