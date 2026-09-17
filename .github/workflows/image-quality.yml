@@ -189,6 +189,10 @@ jobs:
           git config user.name "Richiami Italia Image Bot"
           git config user.email "actions@github.com"
 
+          # clean_form_photo_boxes.py viene modificato solo temporaneamente
+          # nel runner: non deve entrare nel commit né bloccare il rebase.
+          git restore scripts/clean_form_photo_boxes.py
+
           git add recalls.json images
 
           if git diff --cached --quiet; then
