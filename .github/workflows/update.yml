@@ -3065,6 +3065,32 @@ jobs:
               if str(item.get('id', '') or '').strip()
           }
 
+          current_ids = {
+              str(item.get('id', '') or '').strip()
+              for item in current.get('recalls', [])
+              if str(item.get('id', '') or '').strip()
+          }
+
+          carried_provisional = []
+
+          for old_item in previous.get('recalls', []):
+              rid = str(old_item.get('id', '') or '').strip()
+              method = str(old_item.get('metodoEstrazione', '') or '').strip().upper()
+
+              if rid and rid not in current_ids and method == 'RSS':
+                  carried_provisional.append(old_item)
+                  current_ids.add(rid)
+
+          if carried_provisional:
+              current['recalls'] = (
+                  carried_provisional +
+                  current.get('recalls', [])
+              )
+              print(
+                  'Richiami RSS provvisori preservati:',
+                  len(carried_provisional)
+              )
+
           preserved = 0
           awaiting_quality = 0
 
@@ -3082,6 +3108,21 @@ jobs:
 
               item['immagine'] = ''
               awaiting_quality += 1
+
+          current['totale'] = len(
+              current.get('recalls', [])
+          )
+
+          current['pass'] = sum(
+              1
+              for item in current.get('recalls', [])
+              if str(item.get('stato', '') or '').strip().upper() == 'PASS'
+          )
+
+          current['daVerificare'] = (
+              current['totale'] -
+              current['pass']
+          )
 
           current_path.write_text(
               json.dumps(current, ensure_ascii=False, indent=2) + "\\n",
