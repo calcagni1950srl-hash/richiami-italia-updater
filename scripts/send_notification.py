@@ -128,7 +128,7 @@ def save_state(message_id=""):
 
 if not new_items:
     print("Nessun nuovo richiamo: nessuna notifica da inviare.")
-    save_state()
+    print("Nessuna modifica a notification-state.json o recalls.json.")
     raise SystemExit(0)
 
 service_account_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT", "").strip()
