@@ -1,0 +1,92 @@
+name: Audit finale pipeline
+
+on:
+  push:
+    paths:
+      - ".github/workflows/audit-final.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verifica completa offline
+        run: |
+          python -m compileall -q scripts
+          for file in scripts/*.mjs scripts/*.js; do
+            [ -e "$file" ] || continue
+            node --check "$file"
+          done
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from urllib.parse import urlparse
+
+          notif=Path(".github/workflows/notification-watch.yml").read_text(encoding="utf-8")
+          update=Path(".github/workflows/update.yml").read_text(encoding="utf-8")
+          quality=Path(".github/workflows/image-quality.yml").read_text(encoding="utf-8")
+          v2=Path("scripts/rebuild_recall_images_v2.py").read_text(encoding="utf-8")
+          cleaner=Path("scripts/clean_form_photo_boxes.py").read_text(encoding="utf-8")
+          sender=Path("scripts/send_notification.py").read_text(encoding="utf-8")
+
+          assert 'cron: "2,32 * * * *"' in notif
+          assert 'cron: "17 */2 * * *"' in update
+          assert "actions: write" in notif and "update.yml/dispatches" in notif
+          assert "actions: write" in update and "image-quality.yml/dispatches" in update
+          assert "workflow_run:" not in quality
+          assert "workflow_dispatch:" in quality
+          assert "rm -rf images" not in update
+          assert "for old in IMAGES_DIR.glob(f'{rid}-*.png')" not in cleaner
+          assert "Foto esistente preservata" in v2
+          assert "referenced=set(accepted)" in v2
+          assert notif.find("Pubblica subito il nuovo richiamo nella lista") < notif.find("Invia notifica Firebase")
+          assert notif.find("Invia notifica Firebase") < notif.find("Avvia completamento dettagli del nuovo richiamo")
+          assert sender.find("if response is None or not response.ok:") < sender.find("save_state(message_id)")
+          assert update.find("Controlla se serve aggiornamento completo") < update.find("Setup Node per aggiornamento completo")
+          assert "Installa controllo RSS leggero" not in update
+
+          data=json.loads(Path("recalls.json").read_text(encoding="utf-8"))
+          items=data["recalls"]
+          assert data["totale"] == len(items)
+          ids=[str(x.get("id","")).strip() for x in items]
+          assert len(ids)==len(set(ids))
+          pass_count=sum(str(x.get("stato","")).upper()=="PASS" for x in items)
+          assert data["pass"]==pass_count
+          assert data["daVerificare"]==len(items)-pass_count
+
+          image_files={p.name for p in Path("images").glob("*.png")}
+          refs=[]
+          for item in items:
+            url=str(item.get("immagine","") or "").strip()
+            if not url: continue
+            fn=Path(urlparse(url).path).name
+            assert fn in image_files, f"URL senza PNG: {item['id']} -> {fn}"
+            refs.append(fn)
+          assert len(refs)/len(items) >= .90
+          assert set(refs)==image_files
+
+          state=json.loads(Path("notification-state.json").read_text(encoding="utf-8"))
+          notified=[str(x).strip() for x in state.get("notifiedIds",[]) if str(x).strip()]
+          assert len(notified)==len(set(notified))
+          assert "brie-tour-de-marze" in notified
+
+          brie=next(x for x in items if x["id"]=="brie-tour-de-marze")
+          assert brie.get("immagine")
+          brie_file=Path(urlparse(brie["immagine"]).path).name
+          assert brie_file in image_files
+
+          print("Richiami:",len(items))
+          print("Immagini:",len(refs),"/",len(items))
+          print("Notificati:",len(notified))
+          print("✅ AUDIT FINALE PIPELINE SUPERATO")
+          PY
