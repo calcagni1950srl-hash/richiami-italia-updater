@@ -1,0 +1,87 @@
+name: Notifica immediata nuovi richiami
+
+on:
+  workflow_dispatch:
+
+  push:
+    paths:
+      - ".github/workflows/notification-watch.yml"
+      - "scripts/notification_fetch.mjs"
+      - "scripts/send_notification.py"
+
+  schedule:
+    - cron: "3,18,33,48 * * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: recall-notifications
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installa dipendenze RSS
+        run: |
+          npm init -y
+          npm install playwright
+          npx playwright install --with-deps chromium
+
+      - name: Installa dipendenze Firebase
+        run: |
+          python -m pip install google-auth requests
+
+      - name: Controlla feed Ministero
+        run: |
+          set +e
+          for tentativo in 1 2 3; do
+            echo "Tentativo RSS $tentativo/3"
+            node scripts/notification_fetch.mjs
+            codice=$?
+            if [ "$codice" -eq 0 ]; then
+              exit 0
+            fi
+            if [ "$tentativo" -lt 3 ]; then
+              sleep 10
+            fi
+          done
+          exit 1
+
+      - name: Invia notifica Firebase
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          python scripts/send_notification.py
+
+      - name: Salva stato notifiche
+        run: |
+          git config user.name "Richiami Italia Notify Bot"
+          git config user.email "actions@github.com"
+
+          git add notification-state.json
+
+          if git diff --cached --quiet; then
+            echo "Stato notifiche invariato."
+            exit 0
+          fi
+
+          git commit -m "Aggiorna stato notifiche richiami"
+          git pull --rebase origin main
+          git push
