@@ -75,10 +75,10 @@ jobs:
           git config user.name "Richiami Italia Notify Bot"
           git config user.email "actions@github.com"
 
-          git add notification-state.json
+          git add notification-state.json recalls.json
 
           if git diff --cached --quiet; then
-            echo "Stato notifiche invariato."
+            echo "Stato notifiche e lista richiami invariati."
             exit 0
           fi
 
