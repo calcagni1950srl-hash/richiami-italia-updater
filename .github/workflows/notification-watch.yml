@@ -11,7 +11,7 @@ on:
       - "scripts/sync_pending_recalls.py"
 
   schedule:
-    - cron: "2,17,32,47 * * * *"
+    - cron: "2,32 * * * *"
 
 permissions:
   contents: write
