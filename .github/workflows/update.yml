@@ -179,11 +179,30 @@ jobs:
                 fs.readFileSync("recalls.json", "utf8")
               );
 
+              const provisionalIds = (previous.recalls || [])
+                .filter(item =>
+                  String(item?.metodoEstrazione || "")
+                    .trim()
+                    .toUpperCase() === "RSS"
+                )
+                .map(item => String(item?.id || "").trim())
+                .filter(Boolean);
+
+              if (provisionalIds.length > 0) {
+                forceFull = true;
+                reason =
+                  provisionalIds.length +
+                  " richiamo/i RSS provvisorio/i da arricchire";
+              }
+
               const generatedAt = Date.parse(previous.generatedAt || "");
 
               if (
-                !Number.isFinite(generatedAt) ||
-                Date.now() - generatedAt >= 12 * 60 * 60 * 1000
+                !forceFull &&
+                (
+                  !Number.isFinite(generatedAt) ||
+                  Date.now() - generatedAt >= 12 * 60 * 60 * 1000
+                )
               ) {
                 forceFull = true;
                 reason = "aggiornamento completo di sicurezza dopo 12 ore";
