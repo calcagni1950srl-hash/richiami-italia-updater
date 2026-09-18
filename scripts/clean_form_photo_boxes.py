@@ -258,9 +258,6 @@ for recall in recalls:
         recall[key]=new_url
         changed=True
 
-    for old in IMAGES_DIR.glob(f'{rid}-*.png'):
-        if old.name != filename:
-            old.unlink(missing_ok=True)
     print('✅ Foto modulo ripulita:',rid,crop.size)
 
 if changed:
