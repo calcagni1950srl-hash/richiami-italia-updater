@@ -3,6 +3,10 @@ name: Aggiorna Database Richiami Italia
 on:
   workflow_dispatch:
 
+  push:
+    paths:
+      - ".github/workflows/update.yml"
+
   schedule:
     - cron: "7,37 * * * *"
 
@@ -3076,8 +3080,7 @@ jobs:
               awaiting_quality += 1
 
           current_path.write_text(
-              json.dumps(current, ensure_ascii=False, indent=2) + '
-',
+              json.dumps(current, ensure_ascii=False, indent=2) + "\\n",
               encoding='utf-8'
           )
 
