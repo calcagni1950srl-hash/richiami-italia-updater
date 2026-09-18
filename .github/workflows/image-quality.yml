@@ -13,8 +13,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: richiami-image-quality
-  cancel-in-progress: true
+  group: richiami-content-pipeline
+  cancel-in-progress: false
 
 jobs:
   quality:
@@ -31,84 +31,6 @@ jobs:
         with:
           ref: main
           fetch-depth: 2
-
-      - name: Proteggi subito foto validate precedenti
-        if: github.event_name == 'workflow_run'
-        run: |
-          set -e
-
-          git config user.name "Richiami Italia Image Bot"
-          git config user.email "actions@github.com"
-
-          cp recalls.json .recalls-current.json
-
-          if ! git show HEAD^:recalls.json > .recalls-previous.json; then
-            echo "Nessun database precedente disponibile: salto protezione preventiva."
-            rm -f .recalls-current.json .recalls-previous.json
-            exit 0
-          fi
-
-          rm -rf images
-          mkdir -p images
-
-          if git cat-file -e HEAD^:images 2>/dev/null; then
-            git archive HEAD^ images | tar -x
-          fi
-
-          python - <<'PYEOF'
-          import json
-          from pathlib import Path
-          from urllib.parse import urlparse
-
-          current = json.loads(Path('.recalls-current.json').read_text(encoding='utf-8'))
-          previous = json.loads(Path('.recalls-previous.json').read_text(encoding='utf-8'))
-
-          previous_by_id = {
-              str(item.get('id', '') or '').strip(): item
-              for item in previous.get('recalls', [])
-              if str(item.get('id', '') or '').strip()
-          }
-
-          preserved = 0
-          blanked = 0
-
-          for item in current.get('recalls', []):
-              rid = str(item.get('id', '') or '').strip()
-              old = previous_by_id.get(rid)
-              old_url = str((old or {}).get('immagine', '') or '').strip()
-
-              if old_url and '/images/' in old_url:
-                  filename = Path(urlparse(old_url).path).name
-                  if filename and (Path('images') / filename).exists():
-                      item['immagine'] = old_url
-                      preserved += 1
-                      continue
-
-              # Una foto appena prodotta dal workflow principale non è ancora
-              # validata: meglio nessuna foto che far ricomparire quella grezza.
-              item['immagine'] = ''
-              blanked += 1
-
-          Path('recalls.json').write_text(
-              json.dumps(current, ensure_ascii=False, indent=2) + '\n',
-              encoding='utf-8'
-          )
-
-          print('Foto validate preservate:', preserved)
-          print('Foto nuove lasciate in attesa di validazione:', blanked)
-          PYEOF
-
-          rm -f .recalls-current.json .recalls-previous.json
-
-          git add recalls.json images
-
-          if git diff --cached --quiet; then
-            echo "Nessuna foto da ripristinare."
-          else
-            git commit -m "Ripristina foto validate dopo aggiornamento richiami"
-            git pull --rebase origin main
-            git push
-          fi
 
       - name: Setup Node
         uses: actions/setup-node@v4
