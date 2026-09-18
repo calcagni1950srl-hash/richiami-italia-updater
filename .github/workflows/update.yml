@@ -34,21 +34,10 @@ jobs:
             echo "Nessun database precedente trovato: confronto inizializzato vuoto."
           fi
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
-      - name: Installa controllo RSS leggero
-        run: |
-          npm init -y
-          npm install playwright
-          npx playwright install --with-deps chromium
 
       - name: Controlla se serve aggiornamento completo
         id: controllo_rss
@@ -111,9 +100,19 @@ jobs:
         run: |
           echo "Nessun nuovo richiamo: il controllo termina senza accedere alle schede o ai PDF del Ministero."
 
+      - name: Setup Node per aggiornamento completo
+        if: steps.controllo_rss.outputs.aggiorna == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
       - name: Installa strumenti
         if: steps.controllo_rss.outputs.aggiorna == 'true'
         run: |
+          npm init -y
+          npm install playwright
+          npx playwright install --with-deps chromium
+
           sudo apt-get update
           sudo apt-get install -y \
             poppler-utils \
