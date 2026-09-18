@@ -584,13 +584,29 @@ for recall in recalls:
         )
 
     if image is None:
+        old_filename = ""
+        if old_url and "/images/" in old_url:
+            old_filename = old_url.rsplit("/", 1)[-1].split("?", 1)[0].strip()
+
+        if old_filename and (IMAGES_DIR / old_filename).exists():
+            accepted_names.add(old_filename)
+            print(
+                "✅ Foto esistente preservata:",
+                recall_id,
+                "-",
+                old_filename,
+            )
+            continue
+
         if old_url:
             recall[key] = ""
             changed = True
+
         marker = "Foto prodotto non individuata nel PDF ufficiale"
         if marker not in notes:
             notes.append(marker)
             changed = True
+
         print("⚠️ Nessuna foto prodotto individuata:", recall_id)
         continue
 
@@ -631,8 +647,18 @@ for recall in recalls:
         extra,
     )
 
+referenced_names = set(accepted_names)
+
+for recall in recalls:
+    key = image_key(recall)
+    url = str(recall.get(key, "") or "").strip()
+    if url and "/images/" in url:
+        filename = url.rsplit("/", 1)[-1].split("?", 1)[0].strip()
+        if filename:
+            referenced_names.add(filename)
+
 for path in IMAGES_DIR.glob("*.png"):
-    if path.name not in accepted_names:
+    if path.name not in referenced_names:
         path.unlink(missing_ok=True)
         changed = True
 
