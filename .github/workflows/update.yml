@@ -14,8 +14,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: richiami-database-update
-  cancel-in-progress: true
+  group: richiami-content-pipeline
+  cancel-in-progress: false
 
 jobs:
   aggiorna:
@@ -3164,20 +3164,123 @@ jobs:
             images/
           retention-days: 1
 
-      - name: Aggiorna recalls.json nel repository
+      - name: Aggiorna recalls.json nel repository in modo sicuro
         if: steps.controllo_rss.outputs.aggiorna == 'true'
         run: |
           git config user.name "Richiami Italia Bot"
           git config user.email "actions@github.com"
 
-          git add recalls.json images
+          cp recalls.json .generated-recalls.json
 
-          if git diff --cached --quiet; then
-            echo "Nessuna modifica al database."
-          else
+          for tentativo in 1 2 3; do
+            echo "Tentativo pubblicazione database $tentativo/3"
+
+            git fetch origin main
+            git reset --hard origin/main
+
+            python - <<'PYMERGEFINAL'
+            import json
+            from pathlib import Path
+
+            generated = json.loads(
+                Path('.generated-recalls.json').read_text(encoding='utf-8')
+            )
+            latest = json.loads(
+                Path('recalls.json').read_text(encoding='utf-8')
+            )
+
+            latest_by_id = {
+                str(item.get('id', '') or '').strip(): item
+                for item in latest.get('recalls', [])
+                if str(item.get('id', '') or '').strip()
+            }
+
+            generated_ids = set()
+
+            for item in generated.get('recalls', []):
+                rid = str(item.get('id', '') or '').strip()
+                if not rid:
+                    continue
+
+                generated_ids.add(rid)
+                latest_item = latest_by_id.get(rid) or {}
+                latest_image = str(
+                    latest_item.get('immagine', '') or ''
+                ).strip()
+
+                # Il workflow database non deve mai sostituire una foto
+                # già validata da image-quality.
+                if latest_image and '/images/' in latest_image:
+                    item['immagine'] = latest_image
+
+            carry = []
+
+            for item in latest.get('recalls', []):
+                rid = str(item.get('id', '') or '').strip()
+                method = str(
+                    item.get('metodoEstrazione', '') or ''
+                ).strip().upper()
+
+                if rid and rid not in generated_ids and method == 'RSS':
+                    carry.append(item)
+                    generated_ids.add(rid)
+
+            if carry:
+                generated['recalls'] = (
+                    carry + generated.get('recalls', [])
+                )
+                print(
+                    'Richiami RSS arrivati durante il run preservati:',
+                    len(carry)
+                )
+
+            generated['totale'] = len(
+                generated.get('recalls', [])
+            )
+            generated['pass'] = sum(
+                1
+                for item in generated.get('recalls', [])
+                if str(
+                    item.get('stato', '') or ''
+                ).strip().upper() == 'PASS'
+            )
+            generated['daVerificare'] = (
+                generated['totale'] -
+                generated['pass']
+            )
+
+            Path('recalls.json').write_text(
+                json.dumps(
+                    generated,
+                    ensure_ascii=False,
+                    indent=2
+                ) + '\n',
+                encoding='utf-8'
+            )
+            PYMERGEFINAL
+
+            git add recalls.json
+
+            if git diff --cached --quiet; then
+              echo "Nessuna modifica al database."
+              rm -f .generated-recalls.json
+              exit 0
+            fi
+
             git commit -m "Aggiornamento automatico richiami alimentari"
-            git push
-          fi
+
+            if git push origin main; then
+              echo "✅ Database pubblicato."
+              rm -f .generated-recalls.json
+              exit 0
+            fi
+
+            echo "Push non riuscito: rileggo main e riprovo."
+          done
+
+          rm -f .generated-recalls.json
+          echo "ERRORE: impossibile pubblicare recalls.json dopo 3 tentativi."
+          exit 1
 
       - name: Notifiche gestite dal watcher indipendente
         if: steps.controllo_rss.outputs.aggiorna == 'true'
