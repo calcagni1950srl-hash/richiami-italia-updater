@@ -22,80 +22,7 @@ def load_json(path, default):
 pending = load_json(PENDING_PATH, {})
 state = load_json(STATE_PATH, {"version": 1, "notifiedIds": []})
 
-new_items = pending.get("newItems", []) or []
-
-# Mantieni la lista dell'app sincronizzata con il watcher notifiche:
-# ogni nuovo richiamo del feed viene aggiunto subito come voce provvisoria.
-recalls_path = Path("recalls.json")
-recalls_data = load_json(
-    recalls_path,
-    {
-        "version": 2,
-        "generatedAt": "",
-        "source": "Ministero della Salute",
-        "feed": "RSS_avvisi_richiami_osa.xml",
-        "totale": 0,
-        "pass": 0,
-        "daVerificare": 0,
-        "recalls": [],
-    },
-)
-
-existing_recall_ids = {
-    str(item.get("id", "")).strip()
-    for item in (recalls_data.get("recalls", []) or [])
-    if str(item.get("id", "")).strip()
-}
-
-provisional = []
-for item in new_items:
-    rid = str(item.get("id", "")).strip()
-    if not rid or rid in existing_recall_ids:
-        continue
-
-    title = str(item.get("title", "")).strip() or rid.replace("-", " ").title()
-    pub_date = str(item.get("pubDate", "")).strip()
-    link = str(item.get("link", "")).strip()
-
-    provisional.append(
-        {
-            "id": rid,
-            "marca": "",
-            "prodotto": title,
-            "lotto": "",
-            "tmc": "",
-            "produttore": "",
-            "motivo": "Dati del richiamo in aggiornamento",
-            "dataPubblicazione": pub_date,
-            "urlMinistero": link,
-            "pdfMinistero": "",
-            "immagine": "",
-            "criterioMatch": "RSS_MINISTERO",
-            "stato": "DA_VERIFICARE",
-            "metodoEstrazione": "RSS",
-            "note": [
-                "Richiamo rilevato dal feed ufficiale; dettagli e foto in aggiornamento"
-            ],
-        }
-    )
-    existing_recall_ids.add(rid)
-
-if provisional:
-    recalls_data["recalls"] = provisional + (recalls_data.get("recalls", []) or [])
-    recalls_data["totale"] = len(recalls_data["recalls"])
-    recalls_data["daVerificare"] = int(recalls_data.get("daVerificare", 0) or 0) + len(provisional)
-    recalls_data["generatedAt"] = datetime.now(timezone.utc).isoformat()
-    recalls_path.write_text(
-        json.dumps(recalls_data, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-    )
-    print("Richiami provvisori aggiunti subito alla lista:", len(provisional))
-
-feed_ids = [
-    str(value).strip()
-    for value in (pending.get("feedIds", []) or [])
-    if str(value).strip()
-]
+pending_items = pending.get("newItems", []) or []
 
 existing_ids = {
     str(value).strip()
@@ -103,6 +30,20 @@ existing_ids = {
     if str(value).strip()
 }
 
+# Ricalcola i nuovi elementi usando lo stato più recente presente su main.
+# Questo evita doppie notifiche se un run era partito da un commit vecchio.
+new_items = [
+    item
+    for item in pending_items
+    if str(item.get("id", "") or "").strip()
+    and str(item.get("id", "") or "").strip() not in existing_ids
+]
+
+feed_ids = [
+    str(value).strip()
+    for value in (pending.get("feedIds", []) or [])
+    if str(value).strip()
+]
 
 def save_state(message_id=""):
     merged = sorted(existing_ids.union(feed_ids))
