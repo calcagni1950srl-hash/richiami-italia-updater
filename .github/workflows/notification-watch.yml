@@ -8,6 +8,7 @@ on:
       - ".github/workflows/notification-watch.yml"
       - "scripts/notification_fetch.mjs"
       - "scripts/send_notification.py"
+      - "scripts/sync_pending_recalls.py"
 
   schedule:
     - cron: "2,17,32,47 * * * *"
@@ -64,6 +65,39 @@ jobs:
           done
           exit 1
 
+      - name: Pubblica subito il nuovo richiamo nella lista
+        run: |
+          git config user.name "Richiami Italia Notify Bot"
+          git config user.email "actions@github.com"
+
+          for tentativo in 1 2 3; do
+            echo "Tentativo sincronizzazione lista $tentativo/3"
+
+            git fetch origin main
+            git reset --hard origin/main
+
+            python scripts/sync_pending_recalls.py
+
+            git add recalls.json
+
+            if git diff --cached --quiet; then
+              echo "Lista richiami già aggiornata."
+              exit 0
+            fi
+
+            git commit -m "Aggiunge subito nuovo richiamo alla lista"
+
+            if git push origin main; then
+              echo "✅ Nuovo richiamo pubblicato nella lista prima della notifica."
+              exit 0
+            fi
+
+            echo "Push lista non riuscito: rileggo main e riprovo."
+          done
+
+          echo "ERRORE: impossibile pubblicare il nuovo richiamo nella lista."
+          exit 1
+
       - name: Invia notifica Firebase
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
@@ -75,13 +109,25 @@ jobs:
           git config user.name "Richiami Italia Notify Bot"
           git config user.email "actions@github.com"
 
-          git add notification-state.json recalls.json
+          git add notification-state.json
 
           if git diff --cached --quiet; then
-            echo "Stato notifiche e lista richiami invariati."
+            echo "Stato notifiche invariato."
             exit 0
           fi
 
           git commit -m "Aggiorna stato notifiche richiami"
-          git pull --rebase origin main
-          git push
+
+          for tentativo in 1 2 3; do
+            if git pull --rebase origin main && git push origin main; then
+              echo "✅ Stato notifiche salvato."
+              exit 0
+            fi
+
+            git rebase --abort 2>/dev/null || true
+            echo "Salvataggio stato non riuscito, tentativo $tentativo/3."
+            sleep 3
+          done
+
+          echo "ERRORE: impossibile salvare notification-state.json."
+          exit 1
