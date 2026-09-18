@@ -3,12 +3,6 @@ name: Controlla qualità immagini richiami
 on:
   workflow_dispatch:
 
-  workflow_run:
-    workflows:
-      - "Aggiorna Database Richiami Italia"
-    types:
-      - completed
-
 permissions:
   contents: write
 
@@ -18,10 +12,6 @@ concurrency:
 
 jobs:
   quality:
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event.workflow_run.conclusion == 'success'
-
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -35,7 +25,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -74,23 +64,6 @@ jobs:
           rm -rf .quality/images-before-clean
           mkdir -p .quality/images-before-clean
           cp -a images/. .quality/images-before-clean/
-
-          # La vecchia pulizia usava glob "ID-*.png": con ID come
-          # amaretti-gallina cancellava anche le foto dei richiami
-          # amaretti-gallina-0/-1/-2. La disattiviamo nel runner e la
-          # sostituiamo con la pulizia esatta basata sui riferimenti JSON.
-          python - <<'PYEOF'
-          from pathlib import Path
-
-          path = Path('scripts/clean_form_photo_boxes.py')
-          text = path.read_text(encoding='utf-8')
-          dangerous = """    for old in IMAGES_DIR.glob(f'{rid}-*.png'):\n        if old.name != filename:\n            old.unlink(missing_ok=True)\n"""
-          if dangerous not in text:
-              raise SystemExit('ERRORE: blocco di cancellazione per prefisso non trovato')
-          text = text.replace(dangerous, '')
-          path.write_text(text, encoding='utf-8')
-          print('✅ Cancellazione per prefisso ID disattivata')
-          PYEOF
 
           python scripts/clean_form_photo_boxes.py
           python scripts/finalize_recall_images.py
@@ -181,10 +154,6 @@ jobs:
         run: |
           git config user.name "Richiami Italia Image Bot"
           git config user.email "actions@github.com"
-
-          # clean_form_photo_boxes.py viene modificato solo temporaneamente
-          # nel runner: non deve entrare nel commit né bloccare il rebase.
-          git restore scripts/clean_form_photo_boxes.py
 
           git add recalls.json images
 
