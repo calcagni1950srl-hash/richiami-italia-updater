@@ -414,6 +414,16 @@ for recall in recalls:
     if pdf.exists():
         image,label,meta=extract_best(pdf,rid,recall_tokens(recall))
     if image is None:
+        old_filename=''
+        if old and '/images/' in old:
+            old_filename=old.rsplit('/',1)[-1].split('?',1)[0].strip()
+
+        if old_filename and (IMAGES_DIR/old_filename).exists():
+            accepted.add(old_filename)
+            found+=1
+            print('✅ Foto esistente preservata:',rid,'->',old_filename)
+            continue
+
         if old:
             recall[key]=''; changed=True
         marker='Foto prodotto non individuata nel PDF ufficiale'
@@ -423,6 +433,16 @@ for recall in recalls:
         continue
     out=prepare_output(image)
     if not plausible_photo(out,relaxed=True):
+        old_filename=''
+        if old and '/images/' in old:
+            old_filename=old.rsplit('/',1)[-1].split('?',1)[0].strip()
+
+        if old_filename and (IMAGES_DIR/old_filename).exists():
+            accepted.add(old_filename)
+            found+=1
+            print('✅ Foto esistente preservata dopo candidato non plausibile:',rid)
+            continue
+
         if old:
             recall[key]=''; changed=True
         marker='Foto prodotto non individuata nel PDF ufficiale'
@@ -439,8 +459,17 @@ for recall in recalls:
     print(f"✅ {rid}: {label} {out.width}x{out.height} white={s['white_ratio']:.2f} "
           f"color={s['color_ratio']:.2f} band={s['banding']:.2f} score={(meta or {}).get('score',0):.2f}")
 
+referenced=set(accepted)
+for recall in recalls:
+    key=image_key(recall)
+    url=str(recall.get(key,'') or '').strip()
+    if url and '/images/' in url:
+        name=url.rsplit('/',1)[-1].split('?',1)[0].strip()
+        if name:
+            referenced.add(name)
+
 for p in IMAGES_DIR.glob('*.png'):
-    if p.name not in accepted:
+    if p.name not in referenced:
         p.unlink(missing_ok=True); changed=True
 
 if changed:
