@@ -127,6 +127,8 @@ jobs:
           assert "workflow_dispatch:" in quality, "Qualità immagini non dispatchabile"
           assert "actions: write" in update, "Updater senza permesso per avviare image-quality"
           assert "image-quality.yml/dispatches" in update, "Updater non avvia image-quality dopo aggiornamento completo"
+          assert "Installa controllo RSS leggero" not in update, "Updater installa ancora browser nei controlli senza novità"
+          assert update.find("Controlla se serve aggiornamento completo") < update.find("Setup Node per aggiornamento completo"), "Node/Playwright partono prima della decisione locale"
           assert "rm -rf images" not in update, "Updater può ancora cancellare tutte le immagini"
           assert "for old in IMAGES_DIR.glob(f'{rid}-*.png')" not in cleaner, "Cancellazione per prefisso ancora presente"
           assert "Foto esistente preservata" in v2, "Generatore immagini non preserva fallback validi"
