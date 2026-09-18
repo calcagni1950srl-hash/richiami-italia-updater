@@ -1,12 +1,31 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-16T18:57:05.391597Z",
+  "generatedAt": "2026-09-18T13:14:19.843Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
-  "totale": 20,
+  "totale": 21,
   "pass": 18,
-  "daVerificare": 2,
+  "daVerificare": 3,
   "recalls": [
+    {
+      "id": "brie-tour-de-marze",
+      "marca": "Tour De Marze",
+      "prodotto": "Brie Tour De Marze",
+      "lotto": "",
+      "tmc": "",
+      "produttore": "",
+      "motivo": "Dati del richiamo in aggiornamento",
+      "dataPubblicazione": "18 settembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/brie-tour-de-marze",
+      "pdfMinistero": "",
+      "immagine": "",
+      "criterioMatch": "RSS_MINISTERO",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "RSS",
+      "note": [
+        "Richiamo rilevato dal feed ufficiale; dettagli e foto in aggiornamento"
+      ]
+    },
     {
       "id": "amaretti-gallina-0",
       "marca": "Amaretti Gallina",
