@@ -10,7 +10,7 @@ on:
       - "scripts/send_notification.py"
 
   schedule:
-    - cron: "3,18,33,48 * * * *"
+    - cron: "*/5 * * * *"
 
 permissions:
   contents: write
