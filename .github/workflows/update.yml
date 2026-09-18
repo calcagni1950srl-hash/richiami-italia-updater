@@ -52,251 +52,58 @@ jobs:
       - name: Controlla se serve aggiornamento completo
         id: controllo_rss
         run: |
-          cat > controlla-feed.mjs <<'EOF'
-          import { chromium } from "playwright";
-          import fs from "fs";
+          python - <<'PYEOF'
+          import json
+          import os
+          from datetime import datetime, timezone
+          from pathlib import Path
 
-          const FEED_URL =
-            "https://www.salute.gov.it/new/rss/RSS_avvisi_richiami_osa.xml";
+          path = Path("recalls.json")
+          force_full = False
+          reason = ""
 
-          function clean(value) {
-            return String(value || "")
-              .replace(/\u00a0/g, " ")
-              .replace(/[ \t]+/g, " ")
-              .trim();
-          }
+          if not path.exists():
+              force_full = True
+              reason = "recalls.json assente"
+          else:
+              data = json.loads(path.read_text(encoding="utf-8"))
+              provisional = [
+                  item
+                  for item in (data.get("recalls", []) or [])
+                  if (
+                      str(item.get("metodoEstrazione", "") or "").strip().upper() == "RSS"
+                      or str(item.get("criterioMatch", "") or "").strip().upper() == "RSS_MINISTERO"
+                  )
+              ]
 
-          function decodeXml(value) {
-            return String(value || "")
-              .replace(/&amp;/g, "&")
-              .replace(/&lt;/g, "<")
-              .replace(/&gt;/g, ">")
-              .replace(/&quot;/g, '"')
-              .replace(/&#39;/g, "'");
-          }
+              if provisional:
+                  force_full = True
+                  reason = f"{len(provisional)} richiamo/i RSS da completare"
+              else:
+                  raw = str(data.get("generatedAt", "") or "").strip()
+                  try:
+                      generated = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+                      if generated.tzinfo is None:
+                          generated = generated.replace(tzinfo=timezone.utc)
+                      age = datetime.now(timezone.utc) - generated.astimezone(timezone.utc)
+                      if age.total_seconds() >= 12 * 60 * 60:
+                          force_full = True
+                          reason = "aggiornamento completo di sicurezza dopo 12 ore"
+                      else:
+                          reason = (
+                              "nessun richiamo provvisorio: "
+                              "il controllo remoto è affidato al watcher ogni 30 minuti"
+                          )
+                  except Exception:
+                      force_full = True
+                      reason = "data ultimo aggiornamento non valida"
 
-          function extractTag(block, tag) {
-            const regex = new RegExp(
-              `<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${tag}>`,
-              "i"
-            );
+          print("Decisione:", "AGGIORNA" if force_full else "STOP")
+          print("Motivo:", reason)
 
-            const match = block.match(regex);
-
-            if (!match) {
-              return "";
-            }
-
-            let value = match[1];
-
-            value = value
-              .replace(/^<!\[CDATA\[/, "")
-              .replace(/\]\]>$/, "");
-
-            return clean(decodeXml(value));
-          }
-
-          function parseLinks(xml) {
-            const blocks =
-              xml.match(/<item\b[\s\S]*?<\/item>/gi) || [];
-
-            const links = [];
-
-            for (const block of blocks) {
-              const link = extractTag(block, "link");
-
-              if (
-                link &&
-                link.includes("/ext-avviso-sicurezza-alimentare/")
-              ) {
-                links.push(link);
-              }
-            }
-
-            return [...new Set(links)];
-          }
-
-          function safeId(urlString) {
-            try {
-              const url = new URL(urlString);
-              const parts = url.pathname.split("/").filter(Boolean);
-              let slug = parts[parts.length - 1] || "";
-
-              slug = slug
-                .toLowerCase()
-                .replace(/[^a-z0-9_-]/g, "-")
-                .replace(/-+/g, "-")
-                .replace(/^-|-$/g, "");
-
-              return slug;
-            } catch {
-              return "";
-            }
-          }
-
-          async function superaChallenge(page) {
-            for (let attempt = 0; attempt < 5; attempt++) {
-              await page.waitForTimeout(3500);
-
-              const body = await page
-                .locator("body")
-                .innerText()
-                .catch(() => "");
-
-              const blocked =
-                /browser validation|please enable javascript|please enable cookies/i
-                  .test(body);
-
-              if (!blocked) {
-                return true;
-              }
-
-              await page.reload({
-                waitUntil: "domcontentloaded",
-                timeout: 90000
-              });
-            }
-
-            return false;
-          }
-
-          let forceFull = false;
-          let reason = "";
-
-          try {
-            if (!fs.existsSync("recalls.json")) {
-              forceFull = true;
-              reason = "recalls.json assente";
-            }
-
-            let previous = { recalls: [], generatedAt: "" };
-
-            if (!forceFull) {
-              previous = JSON.parse(
-                fs.readFileSync("recalls.json", "utf8")
-              );
-
-              const provisionalIds = (previous.recalls || [])
-                .filter(item =>
-                  String(item?.metodoEstrazione || "")
-                    .trim()
-                    .toUpperCase() === "RSS"
-                )
-                .map(item => String(item?.id || "").trim())
-                .filter(Boolean);
-
-              if (provisionalIds.length > 0) {
-                forceFull = true;
-                reason =
-                  provisionalIds.length +
-                  " richiamo/i RSS provvisorio/i da arricchire";
-              }
-
-              const generatedAt = Date.parse(previous.generatedAt || "");
-
-              if (
-                !forceFull &&
-                (
-                  !Number.isFinite(generatedAt) ||
-                  Date.now() - generatedAt >= 12 * 60 * 60 * 1000
-                )
-              ) {
-                forceFull = true;
-                reason = "aggiornamento completo di sicurezza dopo 12 ore";
-              }
-            }
-
-            if (!forceFull) {
-              const browser = await chromium.launch({ headless: true });
-
-              try {
-                const context = await browser.newContext({
-                  locale: "it-IT",
-                  viewport: { width: 1400, height: 1000 },
-                  userAgent:
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-                    "AppleWebKit/537.36 (KHTML, like Gecko) " +
-                    "Chrome/131.0.0.0 Safari/537.36"
-                });
-
-                const page = await context.newPage();
-
-                await page.goto("https://www.salute.gov.it/", {
-                  waitUntil: "domcontentloaded",
-                  timeout: 90000
-                });
-
-                if (!(await superaChallenge(page))) {
-                  throw new Error("Protezione Ministero non superata");
-                }
-
-                const result = await page.evaluate(async url => {
-                  const response = await fetch(url, {
-                    credentials: "include"
-                  });
-
-                  return {
-                    ok: response.ok,
-                    status: response.status,
-                    text: await response.text()
-                  };
-                }, FEED_URL);
-
-                if (
-                  !result.ok ||
-                  result.status !== 200 ||
-                  !result.text.includes("<item")
-                ) {
-                  throw new Error(`Feed non valido HTTP ${result.status}`);
-                }
-
-                const feedIds = parseLinks(result.text)
-                  .map(safeId)
-                  .filter(Boolean);
-
-                const previousIds = new Set(
-                  previous.recalls
-                    .map(item => String(item.id || "").trim())
-                    .filter(Boolean)
-                );
-
-                const newIds = feedIds.filter(id => !previousIds.has(id));
-
-                console.log("Richiami nel feed:", feedIds.length);
-                console.log("Nuovi ID nel feed:", newIds.length);
-
-                if (newIds.length > 0) {
-                  forceFull = true;
-                  reason = `${newIds.length} nuovo/i richiamo/i nel feed`;
-                } else {
-                  reason = "nessun nuovo richiamo nel feed";
-                }
-
-                await page.close();
-                await context.close();
-              } finally {
-                await browser.close();
-              }
-            }
-          } catch (error) {
-            // Fail-safe: se il controllo leggero non riesce, eseguiamo
-            // l'aggiornamento completo invece di rischiare di perdere richiami.
-            forceFull = true;
-            reason =
-              "controllo RSS non riuscito: " +
-              String(error?.message || error);
-          }
-
-          console.log("Decisione:", forceFull ? "AGGIORNA" : "STOP");
-          console.log("Motivo:", reason);
-
-          fs.appendFileSync(
-            process.env.GITHUB_OUTPUT,
-            `aggiorna=${forceFull ? "true" : "false"}\n`
-          );
-          EOF
-
-          node controlla-feed.mjs
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"aggiorna={'true' if force_full else 'false'}\n")
+          PYEOF
 
       - name: Nessuna novità - termina controllo leggero
         if: steps.controllo_rss.outputs.aggiorna != 'true'
