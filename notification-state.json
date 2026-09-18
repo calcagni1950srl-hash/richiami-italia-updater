@@ -3,25 +3,32 @@
   "initializedFrom": "recalls.json",
   "initializedAt": "2026-09-18T13:09:57.769Z",
   "notifiedIds": [
+    "amaretti-gallina",
     "amaretti-gallina-0",
     "amaretti-gallina-1",
     "amaretti-gallina-2",
+    "amaretti-gallini",
     "brie-1-kg-60-neutre",
+    "brie-tour-de-marze",
+    "caciotta-di-pecora-primo-sale",
+    "canestro",
+    "cenestro",
+    "duble-5",
     "filone-di-tonno-pinne-gialle-decongelato-senza-pelle-sottovuoto",
     "pancetta-affumicata-sottovuoto",
     "pancetta-affumicata-sottovuoto-0",
-    "amaretti-gallini",
-    "amaretti-gallina",
-    "uova-medie-di-cat-da-allevamento-terra-abf-despar",
-    "uova-di-cat-di-vario-calibro-da-allevamento-terra",
-    "uova-di-cat-medie-da-allevamento-terra-selex",
-    "uova-di-cat-medie-da-allevamento-terra-selex-0",
     "speck-e-brie",
     "speck-e-brie-0",
     "speck-e-brie-1",
-    "cenestro",
-    "canestro",
-    "caciotta-di-pecora-primo-sale",
-    "duble-5"
-  ]
+    "uova-di-cat-di-vario-calibro-da-allevamento-terra",
+    "uova-di-cat-medie-da-allevamento-terra-selex",
+    "uova-di-cat-medie-da-allevamento-terra-selex-0",
+    "uova-medie-di-cat-da-allevamento-terra-abf-despar"
+  ],
+  "lastCheckedAt": "2026-09-18T13:11:37.981Z",
+  "lastNotificationAt": "2026-09-18T13:11:38.795464+00:00",
+  "lastNotificationIds": [
+    "brie-tour-de-marze"
+  ],
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/4055667600711181759"
 }
