@@ -1,5 +1,6 @@
 import json
 import os
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -114,20 +115,33 @@ payload = {
     }
 }
 
-response = requests.post(
-    endpoint,
-    headers={
-        "Authorization": "Bearer " + credentials.token,
-        "Content-Type": "application/json; charset=UTF-8",
-    },
-    json=payload,
-    timeout=30,
-)
+response = None
 
-print("Firebase HTTP:", response.status_code)
+for attempt in range(1, 4):
+    try:
+        response = requests.post(
+            endpoint,
+            headers={
+                "Authorization": "Bearer " + credentials.token,
+                "Content-Type": "application/json; charset=UTF-8",
+            },
+            json=payload,
+            timeout=30,
+        )
 
-if not response.ok:
-    print("Risposta Firebase:", response.text)
+        print(f"Firebase tentativo {attempt}/3 HTTP:", response.status_code)
+
+        if response.ok:
+            break
+
+        print("Risposta Firebase:", response.text)
+    except requests.RequestException as error:
+        print(f"Errore Firebase tentativo {attempt}/3:", error)
+
+    if attempt < 3:
+        time.sleep(5)
+
+if response is None or not response.ok:
     raise SystemExit("ERRORE durante l'invio Firebase. Stato notifiche NON aggiornato.")
 
 message_id = ""
