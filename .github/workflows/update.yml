@@ -2948,7 +2948,7 @@ jobs:
           )
 
           current_path.write_text(
-              json.dumps(current, ensure_ascii=False, indent=2) + "\\n",
+              json.dumps(current, ensure_ascii=False, indent=2) + "\n",
               encoding='utf-8'
           )
 
