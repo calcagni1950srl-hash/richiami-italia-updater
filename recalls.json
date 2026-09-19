@@ -18,7 +18,7 @@
       "dataPubblicazione": "17 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/brie-tour-de-marze",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Formaggio%20Brie_1789655650.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/brie-tour-de-marze-23f20e6e40.png",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/brie-tour-de-marze-00c219f8b8.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
@@ -127,7 +127,7 @@
       "stato": "PASS",
       "metodoEstrazione": "OCR",
       "note": [
-        "Immagine prodotto non estratta"
+        "Foto prodotto non individuata nel PDF ufficiale"
       ]
     },
     {
