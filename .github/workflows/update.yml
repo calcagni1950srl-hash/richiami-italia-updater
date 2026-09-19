@@ -2971,6 +2971,7 @@ jobs:
       - name: Aggiorna recalls.json nel repository in modo sicuro
         if: steps.controllo_rss.outputs.aggiorna == 'true'
         run: |
+          set -e
           git config user.name "Richiami Italia Bot"
           git config user.email "actions@github.com"
 
@@ -2982,86 +2983,7 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
 
-            python - <<'PYMERGEFINAL'
-            import json
-            from pathlib import Path
-
-            generated = json.loads(
-                Path('.generated-recalls.json').read_text(encoding='utf-8')
-            )
-            latest = json.loads(
-                Path('recalls.json').read_text(encoding='utf-8')
-            )
-
-            latest_by_id = {
-                str(item.get('id', '') or '').strip(): item
-                for item in latest.get('recalls', [])
-                if str(item.get('id', '') or '').strip()
-            }
-
-            generated_ids = set()
-
-            for item in generated.get('recalls', []):
-                rid = str(item.get('id', '') or '').strip()
-                if not rid:
-                    continue
-
-                generated_ids.add(rid)
-                latest_item = latest_by_id.get(rid) or {}
-                latest_image = str(
-                    latest_item.get('immagine', '') or ''
-                ).strip()
-
-                # Il workflow database non deve mai sostituire una foto
-                # già validata da image-quality.
-                if latest_image and '/images/' in latest_image:
-                    item['immagine'] = latest_image
-
-            carry = []
-
-            for item in latest.get('recalls', []):
-                rid = str(item.get('id', '') or '').strip()
-                method = str(
-                    item.get('metodoEstrazione', '') or ''
-                ).strip().upper()
-
-                if rid and rid not in generated_ids and method == 'RSS':
-                    carry.append(item)
-                    generated_ids.add(rid)
-
-            if carry:
-                generated['recalls'] = (
-                    carry + generated.get('recalls', [])
-                )
-                print(
-                    'Richiami RSS arrivati durante il run preservati:',
-                    len(carry)
-                )
-
-            generated['totale'] = len(
-                generated.get('recalls', [])
-            )
-            generated['pass'] = sum(
-                1
-                for item in generated.get('recalls', [])
-                if str(
-                    item.get('stato', '') or ''
-                ).strip().upper() == 'PASS'
-            )
-            generated['daVerificare'] = (
-                generated['totale'] -
-                generated['pass']
-            )
-
-            Path('recalls.json').write_text(
-                json.dumps(
-                    generated,
-                    ensure_ascii=False,
-                    indent=2
-                ) + '\n',
-                encoding='utf-8'
-            )
-            PYMERGEFINAL
+            python scripts/merge_generated_recalls.py               .generated-recalls.json               recalls.json
 
             git add recalls.json
 
