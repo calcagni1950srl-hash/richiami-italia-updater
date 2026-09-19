@@ -1,0 +1,82 @@
+name: Test merge dati richiami
+
+on:
+  push:
+    paths:
+      - ".github/workflows/test-merge.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Simula scheda provvisoria che diventa completa
+        run: |
+          mkdir -p /tmp/merge-test
+
+          cat > /tmp/merge-test/latest.json <<'JSON'
+          {
+            "recalls": [
+              {
+                "id": "brie-test",
+                "marca": "Tour De Marze",
+                "prodotto": "Brie Tour De Marze",
+                "lotto": "",
+                "tmc": "",
+                "produttore": "",
+                "motivo": "Dati del richiamo in aggiornamento",
+                "immagine": "https://raw.githubusercontent.com/x/images/brie-test-hash.png",
+                "stato": "DA_VERIFICARE",
+                "metodoEstrazione": "RSS"
+              }
+            ]
+          }
+          JSON
+
+          cat > /tmp/merge-test/generated.json <<'JSON'
+          {
+            "recalls": [
+              {
+                "id": "brie-test",
+                "marca": "Paturages Comtois",
+                "prodotto": "Brie Tour De Marze",
+                "lotto": "BPBY2",
+                "tmc": "24-09-2026",
+                "produttore": "FR70.002.001",
+                "motivo": "Richiamo per rischio microbiologico",
+                "immagine": "https://raw.githubusercontent.com/x/images/brie-test-grezza.png",
+                "criterioMatch": "LOTTO_E_TMC",
+                "stato": "PASS",
+                "metodoEstrazione": "OCR",
+                "note": []
+              }
+            ]
+          }
+          JSON
+
+          python scripts/merge_generated_recalls.py             /tmp/merge-test/generated.json             /tmp/merge-test/latest.json
+
+          python - <<'PY'
+          import json
+          data=json.load(open("/tmp/merge-test/latest.json",encoding="utf-8"))
+          item=data["recalls"][0]
+          assert item["motivo"] == "Richiamo per rischio microbiologico"
+          assert item["lotto"] == "BPBY2"
+          assert item["tmc"] == "24-09-2026"
+          assert item["produttore"] == "FR70.002.001"
+          assert item["stato"] == "PASS"
+          assert item["metodoEstrazione"] == "OCR"
+          assert item["immagine"].endswith("brie-test-hash.png")
+          assert data["totale"] == 1
+          assert data["pass"] == 1
+          assert data["daVerificare"] == 0
+          print("✅ Merge provvisorio -> completo superato")
+          PY
