@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-20T05:03:08.633239Z",
+  "generatedAt": "2026-09-20T18:58:33.470162Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
@@ -127,7 +127,7 @@
       "stato": "PASS",
       "metodoEstrazione": "OCR",
       "note": [
-        "Foto prodotto non individuata nel PDF ufficiale"
+        "Immagine prodotto non estratta"
       ]
     },
     {
