@@ -1,12 +1,88 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-21T13:05:28.452485Z",
+  "generatedAt": "2026-09-21T14:30:34.899439+00:00",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
-  "totale": 20,
+  "totale": 24,
   "pass": 18,
-  "daVerificare": 2,
+  "daVerificare": 6,
   "recalls": [
+    {
+      "id": "mais-pop-corn-2",
+      "marca": "",
+      "prodotto": "MAIS PER POP CORN",
+      "lotto": "",
+      "tmc": "",
+      "produttore": "",
+      "motivo": "Dati del richiamo in aggiornamento",
+      "dataPubblicazione": "21/09/2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mais-pop-corn-2",
+      "pdfMinistero": "",
+      "immagine": "",
+      "criterioMatch": "RSS_MINISTERO",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "RSS",
+      "note": [
+        "Richiamo rilevato dal feed ufficiale; dettagli e foto in aggiornamento"
+      ]
+    },
+    {
+      "id": "mais-italiano-pop-corn",
+      "marca": "",
+      "prodotto": "MAIS ITALIANO PER POP CORN",
+      "lotto": "",
+      "tmc": "",
+      "produttore": "",
+      "motivo": "Dati del richiamo in aggiornamento",
+      "dataPubblicazione": "21/09/2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mais-italiano-pop-corn",
+      "pdfMinistero": "",
+      "immagine": "",
+      "criterioMatch": "RSS_MINISTERO",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "RSS",
+      "note": [
+        "Richiamo rilevato dal feed ufficiale; dettagli e foto in aggiornamento"
+      ]
+    },
+    {
+      "id": "mais-italiano-pop-corn-0",
+      "marca": "",
+      "prodotto": "MAIS ITALIANO PER POP CORN",
+      "lotto": "",
+      "tmc": "",
+      "produttore": "",
+      "motivo": "Dati del richiamo in aggiornamento",
+      "dataPubblicazione": "21/09/2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mais-italiano-pop-corn-0",
+      "pdfMinistero": "",
+      "immagine": "",
+      "criterioMatch": "RSS_MINISTERO",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "RSS",
+      "note": [
+        "Richiamo rilevato dal feed ufficiale; dettagli e foto in aggiornamento"
+      ]
+    },
+    {
+      "id": "mais-pop-corn-3",
+      "marca": "",
+      "prodotto": "MAIS PER POP CORN",
+      "lotto": "",
+      "tmc": "",
+      "produttore": "",
+      "motivo": "Dati del richiamo in aggiornamento",
+      "dataPubblicazione": "21/09/2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mais-pop-corn-3",
+      "pdfMinistero": "",
+      "immagine": "",
+      "criterioMatch": "RSS_MINISTERO",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "RSS",
+      "note": [
+        "Richiamo rilevato dal feed ufficiale; dettagli e foto in aggiornamento"
+      ]
+    },
     {
       "id": "brie-tour-de-marze",
       "marca": "Paturages Comtois",
