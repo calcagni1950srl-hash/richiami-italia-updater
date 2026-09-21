@@ -15,6 +15,10 @@
     "cenestro",
     "duble-5",
     "filone-di-tonno-pinne-gialle-decongelato-senza-pelle-sottovuoto",
+    "mais-italiano-pop-corn",
+    "mais-italiano-pop-corn-0",
+    "mais-pop-corn-2",
+    "mais-pop-corn-3",
     "pancetta-affumicata-sottovuoto",
     "pancetta-affumicata-sottovuoto-0",
     "speck-e-brie",
@@ -25,10 +29,13 @@
     "uova-di-cat-medie-da-allevamento-terra-selex-0",
     "uova-medie-di-cat-da-allevamento-terra-abf-despar"
   ],
-  "lastCheckedAt": "2026-09-18T13:15:29.840Z",
-  "lastNotificationAt": "2026-09-18T13:11:38.795464+00:00",
+  "lastCheckedAt": "2026-09-21T14:30:34.346Z",
+  "lastNotificationAt": "2026-09-21T14:30:37.556811+00:00",
   "lastNotificationIds": [
-    "brie-tour-de-marze"
+    "mais-pop-corn-2",
+    "mais-italiano-pop-corn",
+    "mais-italiano-pop-corn-0",
+    "mais-pop-corn-3"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/4055667600711181759"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/320727762053930831"
 }
