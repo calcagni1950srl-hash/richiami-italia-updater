@@ -2868,12 +2868,17 @@ jobs:
           cp output/recalls.json recalls.json
 
           python - <<'PYMERGE'
+          import hashlib
           import json
+          import shutil
           from pathlib import Path
           from urllib.parse import urlparse
 
           current_path = Path('recalls.json')
           previous_path = Path('recalls-precedenti.json')
+          images_dir = Path('images')
+          source_images_dir = Path('output/images')
+          images_dir.mkdir(parents=True, exist_ok=True)
 
           current = json.loads(current_path.read_text(encoding='utf-8'))
           previous = (
@@ -2888,33 +2893,14 @@ jobs:
               if str(item.get('id', '') or '').strip()
           }
 
-          current_ids = {
-              str(item.get('id', '') or '').strip()
-              for item in current.get('recalls', [])
-              if str(item.get('id', '') or '').strip()
-          }
-
-          carried_provisional = []
-
-          for old_item in previous.get('recalls', []):
-              rid = str(old_item.get('id', '') or '').strip()
-              method = str(old_item.get('metodoEstrazione', '') or '').strip().upper()
-
-              if rid and rid not in current_ids and method == 'RSS':
-                  carried_provisional.append(old_item)
-                  current_ids.add(rid)
-
-          if carried_provisional:
-              current['recalls'] = (
-                  carried_provisional +
-                  current.get('recalls', [])
-              )
-              print(
-                  'Richiami RSS provvisori preservati:',
-                  len(carried_provisional)
-              )
+          raw_base = (
+              'https://raw.githubusercontent.com/'
+              'calcagni1950srl-hash/richiami-italia-updater/'
+              'refs/heads/main/images'
+          )
 
           preserved = 0
+          published_new = 0
           awaiting_quality = 0
 
           for item in current.get('recalls', []):
@@ -2922,38 +2908,40 @@ jobs:
               old_item = previous_by_id.get(rid)
               old_url = str((old_item or {}).get('immagine', '') or '').strip()
 
+              # Per i richiami già presenti non tocchiamo mai la foto
+              # validata e versionata già pubblicata.
               if old_url and '/images/' in old_url:
                   filename = Path(urlparse(old_url).path).name
-                  if filename and (Path('images') / filename).exists():
+                  if filename and (images_dir / filename).exists():
                       item['immagine'] = old_url
                       preserved += 1
                       continue
 
+              # Per un richiamo nuovo usiamo subito la foto estratta nello
+              # stesso run, quando il PDF è già disponibile nella sessione
+              # Ministero funzionante. Il controllo qualità successivo potrà
+              # migliorarla, ma il richiamo non resta senza immagine solo
+              # perché il secondo download del PDF viene bloccato.
+              source = source_images_dir / f'{rid}.png'
+              if source.exists() and source.stat().st_size >= 10_000:
+                  digest = hashlib.sha256(source.read_bytes()).hexdigest()[:10]
+                  filename = f'{rid}-{digest}.png'
+                  shutil.copy2(source, images_dir / filename)
+                  item['immagine'] = f'{raw_base}/{filename}'
+                  published_new += 1
+                  continue
+
               item['immagine'] = ''
               awaiting_quality += 1
 
-          current['totale'] = len(
-              current.get('recalls', [])
-          )
-
-          current['pass'] = sum(
-              1
-              for item in current.get('recalls', [])
-              if str(item.get('stato', '') or '').strip().upper() == 'PASS'
-          )
-
-          current['daVerificare'] = (
-              current['totale'] -
-              current['pass']
-          )
-
           current_path.write_text(
-              json.dumps(current, ensure_ascii=False, indent=2) + "\n",
+              json.dumps(current, ensure_ascii=False, indent=2) + '\n',
               encoding='utf-8'
           )
 
           print('Foto validate preservate:', preserved)
-          print('Foto in attesa del controllo qualità:', awaiting_quality)
+          print('Foto nuove pubblicate subito:', published_new)
+          print('Foto ancora in attesa del controllo qualità:', awaiting_quality)
           PYMERGE
 
       - name: Salva artifact
