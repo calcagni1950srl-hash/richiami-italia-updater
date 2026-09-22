@@ -1,31 +1,12 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-22T13:28:43.218784Z",
+  "generatedAt": "2026-09-22T14:32:06.649110Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
   "pass": 16,
   "daVerificare": 4,
   "recalls": [
-    {
-      "id": "salame-stagionato-al-tartufo",
-      "marca": "Salumificio F.lli Costantini",
-      "prodotto": "Salame stagionato al tartufo",
-      "lotto": "20260729",
-      "tmc": "Feb. 2027",
-      "produttore": "UE IT 1107 M",
-      "motivo": "Richiamo per rischio microbiologico",
-      "dataPubblicazione": "22 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salame-stagionato-al-tartufo",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modulorichiamo1_1790069606.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salame-stagionato-al-tartufo-d77d77fc4d.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "TMC da verificare"
-      ]
-    },
     {
       "id": "salame-stagionato-al-trtufo",
       "marca": "Salumificio F.lli Costantini",
@@ -46,6 +27,25 @@
       ]
     },
     {
+      "id": "salame-stagionato-al-tartufo",
+      "marca": "Salumificio F.lli Costantini",
+      "prodotto": "Salame stagionato al tartufo",
+      "lotto": "20260729",
+      "tmc": "Feb. 2027",
+      "produttore": "UE IT 1107 M",
+      "motivo": "Richiamo per rischio microbiologico",
+      "dataPubblicazione": "22 settembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salame-stagionato-al-tartufo",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modulorichiamo1_1790078556.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salame-stagionato-al-tartufo-d77d77fc4d.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "OCR",
+      "note": [
+        "TMC da verificare"
+      ]
+    },
+    {
       "id": "mais-pop-corn-2",
       "marca": "FIOR DI LOTO",
       "prodotto": "MAIS PER POP CORN",
@@ -56,7 +56,7 @@
       "dataPubblicazione": "21 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mais-pop-corn-2",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/MODULORICHIAMOMAISPERPOPCORN400grmarchioFIORDILOTOLotto60183TMC27_03_2028_1789992177.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/mais-pop-corn-2-d88ae60999.png",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/mais-pop-corn-2-674d2bfd06.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
@@ -107,7 +107,7 @@
       "dataPubblicazione": "21 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mais-pop-corn-3",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/richiamoFiordiLoto2_1789992183.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/mais-pop-corn-3-464dd47b83.png",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/mais-pop-corn-3-fb665382ea.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
@@ -124,7 +124,7 @@
       "dataPubblicazione": "17 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/brie-tour-de-marze",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Formaggio%20Brie_1789655650.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/brie-tour-de-marze-00c219f8b8.png",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/brie-tour-de-marze-bf9fb1820e.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
@@ -141,7 +141,7 @@
       "dataPubblicazione": "16 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/amaretti-gallina-0",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/CARTELLO%20DI%20RICHIAMO%20AMARETTI%20GALLINA%20310%20GR._1789569674.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/amaretti-gallina-0-ee1ece3aef.png",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/amaretti-gallina-0-2fa481dc36.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
