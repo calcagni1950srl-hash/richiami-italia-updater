@@ -2,7 +2,12 @@ name: Aggiorna Database Richiami Italia
 
 on:
   workflow_dispatch:
-
+    inputs:
+      force_full:
+        description: "Esegui aggiornamento completo anche senza nuovi richiami"
+        required: false
+        default: false
+        type: boolean
 
   schedule:
     - cron: "17 */2 * * *"
@@ -41,6 +46,8 @@ jobs:
 
       - name: Controlla se serve aggiornamento completo
         id: controllo_rss
+        env:
+          FORCE_FULL: ${{ inputs.force_full || false }}
         run: |
           python - <<'PYEOF'
           import json
@@ -51,8 +58,17 @@ jobs:
           path = Path("recalls.json")
           force_full = False
           reason = ""
+          manual_force = (
+              os.environ.get("FORCE_FULL", "false")
+              .strip()
+              .lower()
+              == "true"
+          )
 
-          if not path.exists():
+          if manual_force:
+              force_full = True
+              reason = "aggiornamento completo manuale richiesto"
+          elif not path.exists():
               force_full = True
               reason = "recalls.json assente"
           else:
