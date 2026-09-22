@@ -18,7 +18,7 @@
       "dataPubblicazione": "21 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mais-pop-corn-2",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/MODULORICHIAMOMAISPERPOPCORN400grmarchioFIORDILOTOLotto60183TMC27_03_2028_1789992177.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/mais-pop-corn-2-2756a3f8d8.png",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/mais-pop-corn-2-d88ae60999.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
@@ -35,7 +35,7 @@
       "dataPubblicazione": "21 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mais-italiano-pop-corn",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/MODULORICHIAMOMAISPERPOPCORN400grmarchioPROBIOSLotto60183TMC30_04_2028_1789992179.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/mais-italiano-pop-corn-d60d74e572.png",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/mais-italiano-pop-corn-83e9e9cd40.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
@@ -52,7 +52,7 @@
       "dataPubblicazione": "21 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mais-italiano-pop-corn-0",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/MODULORICHIAMOMAISPERPOPCORN400grmarchioPROBIOSLotto60183TMC18_06_2028_1789992181.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/mais-italiano-pop-corn-0-d2026cde59.png",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/mais-italiano-pop-corn-0-275ba1adf8.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
@@ -69,7 +69,7 @@
       "dataPubblicazione": "21 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mais-pop-corn-3",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/richiamoFiordiLoto2_1789992183.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/mais-pop-corn-3-aef7271596.png",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/mais-pop-corn-3-464dd47b83.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
@@ -195,7 +195,7 @@
       "stato": "PASS",
       "metodoEstrazione": "OCR",
       "note": [
-        "Immagine prodotto non estratta"
+        "Foto prodotto non individuata nel PDF ufficiale"
       ]
     },
     {
