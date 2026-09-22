@@ -30,6 +30,9 @@ jobs:
           unzip -q /tmp/salame-artifact.zip -d /tmp/salame-artifact
           find /tmp/salame-artifact -maxdepth 3 -type f -print
 
+      - name: Installa Pillow
+        run: python -m pip install pillow
+
       - name: Pubblica esattamente le due foto verificate
         run: |
           python - <<'PY'
