@@ -83,3 +83,5 @@ jobs:
         with:
           name: salame-test-nuova-logica
           path: verifica/
+
+# rerun con ritaglio area fotografica interna
