@@ -1,3 +1,4 @@
+import hashlib
 import json
 import os
 import time
@@ -11,6 +12,7 @@ from google.oauth2 import service_account
 STATE_PATH = Path("notification-state.json")
 PENDING_PATH = Path("notification-pending.json")
 RESULT_PATH = Path("notification-result.json")
+MAX_SUCCESSFUL_ATTEMPTS = 3
 
 
 def load_json(path, default):
@@ -21,7 +23,10 @@ def load_json(path, default):
 
 
 pending = load_json(PENDING_PATH, {})
-state = load_json(STATE_PATH, {"version": 1, "notifiedIds": []})
+state = load_json(
+    STATE_PATH,
+    {"version": 2, "notifiedIds": [], "deliveryAttempts": {}},
+)
 
 pending_items = pending.get("newItems", []) or []
 
@@ -31,8 +36,12 @@ existing_ids = {
     if str(value).strip()
 }
 
-# Ricalcola i nuovi elementi usando lo stato più recente presente su main.
-# Questo evita doppie notifiche se un run era partito da un commit vecchio.
+attempts = {
+    str(key).strip(): int(value or 0)
+    for key, value in (state.get("deliveryAttempts", {}) or {}).items()
+    if str(key).strip()
+}
+
 new_items = [
     item
     for item in pending_items
@@ -40,41 +49,27 @@ new_items = [
     and str(item.get("id", "") or "").strip() not in existing_ids
 ]
 
-feed_ids = [
-    str(value).strip()
-    for value in (pending.get("feedIds", []) or [])
-    if str(value).strip()
-]
-
-def save_state(message_id=""):
-    merged = sorted(existing_ids.union(feed_ids))
-    state["version"] = 1
-    state["notifiedIds"] = merged
+if not new_items:
+    RESULT_PATH.write_text(
+        json.dumps(
+            {
+                "sentCount": 0,
+                "firstAttemptCount": 0,
+                "messageId": "",
+                "completedIds": [],
+            },
+            ensure_ascii=False,
+            indent=2,
+        ) + "\n",
+        encoding="utf-8",
+    )
+    state["version"] = 2
     state["lastCheckedAt"] = pending.get("checkedAt") or datetime.now(timezone.utc).isoformat()
-
-    if new_items:
-        state["lastNotificationAt"] = datetime.now(timezone.utc).isoformat()
-        state["lastNotificationIds"] = [
-            str(item.get("id", "")).strip()
-            for item in new_items
-            if str(item.get("id", "")).strip()
-        ]
-        if message_id:
-            state["lastFirebaseMessageId"] = message_id
-
     STATE_PATH.write_text(
         json.dumps(state, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
-
-
-if not new_items:
-    RESULT_PATH.write_text(
-        json.dumps({"sentCount": 0, "messageId": ""}, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-    )
     print("Nessun nuovo richiamo: nessuna notifica da inviare.")
-    print("Nessuna modifica a notification-state.json o recalls.json.")
     raise SystemExit(0)
 
 service_account_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT", "").strip()
@@ -105,6 +100,15 @@ else:
     title = f"{len(new_items)} nuovi richiami alimentari"
     body = "Il Ministero della Salute ha pubblicato nuovi richiami."
 
+ids = [
+    str(item.get("id", "") or "").strip()
+    for item in new_items
+    if str(item.get("id", "") or "").strip()
+]
+stable_key = "|".join(sorted(ids))
+tag_hash = hashlib.sha256(stable_key.encode("utf-8")).hexdigest()[:16]
+notification_tag = f"richiami_{tag_hash}"
+
 endpoint = f"https://fcm.googleapis.com/v1/projects/{project_id}/messages:send"
 
 payload = {
@@ -116,21 +120,27 @@ payload = {
         },
         "android": {
             "priority": "high",
+            "collapse_key": notification_tag,
+            "ttl": "3600s",
             "notification": {
                 "sound": "default",
+                "tag": notification_tag,
+                "notification_priority": "PRIORITY_MAX",
+                "default_sound": True,
+                "default_vibrate_timings": True,
             },
         },
         "data": {
             "tipo": "nuovi_richiami",
             "numero": str(len(new_items)),
-            "richiamo_id": str(new_items[0].get("id", "")) if len(new_items) == 1 else "",
+            "richiamo_id": ids[0] if len(ids) == 1 else "",
             "url_ministero": str(new_items[0].get("link", "")) if len(new_items) == 1 else "",
+            "retry_group": notification_tag,
         },
     }
 }
 
 response = None
-
 for attempt in range(1, 4):
     try:
         response = requests.post(
@@ -142,15 +152,12 @@ for attempt in range(1, 4):
             json=payload,
             timeout=30,
         )
-
-        print(f"Firebase tentativo {attempt}/3 HTTP:", response.status_code)
-
+        print(f"Firebase tentativo HTTP {attempt}/3:", response.status_code)
         if response.ok:
             break
-
         print("Risposta Firebase:", response.text)
     except requests.RequestException as error:
-        print(f"Errore Firebase tentativo {attempt}/3:", error)
+        print(f"Errore Firebase tentativo HTTP {attempt}/3:", error)
 
     if attempt < 3:
         time.sleep(5)
@@ -164,19 +171,64 @@ try:
 except Exception:
     pass
 
-print("✅ Notifica Firebase inviata al topic richiami.")
-print("Titolo:", title)
-print("Testo:", body)
-if message_id:
-    print("Message ID:", message_id)
+first_attempt_count = 0
+completed_ids = []
+for rid in ids:
+    previous = int(attempts.get(rid, 0) or 0)
+    if previous == 0:
+        first_attempt_count += 1
 
-save_state(message_id)
+    current = previous + 1
+    if current >= MAX_SUCCESSFUL_ATTEMPTS:
+        existing_ids.add(rid)
+        attempts.pop(rid, None)
+        completed_ids.append(rid)
+    else:
+        attempts[rid] = current
+
+state["version"] = 2
+state["notifiedIds"] = sorted(existing_ids)
+state["deliveryAttempts"] = dict(sorted(attempts.items()))
+state["lastCheckedAt"] = pending.get("checkedAt") or datetime.now(timezone.utc).isoformat()
+state["lastNotificationAt"] = datetime.now(timezone.utc).isoformat()
+state["lastNotificationIds"] = ids
+state["lastFirebaseMessageId"] = message_id
+state["lastNotificationAttempt"] = {
+    rid: (
+        MAX_SUCCESSFUL_ATTEMPTS
+        if rid in completed_ids
+        else attempts.get(rid, 0)
+    )
+    for rid in ids
+}
+
+STATE_PATH.write_text(
+    json.dumps(state, ensure_ascii=False, indent=2) + "\n",
+    encoding="utf-8",
+)
 
 RESULT_PATH.write_text(
     json.dumps(
-        {"sentCount": len(new_items), "messageId": message_id},
+        {
+            "sentCount": len(new_items),
+            "firstAttemptCount": first_attempt_count,
+            "messageId": message_id,
+            "completedIds": completed_ids,
+        },
         ensure_ascii=False,
         indent=2,
     ) + "\n",
     encoding="utf-8",
 )
+
+print("✅ Notifica Firebase accettata dal topic richiami.")
+print("Titolo:", title)
+print("Testo:", body)
+print("Tag/collapse key:", notification_tag)
+print("Tentativi riusciti per ID:")
+for rid in ids:
+    done = rid in existing_ids
+    count = MAX_SUCCESSFUL_ATTEMPTS if done else attempts.get(rid, 0)
+    print(f" - {rid}: {count}/{MAX_SUCCESSFUL_ATTEMPTS}" + (" COMPLETATO" if done else ""))
+if message_id:
+    print("Message ID:", message_id)
