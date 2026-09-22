@@ -113,9 +113,9 @@ jobs:
           nuovi="$(python - <<'PY'
           import json
           from pathlib import Path
-          path=Path("notification-pending.json")
+          path=Path("notification-result.json")
           data=json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
-          print(len(data.get("newItems", []) or []))
+          print(int(data.get("sentCount", 0) or 0))
           PY
           )"
 
