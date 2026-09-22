@@ -115,6 +115,11 @@ for recall in recalls:
         'non consumare il prodotto' in text
         or 'inserire immagine' in text
         or 'restituirlo presso' in text
+        or 'avvertenze' in text
+        or 'motivo del richiamo' in text
+        or 'acquistato' in text
+        or 'riconsegnare il prodotto' in text
+        or 'procedere al suo utilizzo' in text
     )
 
     if not contaminated:
