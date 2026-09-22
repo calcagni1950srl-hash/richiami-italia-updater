@@ -4,6 +4,8 @@ import json
 import subprocess
 from pathlib import Path
 
+import cv2
+import numpy as np
 from PIL import Image
 
 PDF_DIR = Path('.quality/pdf')
@@ -28,6 +30,99 @@ def image_text(path):
         'tesseract', str(path), 'stdout', '-l', 'ita', '--psm', '11'
     ])
     return result.stdout.lower()
+
+
+def crop_photo_inside_form(image):
+    """Rimuove bordo/modulo quando una foto valida è dentro un riquadro del form."""
+    img = image.convert('RGB')
+    arr = np.asarray(img)
+    h, w = arr.shape[:2]
+
+    if w < 180 or h < 140:
+        return None
+
+    gray = cv2.cvtColor(arr, cv2.COLOR_RGB2GRAY)
+    hsv = cv2.cvtColor(arr, cv2.COLOR_RGB2HSV)
+    r = arr[:, :, 0].astype(np.int16)
+    g = arr[:, :, 1].astype(np.int16)
+    b = arr[:, :, 2].astype(np.int16)
+
+    white_ratio = float(np.mean(np.all(arr >= 244, axis=2)))
+    pale_blue_ratio = float(np.mean(
+        (b > 220) & (g > 210) & (r > 180) & ((b - r) > 8)
+    ))
+    red_frame = (
+        (r > 80) &
+        (r > g * 1.35) &
+        (r > b * 1.35) &
+        (g < 180)
+    )
+    red_ratio = float(np.mean(red_frame))
+
+    # Interveniamo solo su immagini che hanno una firma tipica del modulo:
+    # molto bianco + fascia azzurra o bordo rosso.
+    if white_ratio < 0.30:
+        return None
+    if pale_blue_ratio < 0.012 and red_ratio < 0.002:
+        return None
+
+    mask = (
+        (gray < 244) |
+        (hsv[:, :, 1] >= 12)
+    ).astype(np.uint8) * 255
+
+    # Il bordo rosso del riquadro unisce artificialmente foto e spazio bianco:
+    # lo togliamo prima di cercare la vera area fotografica.
+    mask[red_frame] = 0
+    mask = cv2.morphologyEx(
+        mask,
+        cv2.MORPH_OPEN,
+        cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3)),
+        iterations=1,
+    )
+
+    contours, _ = cv2.findContours(
+        mask,
+        cv2.RETR_EXTERNAL,
+        cv2.CHAIN_APPROX_SIMPLE,
+    )
+
+    candidates = []
+    image_area = w * h
+    for contour in contours:
+        x, y, bw, bh = cv2.boundingRect(contour)
+        area = bw * bh
+        if bw < max(80, int(w * 0.12)):
+            continue
+        if bh < max(100, int(h * 0.25)):
+            continue
+        if area < image_area * 0.05:
+            continue
+        if max(bw / max(1, bh), bh / max(1, bw)) > 5.0:
+            continue
+        candidates.append((area, x, y, bw, bh))
+
+    if not candidates:
+        return None
+
+    _, x, y, bw, bh = max(candidates)
+    pad_x = max(2, int(bw * 0.01))
+    pad_y = max(2, int(bh * 0.01))
+
+    x1 = max(0, x - pad_x)
+    y1 = max(0, y - pad_y)
+    x2 = min(w, x + bw + pad_x)
+    y2 = min(h, y + bh + pad_y)
+
+    crop = img.crop((x1, y1, x2, y2)).convert('RGB')
+
+    # Evita correzioni che di fatto non ritagliano nulla.
+    if crop.width * crop.height > image_area * 0.85:
+        return None
+    if crop.width < 150 or crop.height < 150:
+        return None
+
+    return crop
 
 
 def versioned_filename(recall_id, image):
@@ -109,6 +204,12 @@ for recall in recalls:
 
     text = image_text(current)
 
+    # Se la foto è dentro un riquadro del modulo, ritagliamo prima la vera
+    # area fotografica interna. Questo elimina fascia azzurra, bordo rosso
+    # e spazio bianco senza tagliare il prodotto.
+    current_image = Image.open(current).convert('RGB')
+    replacement = crop_photo_inside_form(current_image)
+
     # Se nella foto finale sono rimaste frasi tipiche del modulo,
     # significa che abbiamo incluso ancora parte del foglio.
     contaminated = (
@@ -122,16 +223,16 @@ for recall in recalls:
         or 'procedere al suo utilizzo' in text
     )
 
-    if not contaminated:
+    if replacement is None and not contaminated:
         continue
 
-    pdf = PDF_DIR / f'{recall_id}.pdf'
-    if not pdf.exists():
-        continue
-
-    replacement = recover_standard_left_photo(pdf, recall_id)
     if replacement is None:
-        continue
+        pdf = PDF_DIR / f'{recall_id}.pdf'
+        if not pdf.exists():
+            continue
+        replacement = recover_standard_left_photo(pdf, recall_id)
+        if replacement is None:
+            continue
 
     new_name, png_bytes = versioned_filename(recall_id, replacement)
     target = IMAGES_DIR / new_name
