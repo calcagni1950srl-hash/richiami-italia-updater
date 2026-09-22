@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "initializedFrom": "recalls.json",
   "initializedAt": "2026-09-18T13:09:57.769Z",
   "notifiedIds": [
@@ -21,8 +21,6 @@
     "mais-pop-corn-3",
     "pancetta-affumicata-sottovuoto",
     "pancetta-affumicata-sottovuoto-0",
-    "salame-stagionato-al-tartufo",
-    "salame-stagionato-al-trtufo",
     "speck-e-brie",
     "speck-e-brie-0",
     "speck-e-brie-1",
@@ -37,5 +35,10 @@
     "salame-stagionato-al-tartufo",
     "salame-stagionato-al-trtufo"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/-8975318361572755639"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/-8975318361572755639",
+  "deliveryAttempts": {
+    "salame-stagionato-al-tartufo": 1,
+    "salame-stagionato-al-trtufo": 1
+  },
+  "recoveryReason": "2026-09-22: Firebase HTTP 200 senza ricezione confermata sul dispositivo; attivati retry controllati"
 }
