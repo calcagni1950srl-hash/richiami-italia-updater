@@ -21,6 +21,8 @@
     "mais-pop-corn-3",
     "pancetta-affumicata-sottovuoto",
     "pancetta-affumicata-sottovuoto-0",
+    "salame-stagionato-al-tartufo",
+    "salame-stagionato-al-trtufo",
     "speck-e-brie",
     "speck-e-brie-0",
     "speck-e-brie-1",
@@ -29,20 +31,17 @@
     "uova-di-cat-medie-da-allevamento-terra-selex-0",
     "uova-medie-di-cat-da-allevamento-terra-abf-despar"
   ],
-  "lastCheckedAt": "2026-09-22T13:58:01.148Z",
-  "lastNotificationAt": "2026-09-22T13:58:02.707280+00:00",
+  "lastCheckedAt": "2026-09-22T13:59:31.163Z",
+  "lastNotificationAt": "2026-09-22T13:59:32.338118+00:00",
   "lastNotificationIds": [
     "salame-stagionato-al-trtufo",
     "salame-stagionato-al-tartufo"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/-5163512967897356036",
-  "deliveryAttempts": {
-    "salame-stagionato-al-tartufo": 2,
-    "salame-stagionato-al-trtufo": 2
-  },
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/1686453960639300027",
+  "deliveryAttempts": {},
   "recoveryReason": "2026-09-22: Firebase HTTP 200 senza ricezione confermata sul dispositivo; attivati retry controllati",
   "lastNotificationAttempt": {
-    "salame-stagionato-al-trtufo": 2,
-    "salame-stagionato-al-tartufo": 2
+    "salame-stagionato-al-trtufo": 3,
+    "salame-stagionato-al-tartufo": 3
   }
 }
