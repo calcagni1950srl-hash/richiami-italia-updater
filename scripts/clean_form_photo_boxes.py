@@ -208,14 +208,77 @@ def slot_candidates(page_path):
 
 
 def clean_margins(image):
-    img=image.convert('RGB')
-    s=image_stats(img)
-    w,h=img.size
-    if s['white'] > .45 and s['color'] < .15:
-        return img.crop((int(w*.04),int(h*.20),int(w*.96),int(h*.90)))
-    if s['white'] > .45:
-        return img.crop((int(w*.01),int(h*.04),int(w*.99),int(h*.87)))
-    return img.crop((int(w*.01),int(h*.03),int(w*.99),int(h*.99)))
+    """
+    Rifila solo un eventuale bordo uniforme molto sottile.
+
+    In passato qui venivano rimossi fino al 13% del fondo e il 20% della
+    parte alta. Su prodotti lunghi (per esempio un salame) questo poteva
+    tagliare fisicamente il prodotto anche quando il riquadro fotografico
+    del PDF era corretto.
+
+    Regola nuova: preservare quasi tutto il riquadro fotografico. Se non
+    siamo certi che una fascia sia soltanto bordo uniforme, non la togliamo.
+    """
+    img = image.convert('RGB')
+    arr = np.asarray(img)
+    h, w = arr.shape[:2]
+
+    if w < 80 or h < 80:
+        return img
+
+    gray = cv2.cvtColor(arr, cv2.COLOR_RGB2GRAY)
+
+    # Cerchiamo soltanto bordi quasi uniformi e molto chiari/scuri entro
+    # massimo il 2% per lato. Non usiamo più crop percentuali fissi.
+    max_x = max(1, int(w * 0.02))
+    max_y = max(1, int(h * 0.02))
+
+    def uniform_border_strip(strip):
+        if strip.size == 0:
+            return False
+        mean = float(strip.mean())
+        std = float(strip.std())
+        return std < 5.0 and (mean > 242.0 or mean < 18.0)
+
+    left = 0
+    for x in range(max_x):
+        if uniform_border_strip(gray[:, x:x+1]):
+            left = x + 1
+        else:
+            break
+
+    right = w
+    for n in range(max_x):
+        x = w - 1 - n
+        if uniform_border_strip(gray[:, x:x+1]):
+            right = x
+        else:
+            break
+
+    top = 0
+    for y in range(max_y):
+        if uniform_border_strip(gray[y:y+1, :]):
+            top = y + 1
+        else:
+            break
+
+    bottom = h
+    for n in range(max_y):
+        y = h - 1 - n
+        if uniform_border_strip(gray[y:y+1, :]):
+            bottom = y
+        else:
+            break
+
+    # Sicurezza: non consentire mai a questa funzione di eliminare una
+    # porzione significativa della foto.
+    if right - left < int(w * 0.96) or bottom - top < int(h * 0.96):
+        return img
+
+    if left == 0 and top == 0 and right == w and bottom == h:
+        return img
+
+    return img.crop((left, top, right, bottom))
 
 
 def render_first_page(pdf, recall_id):
