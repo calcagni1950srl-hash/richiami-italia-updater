@@ -1,0 +1,111 @@
+name: Pubblica foto salame complete - temporaneo
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/publish-salame-full-temp.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installa strumenti
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils tesseract-ocr tesseract-ocr-ita
+          python -m pip install pillow numpy opencv-python-headless
+          npm init -y
+          npm install playwright
+          npx playwright install --with-deps chromium
+
+      - name: Prepara test mirato senza perdere il database completo
+        run: |
+          cp recalls.json /tmp/recalls-full.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          ids={"salame-stagionato-al-tartufo","salame-stagionato-al-trtufo"}
+          p=Path("recalls.json")
+          d=json.loads(p.read_text(encoding="utf-8"))
+          d["recalls"]=[x for x in d.get("recalls",[]) if x.get("id") in ids]
+          d["totale"]=len(d["recalls"])
+          if len(d["recalls"]) != 2:
+              raise SystemExit("Attesi due richiami salame")
+          p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          PY
+
+      - name: Scarica PDF e genera foto complete
+        run: |
+          node scripts/download_recall_pdfs.mjs
+          python scripts/rebuild_recall_images_v2.py
+          python scripts/clean_form_photo_boxes.py
+          python scripts/finalize_recall_images.py
+
+      - name: Verifica e reintegra solo i due URL nel database completo
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from PIL import Image
+
+          ids={"salame-stagionato-al-tartufo","salame-stagionato-al-trtufo"}
+          subset=json.loads(Path("recalls.json").read_text(encoding="utf-8"))
+          full=json.loads(Path("/tmp/recalls-full.json").read_text(encoding="utf-8"))
+
+          new_by_id={x["id"]:x for x in subset.get("recalls",[]) if x.get("id") in ids}
+          if set(new_by_id) != ids:
+              raise SystemExit("Mancano risultati per uno dei due salami")
+
+          for rid,item in new_by_id.items():
+              url=str(item.get("immagine","") or "")
+              if not url:
+                  raise SystemExit("URL foto vuoto: "+rid)
+              name=url.rsplit("/",1)[-1]
+              path=Path("images")/name
+              if not path.exists():
+                  raise SystemExit("PNG mancante: "+name)
+              im=Image.open(path).convert("RGB")
+              w,h=im.size
+              if w < 250 or h < 400:
+                  raise SystemExit(f"Foto sospetta {rid}: {w}x{h}")
+              print("OK FOTO COMPLETA",rid,name,w,h)
+
+          for item in full.get("recalls",[]):
+              rid=item.get("id")
+              if rid in new_by_id:
+                  item["immagine"]=new_by_id[rid]["immagine"]
+
+          Path("recalls.json").write_text(
+              json.dumps(full,ensure_ascii=False,indent=2)+"\n",
+              encoding="utf-8"
+          )
+          PY
+
+      - name: Pubblica solo foto salame e URL
+        run: |
+          git config user.name "Richiami Italia Image Bot"
+          git config user.email "actions@github.com"
+          git add recalls.json
+          git add -f images/salame-stagionato-al-trtufo-*.png
+          git add -f images/salame-stagionato-al-tartufo-*.png
+          git commit -m "Pubblica definitivamente foto complete dei salami"
+          git pull --rebase origin main
+          git push
