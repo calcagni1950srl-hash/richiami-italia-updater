@@ -44,10 +44,18 @@ def main() -> int:
         latest_image = str(
             latest_item.get("immagine", "") or ""
         ).strip()
+        generated_image = str(
+            item.get("immagine", "") or ""
+        ).strip()
 
-        # Il workflow database non deve mai sostituire una foto
-        # già validata dal workflow qualità immagini.
-        if latest_image and "/images/" in latest_image:
+        # Se il run appena completato ha già prodotto e validato una nuova
+        # immagine, preserviamola. La foto precedente viene usata solo come
+        # fallback quando il run corrente non ne ha una.
+        if (
+            not generated_image
+            and latest_image
+            and "/images/" in latest_image
+        ):
             item["immagine"] = latest_image
 
         # Se il dato ufficiale appena estratto è ancora vuoto ma il
