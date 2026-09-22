@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "initializedFrom": "recalls.json",
   "initializedAt": "2026-09-18T13:09:57.769Z",
   "notifiedIds": [
@@ -37,11 +37,5 @@
     "salame-stagionato-al-trtufo",
     "salame-stagionato-al-tartufo"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/1686453960639300027",
-  "deliveryAttempts": {},
-  "recoveryReason": "2026-09-22: Firebase HTTP 200 senza ricezione confermata sul dispositivo; attivati retry controllati",
-  "lastNotificationAttempt": {
-    "salame-stagionato-al-trtufo": 3,
-    "salame-stagionato-al-tartufo": 3
-  }
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/1686453960639300027"
 }
