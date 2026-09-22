@@ -52,12 +52,20 @@ jobs:
           python -m py_compile scripts/clean_form_photo_boxes.py
           python -m py_compile scripts/finalize_recall_images.py
           python -m py_compile scripts/restore_missing_recall_images.py
+          python -m py_compile scripts/image_quality_guard.py
           node --check scripts/download_recall_pdfs.mjs
+
+      - name: Salva foto attualmente validate
+        run: |
+          rm -rf .quality/pre-existing
+          mkdir -p .quality/pre-existing/images
+          cp recalls.json .quality/pre-existing/recalls.json
+          cp -a images/. .quality/pre-existing/images/ 2>/dev/null || true
 
       - name: Scarica PDF ufficiali
         run: node scripts/download_recall_pdfs.mjs
 
-      - name: Estrai foto prodotto ad alta copertura
+      - name: Estrai e pulisci foto prodotto
         run: |
           python scripts/rebuild_recall_images_v2.py
 
@@ -69,86 +77,13 @@ jobs:
           python scripts/finalize_recall_images.py
           python scripts/restore_missing_recall_images.py
 
-      - name: Verifica copertura e integrità foto prodotto
+          # Una nuova foto sostituisce quella precedente solo se non è
+          # una regressione qualitativa.
+          python scripts/image_quality_guard.py select
+
+      - name: Verifica qualità, copertura e integrità
         run: |
-          python - <<'PYEOF'
-          import json
-          from pathlib import Path
-          from urllib.parse import urlparse
-
-          data = json.loads(
-              Path("recalls.json").read_text(
-                  encoding="utf-8"
-              )
-          )
-
-          recalls = data.get("recalls", [])
-          if not recalls:
-              raise SystemExit(
-                  "ERRORE: recalls.json non contiene richiami"
-              )
-
-          with_pdf = 0
-          images = 0
-          missing = []
-          broken = []
-
-          for recall in recalls:
-              rid = str(recall.get("id", "") or "")
-              image = str(
-                  recall.get("immagine", "") or ""
-              ).strip()
-              pdf = str(
-                  recall.get("pdfMinistero", "") or ""
-              ).strip()
-
-              if pdf:
-                  with_pdf += 1
-
-              if image:
-                  if "/images/" not in image:
-                      broken.append((rid, "URL non valido"))
-                      continue
-
-                  filename = Path(urlparse(image).path).name
-                  local = Path("images") / filename
-                  if not filename or not local.exists():
-                      broken.append((rid, filename or image))
-                      continue
-
-                  images += 1
-              elif pdf:
-                  missing.append(rid)
-
-          coverage = images / max(1, with_pdf)
-
-          print("Richiami:", len(recalls))
-          print("Richiami con PDF:", with_pdf)
-          print("Richiami con foto realmente presente:", images)
-          print("Richiami senza foto prodotto:", len(missing))
-          print("URL immagine senza file:", len(broken))
-          print("Copertura foto reale:", f"{coverage:.1%}")
-
-          if missing:
-              print("Foto non presente o non recuperabile dal PDF ufficiale:")
-              for item in missing:
-                  print(" -", item)
-
-          if broken:
-              print("ERRORE - URL che puntano a file inesistenti:")
-              for rid, filename in broken:
-                  print(" -", rid, "->", filename)
-              raise SystemExit(
-                  "ERRORE: il database contiene URL immagini senza PNG corrispondente"
-              )
-
-          if coverage < 0.90:
-              raise SystemExit(
-                  "ERRORE: copertura foto reale inferiore al 90%"
-              )
-
-          print("✅ Foto integre: nessun URL orfano e copertura alta")
-          PYEOF
+          python scripts/image_quality_guard.py validate
 
       - name: Salva foto prodotto
         run: |
