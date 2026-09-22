@@ -228,13 +228,11 @@
       "dataPubblicazione": "15 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/filone-di-tonno-pinne-gialle-decongelato-senza-pelle-sottovuoto",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/COROMEU%20SRL%20_REVOCA%20DEL%20RICHIAMO%20DEL%2028.02.2026_1789483149.pdf",
-      "immagine": "",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/filone-di-tonno-pinne-gialle-decongelato-senza-pelle-sottovuoto-c624186b70.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
-      "note": [
-        "Foto prodotto non individuata nel PDF ufficiale"
-      ]
+      "note": []
     },
     {
       "id": "amaretti-gallini",
