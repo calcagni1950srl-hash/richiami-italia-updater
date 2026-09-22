@@ -1,0 +1,112 @@
+name: Test salame prodotto intero - temporaneo
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/test-salame-full-product-temp.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installa strumenti
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils tesseract-ocr tesseract-ocr-ita
+          python -m pip install pillow numpy opencv-python-headless
+          npm init -y
+          npm install playwright
+          npx playwright install --with-deps chromium
+
+      - name: Limita test ai due salami
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          ids = {
+              "salame-stagionato-al-tartufo",
+              "salame-stagionato-al-trtufo",
+          }
+          path = Path("recalls.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          data["recalls"] = [x for x in data.get("recalls", []) if x.get("id") in ids]
+          data["totale"] = len(data["recalls"])
+          if len(data["recalls"]) != 2:
+              raise SystemExit("Non trovo entrambi i richiami salame")
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          PY
+
+      - name: Scarica PDF ufficiali
+        run: node scripts/download_recall_pdfs.mjs
+
+      - name: Esegui pipeline completa aggiornata
+        run: |
+          python -m py_compile scripts/rebuild_recall_images_v2.py
+          python -m py_compile scripts/clean_form_photo_boxes.py
+          python -m py_compile scripts/finalize_recall_images.py
+          python scripts/rebuild_recall_images_v2.py
+          python scripts/clean_form_photo_boxes.py
+          python scripts/finalize_recall_images.py
+
+      - name: Raccogli finali e pagine PDF
+        run: |
+          mkdir -p verifica/finali verifica/pagine
+          python - <<'PY'
+          import json, shutil
+          from pathlib import Path
+
+          ids = {
+              "salame-stagionato-al-tartufo",
+              "salame-stagionato-al-trtufo",
+          }
+
+          data = json.loads(Path("recalls.json").read_text(encoding="utf-8"))
+          count = 0
+          for item in data.get("recalls", []):
+              rid = item.get("id")
+              if rid not in ids:
+                  continue
+              url = str(item.get("immagine", "") or "")
+              if not url:
+                  raise SystemExit("Foto finale vuota: " + rid)
+              name = url.rsplit("/", 1)[-1]
+              src = Path("images") / name
+              if not src.exists():
+                  raise SystemExit("Foto finale assente: " + name)
+              shutil.copy2(src, Path("verifica/finali") / name)
+              pdf = Path(".quality/pdf") / f"{rid}.pdf"
+              if pdf.exists():
+                  print("PDF presente:", rid, pdf.stat().st_size)
+              print("FINALE:", rid, "->", name, src.stat().st_size)
+              count += 1
+
+          if count != 2:
+              raise SystemExit(f"Attese 2 foto finali, trovate {count}")
+          PY
+
+          for pdf in .quality/pdf/salame*.pdf; do
+            [ -f "$pdf" ] || continue
+            base="$(basename "$pdf" .pdf)"
+            pdftoppm -f 1 -singlefile -r 120 -png "$pdf" "verifica/pagine/$base"
+          done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: salame-prodotto-intero
+          path: verifica/
