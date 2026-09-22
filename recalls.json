@@ -1,12 +1,50 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-22T05:07:32.377915Z",
+  "generatedAt": "2026-09-22T13:21:43.155848+00:00",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
-  "totale": 20,
+  "totale": 22,
   "pass": 18,
-  "daVerificare": 2,
+  "daVerificare": 4,
   "recalls": [
+    {
+      "id": "salame-stagionato-al-tartufo",
+      "marca": "",
+      "prodotto": "Salame stagionato al tartufo",
+      "lotto": "",
+      "tmc": "",
+      "produttore": "",
+      "motivo": "Dati del richiamo in aggiornamento",
+      "dataPubblicazione": "22/09/2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salame-stagionato-al-tartufo",
+      "pdfMinistero": "",
+      "immagine": "",
+      "criterioMatch": "RSS_MINISTERO",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "RSS",
+      "note": [
+        "Richiamo rilevato dal feed ufficiale; dettagli e foto in aggiornamento"
+      ]
+    },
+    {
+      "id": "salame-stagionato-al-trtufo",
+      "marca": "",
+      "prodotto": "Salame stagionato al trtufo",
+      "lotto": "",
+      "tmc": "",
+      "produttore": "",
+      "motivo": "Dati del richiamo in aggiornamento",
+      "dataPubblicazione": "22/09/2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salame-stagionato-al-trtufo",
+      "pdfMinistero": "",
+      "immagine": "",
+      "criterioMatch": "RSS_MINISTERO",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "RSS",
+      "note": [
+        "Richiamo rilevato dal feed ufficiale; dettagli e foto in aggiornamento"
+      ]
+    },
     {
       "id": "mais-pop-corn-2",
       "marca": "FIOR DI LOTO",
