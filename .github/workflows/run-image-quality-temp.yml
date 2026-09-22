@@ -1,0 +1,24 @@
+name: Avvia controllo immagini - temporaneo
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/run-image-quality-temp.yml"
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Avvia controllo qualità immagini
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          curl --fail-with-body -L             -X POST             -H "Accept: application/vnd.github+json"             -H "Authorization: Bearer ${GH_TOKEN}"             -H "X-GitHub-Api-Version: 2022-11-28"             -H "Content-Type: application/json"             "https://api.github.com/repos/${REPO}/actions/workflows/image-quality.yml/dispatches"             -d '{"ref":"main"}'
+          echo "✅ Controllo qualità avviato."
