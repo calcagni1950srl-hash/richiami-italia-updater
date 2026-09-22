@@ -141,6 +141,12 @@ def caption_candidates(page_path):
                 continue
             s=image_stats(crop)
             score = math.log1p(area) + s['color']*3 + s['edge']*5 - s['white']*.6
+            # Nei moduli Ministero il primo riquadro ("immagine uno"),
+            # a sinistra, contiene normalmente la confezione/prodotto intero;
+            # il secondo spesso mostra solo etichetta o retro. Se il primo
+            # riquadro contiene una foto plausibile, gli diamo priorità.
+            if left:
+                score += 5.0
             candidates.append((score,crop))
 
     return sorted(candidates, reverse=True, key=lambda x:x[0])
@@ -194,6 +200,9 @@ def slot_candidates(page_path):
                 continue
             s=image_stats(crop)
             score=math.log1p(area)+s['color']*3+s['edge']*4-s['white']*.5
+            # Prima scelta: slot sinistro (immagine uno), se valido.
+            if sx1 < int(.50*w):
+                score += 5.0
             candidates.append((score,crop))
     return sorted(candidates,reverse=True,key=lambda x:x[0])
 
