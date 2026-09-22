@@ -1,48 +1,48 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-22T13:21:43.155848+00:00",
+  "generatedAt": "2026-09-22T13:28:43.218784Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
-  "totale": 22,
-  "pass": 18,
+  "totale": 20,
+  "pass": 16,
   "daVerificare": 4,
   "recalls": [
     {
       "id": "salame-stagionato-al-tartufo",
-      "marca": "",
+      "marca": "Salumificio F.lli Costantini",
       "prodotto": "Salame stagionato al tartufo",
-      "lotto": "",
-      "tmc": "",
-      "produttore": "",
-      "motivo": "Dati del richiamo in aggiornamento",
-      "dataPubblicazione": "22/09/2026",
+      "lotto": "20260729",
+      "tmc": "Feb. 2027",
+      "produttore": "UE IT 1107 M",
+      "motivo": "Richiamo per rischio microbiologico",
+      "dataPubblicazione": "22 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salame-stagionato-al-tartufo",
-      "pdfMinistero": "",
-      "immagine": "",
-      "criterioMatch": "RSS_MINISTERO",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modulorichiamo1_1790069606.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salame-stagionato-al-tartufo-a91422fa8c.png",
+      "criterioMatch": "LOTTO_E_TMC",
       "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "RSS",
+      "metodoEstrazione": "OCR",
       "note": [
-        "Richiamo rilevato dal feed ufficiale; dettagli e foto in aggiornamento"
+        "TMC da verificare"
       ]
     },
     {
       "id": "salame-stagionato-al-trtufo",
-      "marca": "",
+      "marca": "Salumificio F.lli Costantini",
       "prodotto": "Salame stagionato al trtufo",
-      "lotto": "",
-      "tmc": "",
-      "produttore": "",
-      "motivo": "Dati del richiamo in aggiornamento",
-      "dataPubblicazione": "22/09/2026",
+      "lotto": "20260729",
+      "tmc": "Feb. 2027",
+      "produttore": "UE IT 1107 M",
+      "motivo": "Richiamo per rischio microbiologico",
+      "dataPubblicazione": "22 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salame-stagionato-al-trtufo",
-      "pdfMinistero": "",
-      "immagine": "",
-      "criterioMatch": "RSS_MINISTERO",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modulo%20richiamo%20conforme_1790069655.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salame-stagionato-al-trtufo-a6016ebc38.png",
+      "criterioMatch": "LOTTO_E_TMC",
       "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "RSS",
+      "metodoEstrazione": "OCR",
       "note": [
-        "Richiamo rilevato dal feed ufficiale; dettagli e foto in aggiornamento"
+        "TMC da verificare"
       ]
     },
     {
@@ -233,7 +233,7 @@
       "stato": "PASS",
       "metodoEstrazione": "OCR",
       "note": [
-        "Foto prodotto non individuata nel PDF ufficiale"
+        "Immagine prodotto non estratta"
       ]
     },
     {
@@ -352,40 +352,6 @@
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/uova-di-cat-medie-da-allevamento-terra-selex-0",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/6536_SELEX_1789387376.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/uova-di-cat-medie-da-allevamento-terra-selex-0-1200246579.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "OCR",
-      "note": []
-    },
-    {
-      "id": "speck-e-brie",
-      "marca": "Re dei Sapori",
-      "prodotto": "Speck e Brie",
-      "lotto": "F262190143",
-      "tmc": "26-09-2026",
-      "produttore": "IT N5U7E CE",
-      "motivo": "Richiamo per rischio microbiologico",
-      "dataPubblicazione": "14 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/speck-e-brie",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Allegato%206%20cartello%20richiamo%20prodotto%20F262190143%20mod10.09.26._1789396754.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/speck-e-brie-ebe9eeb129.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "OCR",
-      "note": []
-    },
-    {
-      "id": "speck-e-brie-0",
-      "marca": "Re dei Sapori",
-      "prodotto": "Speck e Brie",
-      "lotto": "F262190146",
-      "tmc": "26-09-2026",
-      "produttore": "IT N5U7E CE",
-      "motivo": "Richiamo per rischio microbiologico",
-      "dataPubblicazione": "14 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/speck-e-brie-0",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Allegato%206%20cartello%20richiamo%20prodotto%20F262190146%20mod10.09.26._1789396797.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/speck-e-brie-0-eede78397c.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
