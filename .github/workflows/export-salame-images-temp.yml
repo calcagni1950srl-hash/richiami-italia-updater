@@ -1,0 +1,27 @@
+name: Esporta immagini salame per verifica
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/export-salame-images-temp.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepara immagini
+        run: |
+          mkdir -p verifica
+          cp images/salame-stagionato-al-tartufo-e9e272a1e8.png verifica/
+          cp images/salame-stagionato-al-trtufo-6f32585072.png verifica/
+      - name: Carica artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: salame-finali
+          path: verifica/
