@@ -380,9 +380,12 @@ def extract_best(pdf, recall_id, wanted):
 
 
 def prepare_output(image):
-    out=primary_visual_crop(image.convert('RGB'))
-    if max(out.size)>1800:
-        out.thumbnail((1800,1800),Image.Resampling.LANCZOS)
+    # Il candidato è già stato selezionato e ritagliato nella fase di
+    # estrazione. Non applichiamo un secondo crop sul contenuto: sui
+    # prodotti lunghi poteva eliminare una delle estremità.
+    out = image.convert('RGB')
+    if max(out.size) > 1800:
+        out.thumbnail((1800, 1800), Image.Resampling.LANCZOS)
     return out
 
 
