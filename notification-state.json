@@ -29,16 +29,20 @@
     "uova-di-cat-medie-da-allevamento-terra-selex-0",
     "uova-medie-di-cat-da-allevamento-terra-abf-despar"
   ],
-  "lastCheckedAt": "2026-09-22T13:57:12.764Z",
-  "lastNotificationAt": "2026-09-22T13:21:45.756775+00:00",
+  "lastCheckedAt": "2026-09-22T13:58:01.148Z",
+  "lastNotificationAt": "2026-09-22T13:58:02.707280+00:00",
   "lastNotificationIds": [
-    "salame-stagionato-al-tartufo",
-    "salame-stagionato-al-trtufo"
+    "salame-stagionato-al-trtufo",
+    "salame-stagionato-al-tartufo"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/-8975318361572755639",
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/-5163512967897356036",
   "deliveryAttempts": {
-    "salame-stagionato-al-tartufo": 1,
-    "salame-stagionato-al-trtufo": 1
+    "salame-stagionato-al-tartufo": 2,
+    "salame-stagionato-al-trtufo": 2
   },
-  "recoveryReason": "2026-09-22: Firebase HTTP 200 senza ricezione confermata sul dispositivo; attivati retry controllati"
+  "recoveryReason": "2026-09-22: Firebase HTTP 200 senza ricezione confermata sul dispositivo; attivati retry controllati",
+  "lastNotificationAttempt": {
+    "salame-stagionato-al-trtufo": 2,
+    "salame-stagionato-al-tartufo": 2
+  }
 }
