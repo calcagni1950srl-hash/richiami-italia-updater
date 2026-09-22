@@ -42,13 +42,33 @@ jobs:
           npm install playwright
           npx playwright install --with-deps chromium
 
+      - name: Limita il test ai due richiami salame
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          ids = {
+              "salame-stagionato-al-tartufo",
+              "salame-stagionato-al-trtufo",
+          }
+          path=Path("recalls.json")
+          data=json.loads(path.read_text(encoding="utf-8"))
+          data["recalls"]=[x for x in data.get("recalls",[]) if x.get("id") in ids]
+          data["totale"]=len(data["recalls"])
+          path.write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          if len(data["recalls"]) != 2:
+              raise SystemExit("Test non contiene entrambi i richiami")
+          PY
+
       - name: Scarica PDF ufficiali
         run: node scripts/download_recall_pdfs.mjs
 
       - name: Esegui nuova pulizia
         run: |
+          python -m py_compile scripts/rebuild_recall_images_v2.py
           python -m py_compile scripts/clean_form_photo_boxes.py
           python -m py_compile scripts/finalize_recall_images.py
+          python scripts/rebuild_recall_images_v2.py
           python scripts/clean_form_photo_boxes.py
           python scripts/finalize_recall_images.py
 
@@ -85,3 +105,5 @@ jobs:
           path: verifica/
 
 # rerun con ritaglio area fotografica interna
+
+# test completo: rebuild + clean + finalize sui due soli salami
