@@ -10,6 +10,7 @@ from google.oauth2 import service_account
 
 STATE_PATH = Path("notification-state.json")
 PENDING_PATH = Path("notification-pending.json")
+RESULT_PATH = Path("notification-result.json")
 
 
 def load_json(path, default):
@@ -68,6 +69,10 @@ def save_state(message_id=""):
 
 
 if not new_items:
+    RESULT_PATH.write_text(
+        json.dumps({"sentCount": 0, "messageId": ""}, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
     print("Nessun nuovo richiamo: nessuna notifica da inviare.")
     print("Nessuna modifica a notification-state.json o recalls.json.")
     raise SystemExit(0)
@@ -166,3 +171,12 @@ if message_id:
     print("Message ID:", message_id)
 
 save_state(message_id)
+
+RESULT_PATH.write_text(
+    json.dumps(
+        {"sentCount": len(new_items), "messageId": message_id},
+        ensure_ascii=False,
+        indent=2,
+    ) + "\n",
+    encoding="utf-8",
+)
