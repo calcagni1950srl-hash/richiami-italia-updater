@@ -93,6 +93,36 @@ def main() -> int:
             if current_value and not generated_value:
                 item[key] = latest_item[key]
 
+        # Correzioni QA confermate: un nuovo OCR non deve reintrodurre
+        # valori notoriamente errati o una falsa immagine del modulo PDF.
+        qa_overrides = {
+            "pomodoro-ciliegino": {
+                "tmc": "",
+                "immagine": "",
+            },
+            "brie-1-kg-60-neutre": {
+                "lotto": "BXCG1",
+                "tmc": "20/09/2026",
+                "motivo": (
+                    "Potenziale rischio microbiologico dovuto a "
+                    "Listeria monocytogenes"
+                ),
+            },
+            "amaretti-gallini": {
+                "tmc": "12 MESI",
+            },
+            "amaretti-gallina": {
+                "lotto": (
+                    "23/01/2027-08/03/2027-21/06/2027-"
+                    "19/07/2027-20/07/2027"
+                ),
+            },
+        }
+
+        override = qa_overrides.get(rid)
+        if override:
+            item.update(override)
+
         # Non rimettere una scheda completa nello stato provvisorio RSS.
         if str(latest_item.get("stato", "") or "").upper() == "PASS":
             generated_reason = str(item.get("motivo", "") or "").strip()
