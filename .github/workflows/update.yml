@@ -2358,23 +2358,44 @@ jobs:
               if not value:
                   return ""
 
+              # Se OCR mette TMC e lotto sulla stessa riga, estraiamo
+              # soltanto il valore dopo "Lotto".
+              inline_lot = re.search(
+                  r"\\blotto\\s*[:.-]?\\s*([A-Z0-9][A-Z0-9./_-]*)",
+                  value,
+                  re.I
+              )
+
+              if inline_lot:
+                  return clean(
+                      inline_lot.group(1)
+                  )
+
               value = re.sub(
-                  r"\s+-?\s*prod\.?\s*"
-                  r"\d{1,2}[./-]\d{1,2}[./-]\d{2,4}.*$",
+                  r"\\s+-?\\s*prod\\.?\\s*"
+                  r"\\d{1,2}[./-]\\d{1,2}[./-]\\d{2,4}.*$",
                   "",
                   value,
                   flags=re.I
               )
 
               value = re.sub(
-                  r"\s+scadenza\s+.*$",
+                  r"\\s+scadenza\\s+.*$",
                   "",
                   value,
                   flags=re.I
+              )
+
+              # Corregge spazi OCR interni a una data di lotto,
+              # es. "1 9/07/2027" -> "19/07/2027".
+              value = re.sub(
+                  r"\\b([0-3])\\s+([0-9][./-][0-1]?[0-9][./-]\\d{2,4})\\b",
+                  r"\\1\\2",
+                  value
               )
 
               match = re.match(
-                  r"^(L[A-Z0-9]+)\s+WP\s+[A-Z0-9]+",
+                  r"^(L[A-Z0-9]+)\\s+WP\\s+[A-Z0-9]+",
                   value,
                   re.I
               )
@@ -2391,8 +2412,22 @@ jobs:
               if not value:
                   return ""
 
+              # Se la riga contiene esplicitamente un TMC seguito da Lotto,
+              # conserviamo solo il TMC.
+              inline_tmc = re.search(
+                  r"\\bTMC\\s*[:.-]?\\s*"
+                  r"(\\d{1,2}[./-]\\d{1,2}[./-]\\d{2,4})",
+                  value,
+                  re.I
+              )
+
+              if inline_tmc:
+                  return clean(
+                      inline_tmc.group(1)
+                  )
+
               value = re.sub(
-                  r"\s+TT$",
+                  r"\\s+TT$",
                   "",
                   value,
                   flags=re.I
@@ -2400,6 +2435,15 @@ jobs:
 
               value = value.lstrip(
                   "( "
+              )
+
+              # Rumore OCR davanti a durate valide:
+              # "j12 MESI" -> "12 MESI".
+              value = re.sub(
+                  r"^[^0-9]{1,3}(?=\\d+\\s+(?:giorni|mesi|anno|anni)\\b)",
+                  "",
+                  value,
+                  flags=re.I
               )
 
               return clean(value)
