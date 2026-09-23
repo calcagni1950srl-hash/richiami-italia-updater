@@ -90,7 +90,7 @@ async function superaChallenge(page) {
 
 function pageField(body, labels) {
   for (const label of labels) {
-    const escaped = label.replace(/[.*+?^\${}()|[\]\\]/g, "\\const escaped = label.replace(/[.*+?^\${}()|[\]\\]/g, "\\function loadState() {");");
+    const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const regex = new RegExp(
       escaped + "\\s*:?\\s*([^\\n\\r]+)",
       "i"
