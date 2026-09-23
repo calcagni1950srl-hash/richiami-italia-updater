@@ -133,7 +133,7 @@ def caption_candidates(page_path):
                 continue
             if max(bw/bh,bh/bw) > 4.8:
                 continue
-            px=max(4,int(bw*.018)); py=max(4,int(bh*.018))
+            px=max(8,int(bw*.065)); py=max(8,int(bh*.065))
             X1=max(sx1,sx1+x-px); Y1=max(y1,y1+y-py)
             X2=min(sx2,sx1+x+bw+px); Y2=min(y2,y1+y+bh+py)
             crop = pil.crop((X1,Y1,X2,Y2)).convert('RGB')
@@ -192,7 +192,7 @@ def slot_candidates(page_path):
                 continue
             if max(bw/bh,bh/bw)>4.8:
                 continue
-            px=max(4,int(bw*.025)); py=max(4,int(bh*.025))
+            px=max(8,int(bw*.065)); py=max(8,int(bh*.065))
             X1=max(sx1,sx1+x-px); Y1=max(sy1,sy1+y-py)
             X2=min(sx2,sx1+x+bw+px); Y2=min(sy2,sy1+y+bh+py)
             crop=pil.crop((X1,Y1,X2,Y2)).convert('RGB')
