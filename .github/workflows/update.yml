@@ -1,6 +1,12 @@
 name: Aggiorna Database Richiami Italia
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/force-full-update"
+
   workflow_dispatch:
     inputs:
       force_full:
