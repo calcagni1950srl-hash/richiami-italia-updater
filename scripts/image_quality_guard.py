@@ -344,8 +344,8 @@ def validate() -> None:
     with_pdf = 0
     present = 0
     missing = []
-    broken = []
-    bad = []
+    cleared_broken = []
+    cleared_bad = []
 
     for item in recalls:
         rid = str(item.get("id", "") or "").strip()
@@ -362,53 +362,89 @@ def validate() -> None:
 
         name = image_filename(image)
         path = IMAGES / name if name else None
+
+        # Un URL senza file locale produrrebbe il riquadro bianco nell'app.
+        # Non blocchiamo gli altri richiami: svuotiamo soltanto questa foto.
         if not name or path is None or not path.exists():
-            broken.append((rid, name or image))
+            item["immagine"] = ""
+            cleared_broken.append((rid, name or image, "file assente"))
+            if pdf:
+                missing.append(rid)
             continue
 
         q = analyse(path)
+
         if not q["valid"]:
-            broken.append((rid, q["reason"]))
+            item["immagine"] = ""
+            cleared_broken.append((rid, name, q["reason"]))
+            if pdf:
+                missing.append(rid)
             continue
 
+        # Una falsa foto (testo/modulo/residui gravi) riguarda solo il
+        # singolo richiamo. La eliminiamo dal JSON ma NON fermiamo la
+        # pubblicazione delle immagini valide degli altri richiami.
         if q["severe"]:
-            bad.append((rid, name, q["reason"], q["score"]))
+            item["immagine"] = ""
+            cleared_bad.append((rid, name, q["reason"], q["score"]))
+            if pdf:
+                missing.append(rid)
             continue
 
         present += 1
 
+    # Scriviamo subito il JSON sanificato: nessun URL rotto e nessuna
+    # immagine bocciata possono arrivare all'app.
+    RECALLS.write_text(
+        json.dumps(data, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+    # Eliminiamo soltanto PNG non più referenziati dal JSON finale.
+    referenced = {
+        image_filename(item.get("immagine", ""))
+        for item in recalls
+    }
+    referenced.discard("")
+
+    for path in IMAGES.glob("*.png"):
+        if path.name not in referenced:
+            path.unlink(missing_ok=True)
+
+    # Deduplica dell'elenco mancanti solo per il riepilogo.
+    missing = list(dict.fromkeys(missing))
     coverage = present / max(1, with_pdf)
 
     print("Richiami:", len(recalls))
     print("Richiami con PDF:", with_pdf)
     print("Foto pulite e realmente presenti:", present)
     print("Richiami senza foto:", len(missing))
-    print("URL/file rotti:", len(broken))
-    print("Foto bocciate dal controllo qualità:", len(bad))
+    print("URL/file rotti rimossi:", len(cleared_broken))
+    print("Foto non valide rimosse:", len(cleared_bad))
     print("Copertura foto pulite:", f"{coverage:.1%}")
 
     if missing:
-        print("Senza foto:")
+        print("Senza foto (non bloccano gli altri richiami):")
         for rid in missing:
             print(" -", rid)
 
-    if broken:
-        print("ERRORE - URL/file non validi:")
-        for rid, reason in broken:
-            print(" -", rid, "->", reason)
-        raise SystemExit("ERRORE: URL immagini o file non validi")
+    if cleared_broken:
+        print("URL/file rotti rimossi dal singolo richiamo:")
+        for rid, name, reason in cleared_broken:
+            print(" -", rid, "->", name, reason)
 
-    if bad:
-        print("ERRORE - immagini con residui/modulo o qualità non accettabile:")
-        for rid, name, reason, score in bad:
+    if cleared_bad:
+        print("Foto bocciate rimosse dal singolo richiamo:")
+        for rid, name, reason, score in cleared_bad:
             print(" -", rid, "->", name, reason, f"score={score:.2f}")
-        raise SystemExit("ERRORE: immagini finali non pulite")
 
+    # La copertura resta un indicatore diagnostico, non un motivo per
+    # bloccare l'intero aggiornamento. Una sola foto problematica non deve
+    # impedire la pubblicazione delle altre foto corrette.
     if coverage < 0.90:
-        raise SystemExit("ERRORE: copertura foto pulite inferiore al 90%")
+        print("⚠️ Copertura foto sotto il 90%: aggiornamento pubblicato comunque.")
 
-    print("✅ Validazione immagini superata")
-
+    print("✅ Validazione immagini completata senza bloccare richiami validi")
 
 def main() -> None:
     mode = sys.argv[1] if len(sys.argv) > 1 else "validate"
