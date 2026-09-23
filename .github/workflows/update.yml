@@ -2322,6 +2322,33 @@ jobs:
               if len(value) > 350:
                   return ""
 
+              # Il motivo deve descrivere una causa/rischio, non il nome
+              # dell'operatore o del produttore catturato dalla riga vicina.
+              reason_keywords = [
+                  "listeria",
+                  "salmonella",
+                  "rischio",
+                  "presenza",
+                  "allergen",
+                  "istamina",
+                  "alcaloid",
+                  "contamin",
+                  "etichett",
+                  "non conforme",
+                  "scadenza",
+                  "microbiologic",
+                  "chimic",
+                  "fisic",
+                  "ritiro preventivo",
+                  "richiamo preventivo"
+              ]
+
+              if not any(
+                  keyword in low
+                  for keyword in reason_keywords
+              ):
+                  return ""
+
               return value
 
 
