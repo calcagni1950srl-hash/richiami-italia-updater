@@ -227,7 +227,7 @@
       "lotto": "TMC 20/09/2026 – Lotto: BXCG1",
       "tmc": "20/09/2026 – Lotto: BXCG1",
       "produttore": "FR 70.002.001 CE",
-      "motivo": "SASU PATURAGES",
+      "motivo": "Potenziale rischio microbiologico dovuto a Listeria monocytogenes",
       "dataPubblicazione": "15 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/brie-1-kg-60-neutre",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/avviso_richiamo_prodotto_consumatore_1789465229.pdf",
@@ -236,7 +236,7 @@
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
       "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
+        "Motivo corretto dopo verifica dell'avviso ufficiale"
       ]
     },
     {
