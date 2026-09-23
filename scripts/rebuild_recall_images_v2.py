@@ -141,7 +141,7 @@ def remove_long_lines(mask):
     return cv2.bitwise_and(mask, cv2.bitwise_not(lines))
 
 
-def expand_box(box, w, h, frac=0.035):
+def expand_box(box, w, h, frac=0.075):
     x1,y1,x2,y2 = box
     bw=max(1,x2-x1); bh=max(1,y2-y1)
     px=max(6,int(bw*frac)); py=max(6,int(bh*frac))
@@ -180,7 +180,16 @@ def primary_visual_crop(image):
         return image.convert('RGB')
     boxes.sort(reverse=True, key=lambda t:t[0])
     best=boxes[0][1]
-    x1,y1,x2,y2=expand_box(best,w,h,0.045)
+
+    # Se l'area visiva arriva già vicino a un bordo dell'immagine,
+    # non stringiamo ulteriormente: potrebbe essere il prodotto intero
+    # che tocca il margine e un crop aggressivo lo troncherebbe.
+    bx1,by1,bx2,by2=best
+    guard_x=max(8,int(w*0.035)); guard_y=max(8,int(h*0.035))
+    if bx1 <= guard_x or by1 <= guard_y or bx2 >= w-guard_x or by2 >= h-guard_y:
+        return image.convert('RGB')
+
+    x1,y1,x2,y2=expand_box(best,w,h,0.085)
     crop=image.convert('RGB').crop((x1,y1,x2,y2))
     if crop.width < 120 or crop.height < 90 or crop.width*crop.height < total*0.08:
         return image.convert('RGB')
@@ -293,7 +302,7 @@ def page_candidates(page_path, wanted, relaxed=False):
         if area > page_area*(0.55 if relaxed else 0.45): continue
         ratio=max(bw/bh,bh/bw)
         if ratio > (5.0 if relaxed else 4.3): continue
-        x1,y1,x2,y2=expand_box((x,y,x+bw,y+bh),w,h,0.045)
+        x1,y1,x2,y2=expand_box((x,y,x+bw,y+bh),w,h,0.085)
         crop=pil.crop((x1,y1,x2,y2)).convert('RGB')
         crop=primary_visual_crop(crop)
         if not plausible_photo(crop, relaxed=True): continue
