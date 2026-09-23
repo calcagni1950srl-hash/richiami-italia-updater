@@ -88,6 +88,67 @@ async function superaChallenge(page) {
   return false;
 }
 
+function pageField(body, labels) {
+  for (const label of labels) {
+    const escaped = label.replace(/[.*+?^\${}()|[\]\\]/g, "\\function loadState() {");
+    const regex = new RegExp(
+      escaped + "\\s*:?\\s*([^\\n\\r]+)",
+      "i"
+    );
+    const match = body.match(regex);
+    if (match && match[1]) {
+      const value = clean(match[1]);
+      if (value && value.length < 500) return value;
+    }
+  }
+  return "";
+}
+
+async function enrichNewItem(context, item) {
+  const page = await context.newPage();
+
+  try {
+    await page.goto(item.link, {
+      waitUntil: "domcontentloaded",
+      timeout: 90000
+    });
+
+    if (!(await superaChallenge(page))) {
+      throw new Error("Protezione Ministero non superata");
+    }
+
+    await page.waitForTimeout(1200);
+    const body = await page.locator("body").innerText();
+
+    const enriched = {
+      ...item,
+      marca: pageField(body, ["Marca", "Marchio"]),
+      prodotto: pageField(body, ["Denominazione"]) || item.title,
+      motivo: pageField(body, ["Motivo della segnalazione"]),
+      dataPubblicazione:
+        pageField(body, ["Data pubblicazione"]) || item.pubDate
+    };
+
+    console.log(
+      "DETTAGLI:",
+      item.id,
+      "- motivo:",
+      enriched.motivo || "(non disponibile)"
+    );
+
+    return enriched;
+  } catch (error) {
+    console.log(
+      "⚠️ Dettagli immediati non disponibili:",
+      item.id,
+      String(error?.message || error)
+    );
+    return item;
+  } finally {
+    await page.close().catch(() => {});
+  }
+}
+
 function loadState() {
   if (!fs.existsSync(STATE_PATH)) {
     return { version: 1, notifiedIds: [] };
@@ -150,21 +211,28 @@ try {
 
   const newItems = items.filter(item => !notified.has(item.id));
 
+  const enrichedNewItems = [];
+  for (const item of newItems) {
+    enrichedNewItems.push(
+      await enrichNewItem(context, item)
+    );
+  }
+
   const pending = {
     checkedAt: new Date().toISOString(),
     feedUrl: FEED_URL,
     totalFeedItems: items.length,
     feedIds: items.map(item => item.id),
-    newItems
+    newItems: enrichedNewItems
   };
 
   fs.writeFileSync(PENDING_PATH, JSON.stringify(pending, null, 2) + "\n", "utf8");
 
   console.log("Richiami nel feed:", items.length);
   console.log("ID già notificati:", notified.size);
-  console.log("Nuovi richiami da notificare:", newItems.length);
+  console.log("Nuovi richiami da notificare:", enrichedNewItems.length);
 
-  for (const item of newItems) {
+  for (const item of enrichedNewItems) {
     console.log("NUOVO:", item.id, "-", item.title || item.link);
   }
 
