@@ -2519,6 +2519,26 @@ jobs:
               ):
                   return True
 
+              # Formati testuali realmente usati nei moduli ufficiali,
+              # es. "Feb. 2027" oppure TMC dichiarato variabile.
+              months = (
+                  "gen|feb|mar|apr|mag|giu|lug|ago|set|ott|nov|dic"
+              )
+
+              if re.fullmatch(
+                  rf"\s*(?:{months})\.?\s+\d{{4}}\s*",
+                  low,
+                  re.I
+              ):
+                  return True
+
+              if low.strip() in {
+                  "variabile",
+                  "vedi confezione",
+                  "vedere confezione"
+              }:
+                  return True
+
               return False
 
 
