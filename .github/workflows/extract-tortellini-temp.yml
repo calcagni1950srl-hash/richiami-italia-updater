@@ -31,70 +31,122 @@ jobs:
           npx playwright install --with-deps chromium
           mkdir -p diag/embedded diag/render
 
-      - name: Scarica PDF ufficiale tortellini
+      - name: Scarica PDF con la stessa sessione dell updater
         run: |
           cat > diag/download.mjs <<'EOF'
           import { chromium } from "playwright";
           import fs from "fs";
 
-          const PAGE_URL = "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/tortellini-alla-carne-2-confezioni-da-250-g";
+          const FEED_URL = "https://www.salute.gov.it/new/rss/RSS_avvisi_richiami_osa.xml";
+          const TARGET = "tortellini-alla-carne-2-confezioni-da-250-g";
+
+          function decodeXml(value) {
+            return String(value || "")
+              .replace(/&amp;/g, "&")
+              .replace(/&lt;/g, "<")
+              .replace(/&gt;/g, ">")
+              .replace(/&quot;/g, '"')
+              .replace(/&#39;/g, "'");
+          }
+
+          function extractTag(block, tag) {
+            const regex = new RegExp(`<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${tag}>`, "i");
+            const match = block.match(regex);
+            if (!match) return "";
+            return decodeXml(match[1].replace(/^<!\[CDATA\[/, "").replace(/\]\]>$/, "").trim());
+          }
+
+          function parseRss(xml) {
+            const blocks = xml.match(/<item\b[\s\S]*?<\/item>/gi) || [];
+            return blocks.map(block => ({
+              title: extractTag(block, "title"),
+              link: extractTag(block, "link")
+            })).filter(x => x.link);
+          }
 
           async function superaChallenge(page) {
-            for (let attempt = 0; attempt < 6; attempt++) {
+            for (let attempt = 0; attempt < 5; attempt++) {
               await page.waitForTimeout(3500);
               const body = await page.locator("body").innerText().catch(() => "");
               const blocked = /browser validation|please enable javascript|please enable cookies/i.test(body);
               if (!blocked) return true;
-              await page.reload({waitUntil:"domcontentloaded", timeout:90000}).catch(()=>{});
+              await page.reload({waitUntil:"domcontentloaded", timeout:90000});
             }
             return false;
           }
 
-          const browser = await chromium.launch({headless:true});
-          try {
-            const context = await browser.newContext({
-              locale:"it-IT",
-              viewport:{width:1400,height:1000},
-              userAgent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
-            });
+          async function scaricaFeed(context) {
             const page = await context.newPage();
-
-            await page.goto("https://www.salute.gov.it/", {waitUntil:"domcontentloaded", timeout:90000});
-            if (!(await superaChallenge(page))) throw new Error("Challenge Ministero non superata");
-
-            await page.goto(PAGE_URL, {waitUntil:"domcontentloaded", timeout:90000});
-            if (!(await superaChallenge(page))) throw new Error("Scheda richiamo bloccata");
-
-            const href = await page.locator('a[href*=".pdf"]').first().getAttribute("href");
-            if (!href) throw new Error("PDF non trovato nella scheda");
-            const pdfUrl = new URL(href, page.url()).href;
-            console.log("PDF:", pdfUrl);
-
-            const result = await page.evaluate(async url => {
-              const r = await fetch(url, {credentials:"include"});
-              const b = new Uint8Array(await r.arrayBuffer());
-              return {status:r.status, bytes:Array.from(b)};
-            }, pdfUrl);
-
-            const buf = Buffer.from(result.bytes);
-            console.log("HTTP", result.status, "bytes", buf.length, "magic", buf.subarray(0,5).toString());
-            if (result.status !== 200 || buf.subarray(0,5).toString() !== "%PDF-") {
-              throw new Error("Risposta Ministero non è un PDF valido");
+            try {
+              await page.goto("https://www.salute.gov.it/", {waitUntil:"domcontentloaded", timeout:90000});
+              await superaChallenge(page);
+              const result = await page.evaluate(async url => {
+                const response = await fetch(url, {credentials:"include"});
+                return {ok:response.ok,status:response.status,text:await response.text()};
+              }, FEED_URL);
+              if (!result.ok || result.status !== 200 || !result.text.includes("<item")) {
+                throw new Error(`Feed non valido HTTP ${result.status}`);
+              }
+              return result.text;
+            } finally {
+              await page.close();
             }
-            fs.writeFileSync("diag/tortellini.pdf", buf);
+          }
+
+          const browser = await chromium.launch({headless:true});
+          const context = await browser.newContext({
+            locale:"it-IT",
+            viewport:{width:1400,height:1000},
+            userAgent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+          });
+
+          try {
+            const xml = await scaricaFeed(context);
+            const item = parseRss(xml).find(x => x.link.includes("/" + TARGET));
+            if (!item) throw new Error("Richiamo tortellini non trovato nel feed");
+
+            const page = await context.newPage();
+            try {
+              console.log("Scheda:", item.link);
+              await page.goto(item.link, {waitUntil:"domcontentloaded", timeout:90000});
+              if (!(await superaChallenge(page))) throw new Error("Protezione Ministero non superata");
+              await page.waitForTimeout(2200);
+
+              const links = await page.locator("a").evaluateAll(elements =>
+                elements.map(a => ({href:a.href || "", text:(a.innerText || "").trim()}))
+              );
+              const pdf = links.find(x => /\.pdf(?:$|\?)/i.test(x.href) || /modello di richiamo/i.test(x.text));
+              if (!pdf?.href) throw new Error("PDF ufficiale non trovato");
+              console.log("PDF:", pdf.href);
+
+              const download = await page.evaluate(async url => {
+                const response = await fetch(url, {credentials:"include"});
+                const bytes = new Uint8Array(await response.arrayBuffer());
+                return {ok:response.ok,status:response.status,bytes:Array.from(bytes)};
+              }, pdf.href);
+
+              const buf = Buffer.from(download.bytes);
+              console.log("HTTP", download.status, "bytes", buf.length, "magic", buf.subarray(0,5).toString());
+              if (!download.ok || download.status !== 200 || buf.length < 1000 || buf.subarray(0,5).toString() !== "%PDF-") {
+                throw new Error("PDF ufficiale non valido");
+              }
+              fs.writeFileSync("diag/tortellini.pdf", buf);
+            } finally {
+              await page.close().catch(()=>{});
+            }
           } finally {
             await browser.close();
           }
           EOF
           node diag/download.mjs
 
-      - name: Estrai tutte le immagini candidate
+      - name: Estrai tutte le immagini dal PDF ufficiale
         run: |
           pdfimages -all diag/tortellini.pdf diag/embedded/img || true
-          pdftoppm -png -r 180 diag/tortellini.pdf diag/render/page
+          pdftoppm -png -r 220 diag/tortellini.pdf diag/render/page
           find diag -maxdepth 2 -type f -printf '%p %s bytes\n' | sort
 
-      - name: Salva candidati
+      - name: Salva PDF e candidati
         uses: actions/upload-artifact@v4
         with:
           name: tortellini-candidati
