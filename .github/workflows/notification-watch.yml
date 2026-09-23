@@ -176,11 +176,21 @@ jobs:
           PY
 
       - name: Invia notifica Firebase
+        if: >-
+          steps.completa.outputs.update_result == 'success' ||
+          steps.completa.outputs.update_result == 'not_needed'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
           echo "Esito completamento richiamo: ${{ steps.completa.outputs.update_result }}"
           python scripts/send_notification.py
+
+      - name: Non notificare schede incomplete
+        if: >-
+          steps.completa.outputs.update_result != 'success' &&
+          steps.completa.outputs.update_result != 'not_needed'
+        run: |
+          echo "⚠️ Completamento richiamo non riuscito: notifica rimandata al prossimo controllo."
 
       - name: Salva stato notifiche
         run: |
