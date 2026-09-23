@@ -106,8 +106,15 @@ def crop_photo_inside_form(image):
         return None
 
     _, x, y, bw, bh = max(candidates)
-    pad_x = max(2, int(bw * 0.01))
-    pad_y = max(2, int(bh * 0.01))
+    # Se il contenuto fotografico arriva quasi al bordo, evitare un crop
+    # stretto: è un segnale che il prodotto potrebbe essere già a filo.
+    edge_x = max(6, int(w * 0.025))
+    edge_y = max(6, int(h * 0.025))
+    if x <= edge_x or y <= edge_y or x + bw >= w - edge_x or y + bh >= h - edge_y:
+        return None
+
+    pad_x = max(8, int(bw * 0.06))
+    pad_y = max(8, int(bh * 0.06))
 
     x1 = max(0, x - pad_x)
     y1 = max(0, y - pad_y)
@@ -169,10 +176,10 @@ def recover_standard_left_photo(pdf, recall_id):
     # il prodotto vero e proprio.
     cw, ch = crop.size
     crop = crop.crop((
-        int(0.025 * cw),
-        int(0.025 * ch),
-        int(0.990 * cw),
-        int(0.990 * ch),
+        int(0.005 * cw),
+        int(0.005 * ch),
+        int(0.995 * cw),
+        int(0.995 * ch),
     ))
 
     if crop.width < 220 or crop.height < 140:
