@@ -1,11 +1,11 @@
-name: Estrai candidati tortellini una volta
+name: Estrai candidati pomodoro una volta
 
 on:
   push:
     branches:
       - main
     paths:
-      - ".github/workflows/extract-tortellini-temp.yml"
+      - ".github/workflows/extract-pomodoro-temp.yml"
 
 permissions:
   contents: read
@@ -38,7 +38,7 @@ jobs:
           import fs from "fs";
 
           const FEED_URL = "https://www.salute.gov.it/new/rss/RSS_avvisi_richiami_osa.xml";
-          const TARGET = "tortellini-alla-carne-2-confezioni-da-250-g";
+          const TARGET = "pomodoro-alla-carne-2-confezioni-da-250-g";
 
           function decodeXml(value) {
             return String(value || "")
@@ -103,7 +103,7 @@ jobs:
           try {
             const xml = await scaricaFeed(context);
             const item = parseRss(xml).find(x => x.link.includes("/" + TARGET));
-            if (!item) throw new Error("Richiamo tortellini non trovato nel feed");
+            if (!item) throw new Error("Richiamo pomodoro non trovato nel feed");
 
             const page = await context.newPage();
             try {
@@ -130,7 +130,7 @@ jobs:
               if (!download.ok || download.status !== 200 || buf.length < 1000 || buf.subarray(0,5).toString() !== "%PDF-") {
                 throw new Error("PDF ufficiale non valido");
               }
-              fs.writeFileSync("diag/tortellini.pdf", buf);
+              fs.writeFileSync("diag/pomodoro.pdf", buf);
             } finally {
               await page.close().catch(()=>{});
             }
@@ -142,13 +142,13 @@ jobs:
 
       - name: Estrai tutte le immagini dal PDF ufficiale
         run: |
-          pdfimages -all diag/tortellini.pdf diag/embedded/img || true
-          pdftoppm -png -r 220 diag/tortellini.pdf diag/render/page
+          pdfimages -all diag/pomodoro.pdf diag/embedded/img || true
+          pdftoppm -png -r 220 diag/pomodoro.pdf diag/render/page
           find diag -maxdepth 2 -type f -printf '%p %s bytes\n' | sort
 
       - name: Salva PDF e candidati
         uses: actions/upload-artifact@v4
         with:
-          name: tortellini-candidati
+          name: pomodoro-candidati
           path: diag/
           retention-days: 1
