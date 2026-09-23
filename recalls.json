@@ -1,12 +1,31 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-23T16:21:18.094211Z",
+  "generatedAt": "2026-09-23T18:53:51.235570+00:00",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
-  "totale": 18,
+  "totale": 19,
   "pass": 14,
-  "daVerificare": 4,
+  "daVerificare": 5,
   "recalls": [
+    {
+      "id": "tortellini-alla-carne-2-confezioni-da-250-g",
+      "marca": "Agripasta SRL - Oggi cucino BIO",
+      "prodotto": "Tortellini alla carne 2 confezioni da 250 g",
+      "lotto": "",
+      "tmc": "",
+      "produttore": "",
+      "motivo": "Richiamo per rischio presenza di allergeni",
+      "dataPubblicazione": "23 settembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/tortellini-alla-carne-2-confezioni-da-250-g",
+      "pdfMinistero": "",
+      "immagine": "",
+      "criterioMatch": "RSS_MINISTERO",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "RSS",
+      "note": [
+        "Richiamo rilevato dal feed ufficiale; lotto, TMC, produttore e foto in aggiornamento"
+      ]
+    },
     {
       "id": "pomodoro-ciliegino",
       "marca": "G. & V. Ortaggi",
