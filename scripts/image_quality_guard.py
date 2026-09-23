@@ -164,6 +164,7 @@ def analyse(path: Path) -> dict:
         "contrast": contrast,
         "edge": edge_ratio,
         "blur": blur,
+        "area": area,
         "form_hits": form_hits,
     }
 
@@ -276,7 +277,29 @@ def select_best() -> None:
         # candidato ha un vantaggio reale. Questo evita oscillazioni casuali
         # della pipeline fra due ritagli equivalenti.
         elif not old_quality["severe"] and not new_quality["severe"]:
-            choose_old = new_quality["score"] < old_quality["score"] + 0.35
+            old_w = int(old_quality.get("width", 0) or 0)
+            old_h = int(old_quality.get("height", 0) or 0)
+            new_w = int(new_quality.get("width", 0) or 0)
+            new_h = int(new_quality.get("height", 0) or 0)
+            old_area = max(1, old_w * old_h)
+            new_area = max(1, new_w * new_h)
+
+            # Completezza prima della sola nitidezza: un ritaglio può avere
+            # edge/blur migliori ma mostrare soltanto un dettaglio della
+            # confezione. Se la foto di partenza è già pulita, non accettiamo
+            # un candidato che ne conserva meno del 35% dell'area E riduce
+            # entrambe le dimensioni sotto il 60%.
+            drastic_crop = (
+                old_area >= 100_000
+                and new_area < old_area * 0.35
+                and new_w < old_w * 0.60
+                and new_h < old_h * 0.60
+            )
+
+            if drastic_crop:
+                choose_old = True
+            else:
+                choose_old = new_quality["score"] < old_quality["score"] + 0.35
 
         # Se la vecchia foto è contaminata e la nuova è pulita, la nuova
         # vince sempre.
