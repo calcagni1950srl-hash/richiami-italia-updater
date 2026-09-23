@@ -423,6 +423,31 @@ for recall in recalls:
                    'Immagine non disponibile nel PDF ufficiale','Foto prodotto non individuata nel PDF ufficiale']:
         remove_note(notes,marker)
     image=label=meta=None
+
+    # QA: se il PDF ufficiale è stato verificato come privo di una vera
+    # foto prodotto, non preservare né ricostruire vecchi ritagli del modulo.
+    no_photo_confirmed = any(
+        str(note).strip().lower() in {
+            "nessuna foto prodotto presente nel pdf ufficiale",
+            "foto prodotto non individuata nel pdf ufficiale",
+        }
+        for note in notes
+    )
+
+    if no_photo_confirmed:
+        old_filename = ''
+        if old and '/images/' in old:
+            old_filename = old.rsplit('/',1)[-1].split('?',1)[0].strip()
+        if old:
+            recall[key] = ''
+            changed = True
+        if old_filename:
+            (IMAGES_DIR / old_filename).unlink(missing_ok=True)
+        accepted.discard(old_filename)
+        missing.append(rid)
+        print('ℹ️ PDF verificato senza foto prodotto:', rid)
+        continue
+
     if pdf.exists():
         image,label,meta=extract_best(pdf,rid,recall_tokens(recall))
     if image is None:
