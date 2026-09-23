@@ -236,6 +236,23 @@ def select_best() -> None:
         old_url = str(previous_item.get("immagine", "") or "").strip()
         new_url = str(item.get("immagine", "") or "").strip()
 
+        # Se il PDF ufficiale è stato verificato senza una foto prodotto,
+        # il backup storico non deve mai poter reintrodurre un vecchio
+        # ritaglio del modulo durante il confronto qualità.
+        notes = item.get("note", []) or []
+        no_photo_confirmed = any(
+            str(note).strip().lower() in {
+                "nessuna foto prodotto presente nel pdf ufficiale",
+                "foto prodotto non individuata nel pdf ufficiale",
+            }
+            for note in notes
+        )
+        if no_photo_confirmed:
+            if new_url:
+                item["immagine"] = ""
+            unchanged += 1
+            continue
+
         old_name = image_filename(old_url)
         new_name = image_filename(new_url)
 
