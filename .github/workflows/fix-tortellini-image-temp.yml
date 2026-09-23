@@ -1,0 +1,77 @@
+name: Ripristina foto completa tortellini una volta
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/fix-tortellini-image-temp.yml"
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Scarica artifact del run verificato
+        uses: actions/download-artifact@v4
+        with:
+          name: recalls-json
+          path: artifact
+          run-id: 35918498434
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pubblica confezione completa tortellini
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import shutil
+          from pathlib import Path
+
+          rid = 'tortellini-alla-carne-2-confezioni-da-250-g'
+          src = Path('artifact/output/images') / f'{rid}.png'
+          if not src.exists() or src.stat().st_size < 100000:
+              raise SystemExit('Foto completa tortellini non presente nell artifact')
+
+          digest = hashlib.sha256(src.read_bytes()).hexdigest()[:10]
+          filename = f'{rid}-{digest}.png'
+          dst = Path('images') / filename
+          dst.parent.mkdir(parents=True, exist_ok=True)
+          shutil.copy2(src, dst)
+
+          data = json.loads(Path('recalls.json').read_text(encoding='utf-8'))
+          found = False
+          for item in data.get('recalls', []):
+              if item.get('id') == rid:
+                  item['immagine'] = (
+                      'https://raw.githubusercontent.com/'
+                      'calcagni1950srl-hash/richiami-italia-updater/'
+                      'refs/heads/main/images/' + filename
+                  )
+                  found = True
+                  break
+
+          if not found:
+              raise SystemExit('Richiamo tortellini non trovato nel database')
+
+          Path('recalls.json').write_text(
+              json.dumps(data, ensure_ascii=False, indent=2) + '\n',
+              encoding='utf-8'
+          )
+
+          print('Foto completa pubblicata:', filename, src.stat().st_size)
+          PY
+
+      - name: Salva
+        run: |
+          git config user.name "Richiami Italia Image Bot"
+          git config user.email "actions@github.com"
+          git add recalls.json images/
+          git commit -m "Ripristina foto completa tortellini" || exit 0
+          git push
