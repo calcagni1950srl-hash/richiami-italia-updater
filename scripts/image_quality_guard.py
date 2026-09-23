@@ -1,5 +1,6 @@
 import json
 import math
+import re
 import shutil
 import subprocess
 import sys
@@ -76,6 +77,7 @@ def analyse(path: Path) -> dict:
         }
 
     gray = cv2.cvtColor(arr, cv2.COLOR_RGB2GRAY)
+    hsv = cv2.cvtColor(arr, cv2.COLOR_RGB2HSV)
     edges = cv2.Canny(gray, 55, 145)
 
     red = arr[:, :, 0].astype(np.int16)
@@ -91,6 +93,7 @@ def analyse(path: Path) -> dict:
             & ((blue - red) > 8)
         )
     )
+    color_ratio = float(np.mean(hsv[:, :, 1] >= 20))
     contrast = float(gray.std())
     edge_ratio = float(np.mean(edges > 0))
     blur = float(cv2.Laplacian(gray, cv2.CV_64F).var())
@@ -99,11 +102,22 @@ def analyse(path: Path) -> dict:
 
     text = ocr_text(path)
     form_hits = [phrase for phrase in FORM_PHRASES if phrase in text]
+    ocr_words = re.findall(r"[a-zà-ÿ0-9]{3,}", text, flags=re.IGNORECASE)
 
     # Firma tipica della pagina/modulo Ministero: molto spazio bianco
     # accompagnato da una fascia azzurra ampia. È esattamente il difetto
     # che aveva lasciato visibili i moduli dei due salami.
     form_signature = white_ratio > 0.35 and pale_blue_ratio > 0.10
+
+    # Ritaglio testuale del modulo: fondo molto chiaro, quasi nessun colore,
+    # più parole OCR e formato orizzontale. È il caso del falso "POMODORO
+    # CILIEGINO" che non conteneva alcuna foto del prodotto.
+    text_form_signature = (
+        white_ratio > 0.55
+        and color_ratio < 0.08
+        and len(ocr_words) >= 3
+        and ratio > 1.6
+    )
 
     severe_reasons = []
     if w < 120 or h < 90 or area < 15000:
@@ -116,6 +130,8 @@ def analyse(path: Path) -> dict:
         severe_reasons.append("testo del modulo Ministero")
     if form_signature:
         severe_reasons.append("firma grafica del modulo Ministero")
+    if text_form_signature:
+        severe_reasons.append("ritaglio testuale del modulo")
 
     score = (
         5.0
@@ -131,6 +147,8 @@ def analyse(path: Path) -> dict:
         score -= 30.0
     if form_signature:
         score -= 15.0
+    if text_form_signature:
+        score -= 25.0
 
     return {
         "valid": True,
@@ -141,6 +159,8 @@ def analyse(path: Path) -> dict:
         "height": h,
         "white": white_ratio,
         "pale_blue": pale_blue_ratio,
+        "color": color_ratio,
+        "ocr_words": len(ocr_words),
         "contrast": contrast,
         "edge": edge_ratio,
         "blur": blur,
@@ -155,6 +175,31 @@ def url_for(filename: str) -> str:
         "refs/heads/main/images/"
         + filename
     )
+
+
+def discard_severe_new_image(item: dict, rid: str) -> bool:
+    image = str(item.get("immagine", "") or "").strip()
+    name = image_filename(image)
+    if not name:
+        return False
+
+    path = IMAGES / name
+    if not path.exists():
+        return False
+
+    quality = analyse(path)
+    if not quality["severe"]:
+        return False
+
+    item["immagine"] = ""
+    path.unlink(missing_ok=True)
+    print(
+        "🗑️ Scarto falsa foto senza precedente valido:",
+        rid,
+        quality.get("reason", ""),
+        f"score={quality.get('score', -999.0):.2f}",
+    )
+    return True
 
 
 def select_best() -> None:
@@ -183,7 +228,8 @@ def select_best() -> None:
 
         previous_item = previous_by_id.get(rid)
         if not previous_item:
-            kept_new += 1
+            if not discard_severe_new_image(item, rid):
+                kept_new += 1
             continue
 
         old_url = str(previous_item.get("immagine", "") or "").strip()
@@ -193,7 +239,8 @@ def select_best() -> None:
         new_name = image_filename(new_url)
 
         if not old_name:
-            kept_new += 1
+            if not discard_severe_new_image(item, rid):
+                kept_new += 1
             continue
 
         old_path = BACKUP_IMAGES / old_name
