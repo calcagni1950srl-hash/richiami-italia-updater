@@ -56,7 +56,22 @@ def main() -> int:
             and latest_image
             and "/images/" in latest_image
         ):
-            item["immagine"] = latest_image
+            latest_name = latest_image.rsplit("/", 1)[-1]
+            generated_image_file = Path(".generated-images") / latest_name
+
+            # Conserviamo la vecchia foto soltanto se è ancora presente
+            # nel set finale già validato di questo run. Se il controllo
+            # qualità l'ha eliminata, NON dobbiamo resuscitare il vecchio
+            # URL: produrrebbe un riquadro bianco nell'app.
+            if generated_image_file.exists():
+                item["immagine"] = latest_image
+            else:
+                item["immagine"] = ""
+                print(
+                    "Foto precedente non più valida, URL non preservato:",
+                    rid,
+                    latest_name,
+                )
 
         # Se il dato ufficiale appena estratto è ancora vuoto ma il
         # database corrente contiene un valore valido, non peggioriamo
