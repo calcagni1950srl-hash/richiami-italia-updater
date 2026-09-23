@@ -47,17 +47,27 @@ for item in new_items:
         str(item.get("title", "") or "").strip()
         or rid.replace("-", " ").title()
     )
+    marca = str(item.get("marca", "") or "").strip()
+    prodotto = (
+        str(item.get("prodotto", "") or "").strip()
+        or title
+    )
+    motivo = str(item.get("motivo", "") or "").strip()
+    data_pubblicazione = (
+        str(item.get("dataPubblicazione", "") or "").strip()
+        or str(item.get("pubDate", "") or "").strip()
+    )
 
     provisional.append(
         {
             "id": rid,
-            "marca": "",
-            "prodotto": title,
+            "marca": marca,
+            "prodotto": prodotto,
             "lotto": "",
             "tmc": "",
             "produttore": "",
-            "motivo": "Dati del richiamo in aggiornamento",
-            "dataPubblicazione": str(item.get("pubDate", "") or "").strip(),
+            "motivo": motivo or "Dati del richiamo in aggiornamento",
+            "dataPubblicazione": data_pubblicazione,
             "urlMinistero": str(item.get("link", "") or "").strip(),
             "pdfMinistero": "",
             "immagine": "",
@@ -65,7 +75,13 @@ for item in new_items:
             "stato": "DA_VERIFICARE",
             "metodoEstrazione": "RSS",
             "note": [
-                "Richiamo rilevato dal feed ufficiale; dettagli e foto in aggiornamento"
+                (
+                    "Richiamo rilevato dal feed ufficiale; lotto, TMC, "
+                    "produttore e foto in aggiornamento"
+                    if motivo
+                    else
+                    "Richiamo rilevato dal feed ufficiale; dettagli e foto in aggiornamento"
+                )
             ],
         }
     )
