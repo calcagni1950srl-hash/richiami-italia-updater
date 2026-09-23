@@ -2080,16 +2080,16 @@ jobs:
 
               if not candidates:
                   #
-                  # Nessuna immagine incorporata separatamente:
-                  # proviamo il riconoscimento fotografico sulla
-                  # pagina renderizzata. Se la confidenza non è
-                  # sufficiente, la funzione restituisce stringa vuota.
+                  # Nessuna fotografia incorporata valida nel PDF:
+                  # NON ricaviamo immagini ritagliando la pagina del
+                  # modulo. Un'area grafica o una porzione del documento
+                  # non deve mai essere mostrata come foto del prodotto.
                   #
-                  return extract_from_rendered_page(
-                      pdf,
-                      recall_id,
-                      folder
+                  print(
+                      "ℹ️ Nessuna foto prodotto reale nel PDF:",
+                      recall_id
                   )
+                  return ""
 
               #
               # Se abbiamo fotografie chiaramente riconoscibili,
