@@ -1,0 +1,110 @@
+name: Leggi dettagli pomodoro - temporaneo
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/read-pomodoro-temp.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  read:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Installa Playwright
+        run: |
+          npm init -y
+          npm install playwright
+          npx playwright install --with-deps chromium
+
+      - name: Leggi scheda Ministero
+        run: |
+          cat > /tmp/read.mjs <<'EOF'
+          import { chromium } from "playwright";
+          import fs from "fs";
+
+          const url = "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pomodoro-ciliegino";
+
+          function clean(v) {
+            return String(v || "")
+              .replace(/\u00a0/g, " ")
+              .replace(/[ \t]+/g, " ")
+              .trim();
+          }
+
+          function field(body, labels) {
+            for (const label of labels) {
+              const escaped = label.replace(/[.*+?^\${}()|[\]\\]/g, "\\$&");
+              const rx = new RegExp(escaped + "\\s*:?\\s*([^\\n\\r]+)", "i");
+              const m = body.match(rx);
+              if (m && m[1]) return clean(m[1]);
+            }
+            return "";
+          }
+
+          async function superaChallenge(page) {
+            for (let i = 0; i < 5; i++) {
+              await page.waitForTimeout(3000);
+              const body = await page.locator("body").innerText().catch(() => "");
+              if (!/browser validation|please enable javascript|please enable cookies/i.test(body)) return true;
+              await page.reload({waitUntil:"domcontentloaded", timeout:90000});
+            }
+            return false;
+          }
+
+          const browser = await chromium.launch({headless:true});
+          try {
+            const context = await browser.newContext({
+              locale:"it-IT",
+              viewport:{width:1400,height:1000},
+              userAgent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+            });
+            const page = await context.newPage();
+            await page.goto(url,{waitUntil:"domcontentloaded",timeout:90000});
+            if (!(await superaChallenge(page))) throw new Error("Protezione Ministero non superata");
+            await page.waitForTimeout(2200);
+            const body = await page.locator("body").innerText();
+
+            const links = await page.locator("a").evaluateAll(els => els.map(a => ({
+              href:a.href || "",
+              text:(a.innerText || "").trim()
+            })));
+
+            const pdf = links.find(x => /\.pdf(?:$|\?)/i.test(x.href) || /modello di richiamo/i.test(x.text));
+
+            const idx = body.toLowerCase().indexOf("motivo");
+            const out = {
+              prodotto: field(body, ["Denominazione"]),
+              marca: field(body, ["Marca","Marchio"]),
+              motivo: field(body, ["Motivo della segnalazione"]),
+              dataPubblicazione: field(body, ["Data pubblicazione"]),
+              pdfMinistero: pdf?.href || "",
+              bodySnippet: idx >= 0 ? body.slice(Math.max(0,idx-300), idx+1000) : body.slice(0,1200)
+            };
+
+            fs.writeFileSync("pomodoro-check.json", JSON.stringify(out,null,2)+"\n","utf8");
+            console.log(JSON.stringify(out,null,2));
+            await context.close();
+          } finally {
+            await browser.close();
+          }
+          EOF
+
+          node /tmp/read.mjs
+
+      - name: Pubblica risultato temporaneo
+        run: |
+          git config user.name "Richiami Italia Detail Bot"
+          git config user.email "actions@github.com"
+          git add pomodoro-check.json
+          git commit -m "Salva verifica dettagli pomodoro"
+          git push
