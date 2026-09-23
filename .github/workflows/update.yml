@@ -2267,6 +2267,56 @@ jobs:
               )
 
 
+          def raw_recall_reason(text):
+              """
+              Estrae dal modello PDF ufficiale il motivo specifico del richiamo.
+              La pagina web del Ministero puo' riportare soltanto la categoria
+              generale (es. Rischio microbiologico), mentre nel PDF puo'
+              comparire la causa precisa (es. presenza di Salmonella).
+              """
+              labels = [
+                  "Motivo del richiamo",
+                  "Motivo della segnalazione",
+                  "Motivo richiamo",
+                  "Motivo"
+              ]
+
+              value = after_label(
+                  text,
+                  labels,
+                  4
+              )
+
+              value = clean(value)
+
+              if not value:
+                  return ""
+
+              # Evita di catturare l'etichetta del campo successivo quando
+              # OCR/testo digitale non contengono un valore utilizzabile.
+              invalid = [
+                  "avvertenze",
+                  "avvertenza",
+                  "descrizione del rischio",
+                  "misure adottate",
+                  "foto del prodotto"
+              ]
+
+              low = value.lower()
+
+              if any(
+                  low == item
+                  or low.startswith(item + ":")
+                  for item in invalid
+              ):
+                  return ""
+
+              if len(value) > 350:
+                  return ""
+
+              return value
+
+
           def normalize_lot(value):
               value = clean(value)
 
@@ -2592,6 +2642,18 @@ jobs:
               producer = clean(
                   raw_producer(text)
               )
+
+              pdf_reason = clean(
+                  raw_recall_reason(text)
+              )
+
+              if pdf_reason:
+                  recall["motivo"] = pdf_reason
+                  recall[
+                      "note"
+                  ].append(
+                      "Motivo specifico estratto dal PDF ufficiale"
+                  )
 
 
               if (
