@@ -18,12 +18,13 @@
       "dataPubblicazione": "23 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pomodoro-ciliegino",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/CdR%20pomodoro%20ciliegino_1790174029.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/pomodoro-ciliegino-64fa8a4eab.png",
+      "immagine": "",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "DA_VERIFICARE",
       "metodoEstrazione": "OCR",
       "note": [
-        "TMC da verificare"
+        "TMC da verificare",
+        "Immagine prodotto non presente nel PDF ufficiale"
       ]
     },
     {
