@@ -2719,6 +2719,126 @@ jobs:
               )
 
 
+          # Elimina doppioni creati da correzioni/refusi nel feed del
+          # Ministero. Due URL diversi non significano necessariamente
+          # due richiami diversi: usiamo i dati sostanziali del richiamo.
+          from difflib import SequenceMatcher
+          import unicodedata
+
+
+          def dedup_text(value):
+              value = unicodedata.normalize(
+                  "NFKD",
+                  str(value or "")
+              )
+
+              value = "".join(
+                  ch
+                  for ch in value
+                  if not unicodedata.combining(ch)
+              )
+
+              return re.sub(
+                  r"[^a-z0-9]+",
+                  " ",
+                  value.lower()
+              ).strip()
+
+
+          def same_recall(left, right):
+              # Campi che devono coincidere esattamente dopo normalizzazione.
+              for field in (
+                  "marca",
+                  "lotto",
+                  "tmc",
+                  "motivo",
+                  "dataPubblicazione"
+              ):
+                  if (
+                      dedup_text(left.get(field))
+                      !=
+                      dedup_text(right.get(field))
+                  ):
+                      return False
+
+              left_product = dedup_text(
+                  left.get("prodotto")
+              )
+
+              right_product = dedup_text(
+                  right.get("prodotto")
+              )
+
+              if (
+                  not left_product
+                  or
+                  not right_product
+              ):
+                  return False
+
+              # Tollera piccoli refusi del Ministero, per esempio
+              # "tartufo" / "trtufo", ma non prodotti realmente diversi.
+              similarity = SequenceMatcher(
+                  None,
+                  left_product,
+                  right_product
+              ).ratio()
+
+              if similarity < 0.93:
+                  return False
+
+              left_producer = dedup_text(
+                  left.get("produttore")
+              )
+
+              right_producer = dedup_text(
+                  right.get("produttore")
+              )
+
+              if (
+                  left_producer
+                  and
+                  right_producer
+                  and
+                  left_producer != right_producer
+              ):
+                  return False
+
+              return True
+
+
+          deduplicated = []
+
+          for recall in recalls:
+              duplicate_of = next(
+                  (
+                      previous
+                      for previous in deduplicated
+                      if same_recall(
+                          previous,
+                          recall
+                      )
+                  ),
+                  None
+              )
+
+              if duplicate_of is not None:
+                  print(
+                      "♻️ Doppione Ministero ignorato:",
+                      recall.get("id"),
+                      "->",
+                      duplicate_of.get("id")
+                  )
+                  continue
+
+              deduplicated.append(
+                  recall
+              )
+
+
+          recalls = deduplicated
+
+
           pass_count = sum(
               1
               for recall
