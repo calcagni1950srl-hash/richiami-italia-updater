@@ -204,15 +204,27 @@ jobs:
             exit 0
           fi
 
-          git commit -m "Aggiorna stato notifiche richiami"
-
           for tentativo in 1 2 3; do
-            if git pull --rebase origin main && git push origin main; then
+            # Aggiorna prima la base, poi riapplica soltanto lo stato
+            # prodotto da questo run. Evita conflitti tra due controlli
+            # notifiche partiti quasi contemporaneamente.
+            git reset notification-state.json
+            git checkout -- notification-state.json
+            if ! git pull --rebase origin main; then
+              git rebase --abort 2>/dev/null || true
+              echo "Aggiornamento base non riuscito, tentativo $tentativo/3."
+              sleep 3
+              continue
+            fi
+
+            git add notification-state.json
+            git commit -m "Aggiorna stato notifiche richiami" || true
+
+            if git push origin main; then
               echo "✅ Stato notifiche salvato."
               exit 0
             fi
 
-            git rebase --abort 2>/dev/null || true
             echo "Salvataggio stato non riuscito, tentativo $tentativo/3."
             sleep 3
           done
