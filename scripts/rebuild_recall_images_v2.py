@@ -419,13 +419,9 @@ for recall in recalls:
     key=image_key(recall); old=str(recall.get(key,'') or '')
     notes=recall.setdefault('note',[]) if isinstance(recall.get('note',[]),list) else []
     if not isinstance(recall.get('note'),list): recall['note']=notes
-    for marker in ['Immagine scartata dal controllo qualità','Immagine prodotto non estratta',
-                   'Immagine non disponibile nel PDF ufficiale','Foto prodotto non individuata nel PDF ufficiale']:
-        remove_note(notes,marker)
-    image=label=meta=None
 
-    # QA: se il PDF ufficiale è stato verificato come privo di una vera
-    # foto prodotto, non preservare né ricostruire vecchi ritagli del modulo.
+    # Calcola il vincolo PRIMA di ripulire le note tecniche: una delle note
+    # usate come prova ("Foto prodotto non individuata...") viene rimossa sotto.
     no_photo_confirmed = any(
         str(note).strip().lower() in {
             "nessuna foto prodotto presente nel pdf ufficiale",
@@ -433,6 +429,14 @@ for recall in recalls:
         }
         for note in notes
     )
+
+    for marker in ['Immagine scartata dal controllo qualità','Immagine prodotto non estratta',
+                   'Immagine non disponibile nel PDF ufficiale','Foto prodotto non individuata nel PDF ufficiale']:
+        remove_note(notes,marker)
+    image=label=meta=None
+
+    # QA: se il PDF ufficiale è stato verificato come privo di una vera
+    # foto prodotto, non preservare né ricostruire vecchi ritagli del modulo.
 
     if no_photo_confirmed:
         old_filename = ''
