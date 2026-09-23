@@ -1,11 +1,6 @@
 name: Aggiorna Database Richiami Italia
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - ".github/force-full-update"
 
   workflow_dispatch:
     inputs:
@@ -54,7 +49,6 @@ jobs:
         id: controllo_rss
         env:
           FORCE_FULL: ${{ inputs.force_full || false }}
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
         run: |
           python - <<'PYEOF'
           import json
@@ -70,7 +64,6 @@ jobs:
               .strip()
               .lower()
               == "true"
-              or os.environ.get("GITHUB_EVENT_NAME", "") == "push"
           )
 
           if manual_force:
