@@ -1,4 +1,5 @@
 name: Avvia aggiornamento completo motivo - temporaneo
+# secondo trigger esplicito
 
 on:
   push:
