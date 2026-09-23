@@ -2268,6 +2268,30 @@ jobs:
               )
 
 
+          def normalize_producer(value):
+              value = clean(value)
+              if not value:
+                  return ""
+
+              # Rumore OCR frequente all'inizio del campo.
+              value = re.sub(
+                  r"^[,;/\\|]+\s*",
+                  "",
+                  value
+              )
+
+              # Non pubblicare frammenti del nome dell'etichetta come se
+              # fossero il produttore.
+              if re.match(
+                  r"^utorizzazione\b",
+                  value,
+                  re.I
+              ):
+                  return ""
+
+              return value.strip()
+
+
           def raw_recall_reason(text):
               """
               Estrae dal modello PDF ufficiale il motivo specifico del richiamo.
@@ -2731,7 +2755,7 @@ jobs:
                   raw_tmc(text)
               )
 
-              producer = clean(
+              producer = normalize_producer(
                   raw_producer(text)
               )
 
