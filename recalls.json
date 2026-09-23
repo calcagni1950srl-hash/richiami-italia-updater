@@ -1,31 +1,12 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-22T14:32:06.649110Z",
+  "generatedAt": "2026-09-23T07:54:14.230367Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
   "pass": 16,
   "daVerificare": 4,
   "recalls": [
-    {
-      "id": "salame-stagionato-al-trtufo",
-      "marca": "Salumificio F.lli Costantini",
-      "prodotto": "Salame stagionato al trtufo",
-      "lotto": "20260729",
-      "tmc": "Feb. 2027",
-      "produttore": "UE IT 1107 M",
-      "motivo": "Richiamo per rischio microbiologico",
-      "dataPubblicazione": "22 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salame-stagionato-al-trtufo",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modulo%20richiamo%20conforme_1790069655.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salame-stagionato-al-trtufo-70de4a0e3e.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "TMC da verificare"
-      ]
-    },
     {
       "id": "salame-stagionato-al-tartufo",
       "marca": "Salumificio F.lli Costantini",
@@ -38,6 +19,25 @@
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salame-stagionato-al-tartufo",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modulorichiamo1_1790078556.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salame-stagionato-al-tartufo-5b2f73561b.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "OCR",
+      "note": [
+        "TMC da verificare"
+      ]
+    },
+    {
+      "id": "salame-stagionato-al-trtufo",
+      "marca": "Salumificio F.lli Costantini",
+      "prodotto": "Salame stagionato al trtufo",
+      "lotto": "20260729",
+      "tmc": "Feb. 2027",
+      "produttore": "UE IT 1107 M",
+      "motivo": "Richiamo per rischio microbiologico",
+      "dataPubblicazione": "22 settembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salame-stagionato-al-trtufo",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modulo%20richiamo%20conforme_1790069655.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salame-stagionato-al-trtufo-70de4a0e3e.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "DA_VERIFICARE",
       "metodoEstrazione": "OCR",
