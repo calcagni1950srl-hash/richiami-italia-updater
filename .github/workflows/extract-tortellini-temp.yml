@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - ".github/workflows/extract-pomodoro-temp.yml"
+      - ".github/workflows/extract-tortellini-temp.yml"
 
 permissions:
   contents: read
@@ -38,7 +38,7 @@ jobs:
           import fs from "fs";
 
           const FEED_URL = "https://www.salute.gov.it/new/rss/RSS_avvisi_richiami_osa.xml";
-          const TARGET = "pomodoro-alla-carne-2-confezioni-da-250-g";
+          const TARGET = "pomodoro-ciliegino";
 
           function decodeXml(value) {
             return String(value || "")
