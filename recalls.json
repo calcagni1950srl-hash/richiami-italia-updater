@@ -1,31 +1,12 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-23T18:53:51.235570+00:00",
+  "generatedAt": "2026-09-23T20:57:40.940666Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
-  "totale": 19,
+  "totale": 18,
   "pass": 14,
-  "daVerificare": 5,
+  "daVerificare": 4,
   "recalls": [
-    {
-      "id": "tortellini-alla-carne-2-confezioni-da-250-g",
-      "marca": "Agripasta SRL - Oggi cucino BIO",
-      "prodotto": "Tortellini alla carne 2 confezioni da 250 g",
-      "lotto": "",
-      "tmc": "",
-      "produttore": "",
-      "motivo": "Richiamo per rischio presenza di allergeni",
-      "dataPubblicazione": "23 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/tortellini-alla-carne-2-confezioni-da-250-g",
-      "pdfMinistero": "",
-      "immagine": "",
-      "criterioMatch": "RSS_MINISTERO",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "RSS",
-      "note": [
-        "Richiamo rilevato dal feed ufficiale; lotto, TMC, produttore e foto in aggiornamento"
-      ]
-    },
     {
       "id": "pomodoro-ciliegino",
       "marca": "G. & V. Ortaggi",
@@ -42,9 +23,25 @@
       "stato": "DA_VERIFICARE",
       "metodoEstrazione": "OCR",
       "note": [
-        "TMC da verificare",
-        "Immagine prodotto non presente nel PDF ufficiale"
+        "TMC da verificare"
       ]
+    },
+    {
+      "id": "tortellini-alla-carne-2-confezioni-da-250-g",
+      "marca": "Agripasta SRL - Oggi cucino BIO",
+      "prodotto": "Tortellini alla carne 2 confezioni da 250 g",
+      "lotto": "026 -251",
+      "tmc": "07.12.2026",
+      "produttore": "AGRIPASTA SRL - OGGI CUCINO BIO",
+      "motivo": "Richiamo per rischio presenza di allergeni",
+      "dataPubblicazione": "23 settembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/tortellini-alla-carne-2-confezioni-da-250-g",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/MODULO%20RICHIAMO_1790183041.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/tortellini-alla-carne-2-confezioni-da-250-g-9e8484ede8.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "OCR",
+      "note": []
     },
     {
       "id": "salame-stagionato-al-tartufo",
@@ -319,23 +316,6 @@
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/uova-di-cat-di-vario-calibro-da-allevamento-terra",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/4770_COOP_1789387372.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/uova-di-cat-di-vario-calibro-da-allevamento-terra-69dbab74a6.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "OCR",
-      "note": []
-    },
-    {
-      "id": "uova-di-cat-medie-da-allevamento-terra-selex",
-      "marca": "Selex",
-      "prodotto": "Uova di cat. A medie da allevamento a terra Selex",
-      "lotto": "H 10813",
-      "tmc": "27/09/2026",
-      "produttore": "Codice identificativo IT 03010/Autorizzazione CE C3Y0J",
-      "motivo": "Richiamo per rischio microbiologico",
-      "dataPubblicazione": "14 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/uova-di-cat-medie-da-allevamento-terra-selex",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/5647_SELEX_1789387374.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/uova-di-cat-medie-da-allevamento-terra-selex-c338b58630.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
