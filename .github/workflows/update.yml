@@ -1469,17 +1469,31 @@ jobs:
 
               left, top, right, bottom = bbox
 
+              # Se il contenuto tocca già quasi il bordo della finestra,
+              # non rifiliamo: potrebbe essere proprio il prodotto intero
+              # arrivato a filo e rischieremmo di troncarlo.
+              guard_x = max(8, int(rgb.width * 0.025))
+              guard_y = max(8, int(rgb.height * 0.025))
+
+              if (
+                  left <= guard_x
+                  or top <= guard_y
+                  or right >= rgb.width - guard_x
+                  or bottom >= rgb.height - guard_y
+              ):
+                  return rgb
+
               margin_x = max(
-                  6,
+                  10,
                   int(
-                      rgb.width * 0.015
+                      rgb.width * 0.04
                   )
               )
 
               margin_y = max(
-                  6,
+                  10,
                   int(
-                      rgb.height * 0.015
+                      rgb.height * 0.04
                   )
               )
 
@@ -1754,8 +1768,22 @@ jobs:
               ) in enumerate(
                   candidates[:12]
               ):
+                  # Allarghiamo sempre il candidato prima del rifilo.
+                  # Una finestra che intercetta la confezione a filo bordo
+                  # non deve diventare una foto tagliata.
+                  left, top, right, bottom = box
+                  pad_x = max(18, int((right - left) * 0.08))
+                  pad_y = max(18, int((bottom - top) * 0.08))
+
+                  safe_box = (
+                      max(0, left - pad_x),
+                      max(0, top - pad_y),
+                      min(page_width, right + pad_x),
+                      min(page_height, bottom + pad_y)
+                  )
+
                   crop = page.crop(
-                      box
+                      safe_box
                   )
 
                   crop = trim_white_border(
