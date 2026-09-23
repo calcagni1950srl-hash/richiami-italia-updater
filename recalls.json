@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-23T20:57:40.940666Z",
+  "generatedAt": "2026-09-23T21:51:54.462941Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 18,
@@ -14,15 +14,16 @@
       "lotto": "N. 210",
       "tmc": "La",
       "produttore": "G & V ORTAGGI",
-      "motivo": "Richiamo per rischio microbiologico",
+      "motivo": "PRESENZA SALMONELLA SPP",
       "dataPubblicazione": "23 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pomodoro-ciliegino",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/CdR%20pomodoro%20ciliegino_1790174029.pdf",
-      "immagine": "",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/pomodoro-ciliegino-c34a1e42cd.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "DA_VERIFICARE",
       "metodoEstrazione": "OCR",
       "note": [
+        "Motivo specifico estratto dal PDF ufficiale",
         "TMC da verificare"
       ]
     },
@@ -33,7 +34,7 @@
       "lotto": "026 -251",
       "tmc": "07.12.2026",
       "produttore": "AGRIPASTA SRL - OGGI CUCINO BIO",
-      "motivo": "Richiamo per rischio presenza di allergeni",
+      "motivo": "INDICAZIONE DELL'OSA, LISTA INGREDIENTI E LISTA ALLERGENI ERRATA",
       "dataPubblicazione": "23 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/tortellini-alla-carne-2-confezioni-da-250-g",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/MODULO%20RICHIAMO_1790183041.pdf",
@@ -41,7 +42,9 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
-      "note": []
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
     },
     {
       "id": "salame-stagionato-al-tartufo",
@@ -50,7 +53,7 @@
       "lotto": "20260729",
       "tmc": "Feb. 2027",
       "produttore": "UE IT 1107 M",
-      "motivo": "Richiamo per rischio microbiologico",
+      "motivo": "Presenza di LISTERIA MONOCYTOGENES",
       "dataPubblicazione": "22 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salame-stagionato-al-tartufo",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modulorichiamo1_1790078556.pdf",
@@ -59,6 +62,7 @@
       "stato": "DA_VERIFICARE",
       "metodoEstrazione": "OCR",
       "note": [
+        "Motivo specifico estratto dal PDF ufficiale",
         "TMC da verificare"
       ]
     },
@@ -69,7 +73,7 @@
       "lotto": "60183",
       "tmc": "27/03/2028",
       "produttore": "BMS S.R.L.",
-      "motivo": "Richiamo per rischio chimico",
+      "motivo": "PRESENZA DI ALCALOIDI TROPANICI IN CONCENTRAZIONE SUPERIORE AI LIMITI DI LEGGE",
       "dataPubblicazione": "21 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mais-pop-corn-2",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/MODULORICHIAMOMAISPERPOPCORN400grmarchioFIORDILOTOLotto60183TMC27_03_2028_1789992177.pdf",
@@ -77,7 +81,9 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
-      "note": []
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
     },
     {
       "id": "mais-italiano-pop-corn",
@@ -86,7 +92,7 @@
       "lotto": "60183",
       "tmc": "30/04/2028",
       "produttore": "BMS S.R.L.",
-      "motivo": "Richiamo per rischio chimico",
+      "motivo": "PRESENZA DI ALCALOIDI TROPANICI IN CONCENTRAZIONE SUPERIORE AI LIMITI DI LEGGE",
       "dataPubblicazione": "21 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mais-italiano-pop-corn",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/MODULORICHIAMOMAISPERPOPCORN400grmarchioPROBIOSLotto60183TMC30_04_2028_1789992179.pdf",
@@ -94,7 +100,9 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
-      "note": []
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
     },
     {
       "id": "mais-italiano-pop-corn-0",
@@ -103,7 +111,7 @@
       "lotto": "60183",
       "tmc": "18/06/2028",
       "produttore": "BMS S.R.L.",
-      "motivo": "Richiamo per rischio chimico",
+      "motivo": "PRESENZA DI ALCALOIDI TROPANICI IN CONCENTRAZIONE SUPERIORE AI LIMITI DI LEGGE",
       "dataPubblicazione": "21 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mais-italiano-pop-corn-0",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/MODULORICHIAMOMAISPERPOPCORN400grmarchioPROBIOSLotto60183TMC18_06_2028_1789992181.pdf",
@@ -111,7 +119,9 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
-      "note": []
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
     },
     {
       "id": "mais-pop-corn-3",
@@ -120,7 +130,7 @@
       "lotto": "L60183",
       "tmc": "18-06-2028",
       "produttore": "BMS S.R.L.",
-      "motivo": "Richiamo per rischio chimico",
+      "motivo": "PRESENZA DI ALCALOIDI TROPANICI IN CONCENTRAZIONE SUPERIORE AI LIMITI DI LEGGE",
       "dataPubblicazione": "21 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mais-pop-corn-3",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/richiamoFiordiLoto2_1789992183.pdf",
@@ -128,7 +138,9 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
-      "note": []
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
     },
     {
       "id": "brie-tour-de-marze",
@@ -137,7 +149,7 @@
       "lotto": "BPBY2",
       "tmc": "24-09-2026",
       "produttore": "FR70.002.001",
-      "motivo": "Richiamo per rischio microbiologico",
+      "motivo": "RICHIAMO PREVENTIVO PRESENZA LISTERIA MONOCYTOGENES",
       "dataPubblicazione": "17 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/brie-tour-de-marze",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Formaggio%20Brie_1789655650.pdf",
@@ -145,7 +157,9 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
-      "note": []
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
     },
     {
       "id": "amaretti-gallina-0",
@@ -154,7 +168,7 @@
       "lotto": "23/01/2027-08/03/2027-21/06/2027-19/07/2027-20/07/2027",
       "tmc": "12 MESI",
       "produttore": "AMARETTI GALLINA",
-      "motivo": "Richiamo per rischio presenza di allergeni",
+      "motivo": "PRESENZA DI ALLERGENI NON DICHIARATI IN ETICHETTA",
       "dataPubblicazione": "16 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/amaretti-gallina-0",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/CARTELLO%20DI%20RICHIAMO%20AMARETTI%20GALLINA%20310%20GR._1789569674.pdf",
@@ -162,7 +176,9 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
-      "note": []
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
     },
     {
       "id": "amaretti-gallina-2",
@@ -171,7 +187,7 @@
       "lotto": "20/07/2027",
       "tmc": "12 MESI",
       "produttore": "/AMARETTI GALLINA",
-      "motivo": "Richiamo per rischio presenza di allergeni",
+      "motivo": "PRESENZA DI ALLERGENI NON DICHIARATI IN ETICHETTA",
       "dataPubblicazione": "16 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/amaretti-gallina-2",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/CARTELLO%20DI%20RICHIAMO%20AMARETTI%20GALLINA%20750%20GR._1789569770.pdf",
@@ -179,7 +195,9 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
-      "note": []
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
     },
     {
       "id": "pancetta-affumicata-sottovuoto",
@@ -188,7 +206,7 @@
       "lotto": "040626",
       "tmc": "Variabile",
       "produttore": "IT 9-3701 /L",
-      "motivo": "Richiamo per rischio microbiologico",
+      "motivo": "Presenza listeria",
       "dataPubblicazione": "15 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pancetta-affumicata-sottovuoto",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/mopdello%20richiamo%20pancetta%20affumicata%20su%20sartizzu_1789537202.pdf",
@@ -197,6 +215,7 @@
       "stato": "DA_VERIFICARE",
       "metodoEstrazione": "TESTO_DIGITALE",
       "note": [
+        "Motivo specifico estratto dal PDF ufficiale",
         "TMC da verificare"
       ]
     },
@@ -207,7 +226,7 @@
       "lotto": "TMC 20/09/2026 – Lotto: BXCG1",
       "tmc": "20/09/2026 – Lotto: BXCG1",
       "produttore": "FR 70.002.001 CE",
-      "motivo": "Richiamo per rischio microbiologico",
+      "motivo": "SASU PATURAGES",
       "dataPubblicazione": "15 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/brie-1-kg-60-neutre",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/avviso_richiamo_prodotto_consumatore_1789465229.pdf",
@@ -215,7 +234,9 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
-      "note": []
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
     },
     {
       "id": "filone-di-tonno-pinne-gialle-decongelato-senza-pelle-sottovuoto",
@@ -224,7 +245,7 @@
       "lotto": "20261008399",
       "tmc": "28/03/2026",
       "produttore": "IT Y2N9V UE",
-      "motivo": "Revoca per scadenza prodotto",
+      "motivo": "Istamina oltre i limiti di legge",
       "dataPubblicazione": "15 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/filone-di-tonno-pinne-gialle-decongelato-senza-pelle-sottovuoto",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/COROMEU%20SRL%20_REVOCA%20DEL%20RICHIAMO%20DEL%2028.02.2026_1789483149.pdf",
@@ -232,7 +253,9 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
-      "note": []
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
     },
     {
       "id": "amaretti-gallini",
@@ -241,7 +264,7 @@
       "lotto": "20/07/2027",
       "tmc": "j12 MESI",
       "produttore": ",AMARETTI GALLINA",
-      "motivo": "Richiamo per rischio presenza di allergeni",
+      "motivo": "ETICHETTA NON CONFORME",
       "dataPubblicazione": "15 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/amaretti-gallini",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20di%20richiamo%20750g_1789569572.pdf",
@@ -250,6 +273,7 @@
       "stato": "DA_VERIFICARE",
       "metodoEstrazione": "OCR",
       "note": [
+        "Motivo specifico estratto dal PDF ufficiale",
         "TMC da verificare"
       ]
     },
@@ -260,7 +284,7 @@
       "lotto": "23/01/2027-08/03/2027-21/06/2027-1 9/07/2027-20/07/2027",
       "tmc": "12 MESI",
       "produttore": "AMARETTI GALLINA",
-      "motivo": "Richiamo per rischio presenza di allergeni",
+      "motivo": "ETICHETTA NON CONFORME",
       "dataPubblicazione": "15 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/amaretti-gallina",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20di%20richiamo%20confezioni%20da%20500g%20e%20310g_1789569624.pdf",
@@ -268,7 +292,9 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
-      "note": []
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
     },
     {
       "id": "pancetta-affumicata-sottovuoto-0",
@@ -277,7 +303,7 @@
       "lotto": "040626",
       "tmc": "28.12.2026",
       "produttore": "IT 9-3701 /L",
-      "motivo": "Richiamo per rischio microbiologico",
+      "motivo": "Presenza listeria",
       "dataPubblicazione": "15 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pancetta-affumicata-sottovuoto-0",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/modulo%20di%20richiamo%20pancetta%20affumicata%20sv%20su%20sartizzu_1789537248.pdf",
@@ -285,7 +311,9 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
-      "note": []
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
     },
     {
       "id": "uova-medie-di-cat-da-allevamento-terra-abf-despar",
@@ -294,7 +322,7 @@
       "lotto": "H10813",
       "tmc": "27/09/26",
       "produttore": "utorizzazione CE C3Y0)",
-      "motivo": "Richiamo per rischio microbiologico",
+      "motivo": "Presenza di Salmonella spp. sul guscio",
       "dataPubblicazione": "14 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/uova-medie-di-cat-da-allevamento-terra-abf-despar",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/3103_DESPAR_1789387364.pdf",
@@ -302,7 +330,9 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
-      "note": []
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
     },
     {
       "id": "uova-di-cat-di-vario-calibro-da-allevamento-terra",
@@ -311,7 +341,7 @@
       "lotto": "H10813",
       "tmc": "27/09/26",
       "produttore": "Codice identificativo IT03010/Autorizzazione CE C3Y0J",
-      "motivo": "Richiamo per rischio microbiologico",
+      "motivo": "Presenza di Salmonella spp sul guscio",
       "dataPubblicazione": "14 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/uova-di-cat-di-vario-calibro-da-allevamento-terra",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/4770_COOP_1789387372.pdf",
@@ -319,7 +349,9 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
-      "note": []
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
     }
   ]
 }
