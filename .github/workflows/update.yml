@@ -3095,9 +3095,11 @@ jobs:
           mkdir -p .quality/pdf
           mkdir -p .quality/pre-existing/images
 
-          # Foto/JSON già pubblicati prima di questo run: servono alla guardia
-          # anti-regressione per non sostituire una buona foto con una peggiore.
-          cp recalls-precedenti.json .quality/pre-existing/recalls.json
+          # Snapshot migliore disponibile PRIMA della rifinitura qualità:
+          # contiene le vecchie foto validate e, per i richiami nuovi, la
+          # foto già estratta nello stesso run. Se i pulitori successivi
+          # producono un ritaglio peggiore, la guardia ripristina questa.
+          cp recalls.json .quality/pre-existing/recalls.json
           cp -a images/. .quality/pre-existing/images/ 2>/dev/null || true
 
           # Riutilizziamo i PDF validi già scaricati nella sessione Ministero
