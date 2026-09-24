@@ -77,7 +77,7 @@ jobs:
           from pathlib import Path
           path=Path("notification-result.json")
           data=json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
-          print(int(data.get("firstAttemptCount", 0) or 0))
+          print(len((data.get("newItems", []) or [])) or int(data.get("firstAttemptCount", 0) or 0))
           PY
           )"
 
