@@ -165,43 +165,28 @@ payload = {
     }
 }
 
-# Questi sono retry della STESSA richiesta soltanto in caso di errore
-# HTTP/rete. Appena Firebase accetta il messaggio (HTTP 2xx), usciamo:
-# non inviamo altre notifiche duplicate nei run successivi.
-response = None
+# Una sola richiesta per evento. Un timeout può avvenire DOPO che FCM ha
+# già accettato il messaggio: ritentare qui può quindi creare duplicati.
+# I controlli successivi sono gestiti dallo stato persistente.
+try:
+    response = requests.post(
+        endpoint,
+        headers={
+            "Authorization": "Bearer " + credentials.token,
+            "Content-Type": "application/json; charset=UTF-8",
+        },
+        json=payload,
+        timeout=30,
+    )
+except requests.RequestException as error:
+    raise SystemExit(
+        "ERRORE Firebase: esito invio incerto; nessun retry immediato. "
+        + str(error)
+    ) from error
 
-for attempt in range(1, 4):
-    try:
-        response = requests.post(
-            endpoint,
-            headers={
-                "Authorization": "Bearer " + credentials.token,
-                "Content-Type": "application/json; charset=UTF-8",
-            },
-            json=payload,
-            timeout=30,
-        )
-
-        print(
-            f"Firebase tentativo HTTP {attempt}/3:",
-            response.status_code,
-        )
-
-        if response.ok:
-            break
-
-        print("Risposta Firebase:", response.text)
-
-    except requests.RequestException as error:
-        print(
-            f"Errore Firebase tentativo HTTP {attempt}/3:",
-            error,
-        )
-
-    if attempt < 3:
-        time.sleep(5)
-
-if response is None or not response.ok:
+print("Firebase HTTP:", response.status_code)
+if not response.ok:
+    print("Risposta Firebase:", response.text)
     raise SystemExit(
         "ERRORE durante l'invio Firebase. "
         "Stato notifiche NON aggiornato."
