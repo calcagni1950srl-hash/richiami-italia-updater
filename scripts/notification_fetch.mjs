@@ -155,9 +155,16 @@ function loadState() {
   }
 
   try {
-    return JSON.parse(fs.readFileSync(STATE_PATH, "utf8"));
-  } catch {
-    return { version: 1, notifiedIds: [] };
+    const raw = fs.readFileSync(STATE_PATH, "utf8").trimStart();
+    try {
+      return JSON.parse(raw);
+    } catch {
+      const end = raw.lastIndexOf("}");
+      if (end >= 0) return JSON.parse(raw.slice(0, end + 1));
+      throw new Error("Stato notifiche non valido");
+    }
+  } catch (error) {
+    throw new Error("Impossibile leggere notification-state.json: " + String(error?.message || error));
   }
 }
 
