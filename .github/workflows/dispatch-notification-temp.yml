@@ -1,0 +1,16 @@
+name: Dispatch Notification Temp
+on:
+  push:
+    paths:
+      - ".github/workflows/dispatch-notification-temp.yml"
+permissions:
+  actions: write
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh api --method POST repos/$REPO/actions/workflows/notification-watch.yml/dispatches -f ref=main
