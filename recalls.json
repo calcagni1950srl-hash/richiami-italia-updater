@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-24T11:54:18.941205Z",
+  "generatedAt": "2026-09-24T20:53:45.331925Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 18,
@@ -19,6 +19,25 @@
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/filetti-di-alici-olio",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/cartello%20richiamo%202_1790242398.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/filetti-di-alici-olio-f0252ae686.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
+    {
+      "id": "hamburger-di-bufalo-170g-skin",
+      "marca": "HAMBURGER DI BUFALO - GRAN SELEZIONE",
+      "prodotto": "HAMBURGER DI BUFALO - 170g skin",
+      "lotto": "7726019083",
+      "tmc": "27-28-29 /09/2026",
+      "produttore": "IT 2874S UE",
+      "motivo": "Presenza di Salmonella spp.",
+      "dataPubblicazione": "24 settembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/hamburger-di-bufalo-170g-skin",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/CARTELLODIRICHIAMO_HAMBURGERDIBUFALO170g1_1790260408.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/hamburger-di-bufalo-170g-skin-d9407cfaca.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
@@ -328,26 +347,6 @@
       "metodoEstrazione": "OCR",
       "note": [
         "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "uova-medie-di-cat-da-allevamento-terra-abf-despar",
-      "marca": "Despar",
-      "prodotto": "Uova medie di cat. A da allevamento a terra ABF Despar",
-      "lotto": "H10813",
-      "tmc": "27/09/26",
-      "produttore": "",
-      "motivo": "Presenza di Salmonella spp. sul guscio",
-      "dataPubblicazione": "14 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/uova-medie-di-cat-da-allevamento-terra-abf-despar",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/3103_DESPAR_1789387364.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/uova-medie-di-cat-da-allevamento-terra-abf-despar-e7623004b9.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "Produttore non estratto - non usato per il match"
       ]
     }
   ]
