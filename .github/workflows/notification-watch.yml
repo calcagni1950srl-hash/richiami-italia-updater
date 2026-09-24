@@ -197,19 +197,13 @@ jobs:
           git config user.name "Richiami Italia Notify Bot"
           git config user.email "actions@github.com"
 
-          git add notification-state.json
-
-          if git diff --cached --quiet; then
-            echo "Stato notifiche invariato."
-            exit 0
-          fi
+          # Conserva LO STATO GENERATO DA QUESTO RUN prima di aggiornare
+          # la working tree. La vecchia versione lo cancellava con checkout,
+          # quindi lo stesso richiamo risultava nuovo al controllo successivo.
+          cp notification-state.json /tmp/notification-state.generated.json
 
           for tentativo in 1 2 3; do
-            # Aggiorna prima la base, poi riapplica soltanto lo stato
-            # prodotto da questo run. Evita conflitti tra due controlli
-            # notifiche partiti quasi contemporaneamente.
-            git reset notification-state.json
-            git checkout -- notification-state.json
+            git reset --hard HEAD
             if ! git pull --rebase origin main; then
               git rebase --abort 2>/dev/null || true
               echo "Aggiornamento base non riuscito, tentativo $tentativo/3."
@@ -217,11 +211,46 @@ jobs:
               continue
             fi
 
+            python - <<'PY'
+          import json
+          from pathlib import Path
+
+          remote_path = Path("notification-state.json")
+          generated_path = Path("/tmp/notification-state.generated.json")
+
+          remote = json.loads(remote_path.read_text(encoding="utf-8")) if remote_path.exists() else {}
+          generated = json.loads(generated_path.read_text(encoding="utf-8"))
+
+          ids = set(remote.get("notifiedIds", []) or [])
+          ids.update(generated.get("notifiedIds", []) or [])
+          generated["notifiedIds"] = sorted(str(x) for x in ids if str(x).strip())
+          generated["version"] = max(int(remote.get("version", 0) or 0), int(generated.get("version", 3) or 3))
+
+          remote_checked = str(remote.get("lastCheckedAt", "") or "")
+          generated_checked = str(generated.get("lastCheckedAt", "") or "")
+          if remote_checked > generated_checked:
+              generated["lastCheckedAt"] = remote_checked
+
+          remote_notification = str(remote.get("lastNotificationAt", "") or "")
+          generated_notification = str(generated.get("lastNotificationAt", "") or "")
+          if remote_notification > generated_notification:
+              for key in ("lastNotificationAt", "lastNotificationIds", "lastFirebaseMessageId"):
+                  if key in remote:
+                      generated[key] = remote[key]
+
+          remote_path.write_text(json.dumps(generated, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+          PY
+
             git add notification-state.json
-            git commit -m "Aggiorna stato notifiche richiami" || true
+            if git diff --cached --quiet; then
+              echo "Stato notifiche già aggiornato."
+              exit 0
+            fi
+
+            git commit -m "Aggiorna stato notifiche richiami"
 
             if git push origin main; then
-              echo "✅ Stato notifiche salvato."
+              echo "✅ Stato notifiche salvato senza perdere gli ID notificati."
               exit 0
             fi
 
