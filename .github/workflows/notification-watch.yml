@@ -175,10 +175,35 @@ jobs:
               out.write(f"update_result={result}\n")
           PY
 
-      - name: Invia notifica Firebase
+      - name: Verifica che il richiamo sia già visibile nell'app
+        id: visibile
         if: >-
           steps.completa.outputs.update_result == 'success' ||
           steps.completa.outputs.update_result == 'not_needed'
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+
+          pending = json.loads(Path("notification-pending.json").read_text(encoding="utf-8"))
+          pending_ids = {str(x.get("id", "")).strip() for x in pending.get("newItems", []) if str(x.get("id", "")).strip()}
+          recalls = json.loads(Path("recalls.json").read_text(encoding="utf-8"))
+          visible_ids = {str(x.get("id", "")).strip() for x in recalls.get("recalls", []) if str(x.get("id", "")).strip()}
+          missing = sorted(pending_ids - visible_ids)
+          ok = not missing
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write("ok=" + ("true" if ok else "false") + "\n")
+          if missing:
+              print("Notifica rimandata: richiamo non ancora visibile nell'app:", ", ".join(missing))
+          else:
+              print("Richiamo già presente in recalls.json: notifica autorizzata.")
+          PY
+
+      - name: Invia notifica Firebase
+        if: >-
+          (steps.completa.outputs.update_result == 'success' ||
+          steps.completa.outputs.update_result == 'not_needed') &&
+          steps.visibile.outputs.ok == 'true'
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
