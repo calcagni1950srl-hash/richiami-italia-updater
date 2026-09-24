@@ -244,7 +244,9 @@ jobs:
           generated_path = Path("/tmp/notification-state.generated.json")
 
           remote = json.loads(remote_path.read_text(encoding="utf-8")) if remote_path.exists() else {}
-          generated = json.loads(generated_path.read_text(encoding="utf-8"))
+          raw = generated_path.read_text(encoding="utf-8")
+          decoder = json.JSONDecoder()
+          generated, _ = decoder.raw_decode(raw.lstrip())
 
           ids = set(remote.get("notifiedIds", []) or [])
           ids.update(generated.get("notifiedIds", []) or [])
