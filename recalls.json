@@ -1,12 +1,31 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-23T22:10:26.211535Z",
+  "generatedAt": "2026-09-24T11:54:18.941205Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 18,
-  "pass": 17,
-  "daVerificare": 1,
+  "pass": 16,
+  "daVerificare": 2,
   "recalls": [
+    {
+      "id": "filetti-di-alici-olio",
+      "marca": "COOP",
+      "prodotto": "FILETTI DI ALICI IN OLIO",
+      "lotto": "L VS157",
+      "tmc": "06/12/2027",
+      "produttore": "AL 28 PP",
+      "motivo": "POSSIBILE PRESENZA ISTAMINA",
+      "dataPubblicazione": "24 settembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/filetti-di-alici-olio",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/cartello%20richiamo%202_1790242398.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/filetti-di-alici-olio-f0252ae686.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
     {
       "id": "pomodoro-ciliegino",
       "marca": "G. & V. Ortaggi",
@@ -24,9 +43,7 @@
       "metodoEstrazione": "OCR",
       "note": [
         "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare",
-        "Nessuna foto prodotto presente nel PDF ufficiale",
-        "TMC non presente/leggibile nel PDF ufficiale"
+        "TMC da verificare"
       ]
     },
     {
@@ -234,9 +251,7 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo corretto dopo verifica dell'avviso ufficiale"
-      ]
+      "note": []
     },
     {
       "id": "filone-di-tonno-pinne-gialle-decongelato-senza-pelle-sottovuoto",
@@ -270,10 +285,11 @@
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20di%20richiamo%20750g_1789569572.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/amaretti-gallini-99f67dc43f.png",
       "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
+      "stato": "DA_VERIFICARE",
       "metodoEstrazione": "OCR",
       "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
+        "Motivo specifico estratto dal PDF ufficiale",
+        "TMC da verificare"
       ]
     },
     {
@@ -330,26 +346,8 @@
       "stato": "PASS",
       "metodoEstrazione": "OCR",
       "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "uova-di-cat-di-vario-calibro-da-allevamento-terra",
-      "marca": "Fattorie Natura",
-      "prodotto": "Uova di cat. A di vario calibro da allevamento a terra",
-      "lotto": "H10813",
-      "tmc": "27/09/26",
-      "produttore": "Codice identificativo IT03010/Autorizzazione CE C3Y0J",
-      "motivo": "Presenza di Salmonella spp sul guscio",
-      "dataPubblicazione": "14 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/uova-di-cat-di-vario-calibro-da-allevamento-terra",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/4770_COOP_1789387372.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/uova-di-cat-di-vario-calibro-da-allevamento-terra-69dbab74a6.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
+        "Motivo specifico estratto dal PDF ufficiale",
+        "Produttore non estratto - non usato per il match"
       ]
     }
   ]
