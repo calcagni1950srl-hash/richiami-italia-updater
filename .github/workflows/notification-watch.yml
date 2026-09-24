@@ -243,7 +243,11 @@ jobs:
           remote_path = Path("notification-state.json")
           generated_path = Path("/tmp/notification-state.generated.json")
 
-          remote = json.loads(remote_path.read_text(encoding="utf-8")) if remote_path.exists() else {}
+          if remote_path.exists():
+              raw_remote = remote_path.read_text(encoding="utf-8")
+              remote, _ = json.JSONDecoder().raw_decode(raw_remote.lstrip())
+          else:
+              remote = {}
           raw = generated_path.read_text(encoding="utf-8")
           decoder = json.JSONDecoder()
           generated, _ = decoder.raw_decode(raw.lstrip())
