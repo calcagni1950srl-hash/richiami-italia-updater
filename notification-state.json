@@ -16,6 +16,7 @@
     "duble-5",
     "filetti-di-alici-olio",
     "filone-di-tonno-pinne-gialle-decongelato-senza-pelle-sottovuoto",
+    "hamburger-di-bufalo-170g-skin",
     "mais-italiano-pop-corn",
     "mais-italiano-pop-corn-0",
     "mais-pop-corn-2",
@@ -34,10 +35,10 @@
     "uova-di-cat-medie-da-allevamento-terra-selex-0",
     "uova-medie-di-cat-da-allevamento-terra-abf-despar"
   ],
-  "lastCheckedAt": "2026-09-24T12:26:18.184Z",
-  "lastNotificationAt": "2026-09-24T12:18:05.419965+00:00",
+  "lastCheckedAt": "2026-09-24T20:47:40.869Z",
+  "lastNotificationAt": "2026-09-24T20:55:20.635781+00:00",
   "lastNotificationIds": [
-    "filetti-di-alici-olio"
+    "hamburger-di-bufalo-170g-skin"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/-5490128563400665029"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/-3133312325333063201"
 }
