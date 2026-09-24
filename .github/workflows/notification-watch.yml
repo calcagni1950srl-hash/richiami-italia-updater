@@ -206,6 +206,21 @@ jobs:
               print("Richiamo già presente in recalls.json: notifica autorizzata.")
           PY
 
+      - name: Ricarica stato notifiche prima di Firebase
+        if: >-
+          (steps.completa.outputs.update_result == 'success' ||
+          steps.completa.outputs.update_result == 'not_needed') &&
+          steps.visibile.outputs.ok == 'true'
+        run: |
+          git fetch origin main
+          git show origin/main:notification-state.json > notification-state.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path("notification-state.json").read_text(encoding="utf-8"))
+          print("ID notificati aggiornati prima di Firebase:", len(data.get("notifiedIds", []) or []))
+          PY
+
       - name: Invia notifica Firebase
         if: >-
           (steps.completa.outputs.update_result == 'success' ||
