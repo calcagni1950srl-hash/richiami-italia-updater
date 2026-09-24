@@ -175,6 +175,13 @@ jobs:
               out.write(f"update_result={result}\n")
           PY
 
+      - name: Aggiorna dati pubblicati dopo updater
+        if: >-
+          steps.completa.outputs.update_result == 'success'
+        run: |
+          git fetch origin main
+          git show origin/main:recalls.json > recalls.json
+
       - name: Verifica che il richiamo sia già visibile nell'app
         id: visibile
         if: >-
@@ -269,7 +276,7 @@ jobs:
                   if key in remote:
                       generated[key] = remote[key]
 
-          remote_path.write_text(json.dumps(generated, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+          remote_path.write_text(json.dumps(generated, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
           PY
 
             git add notification-state.json
