@@ -1,12 +1,88 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-24T21:02:31.508303Z",
+  "generatedAt": "2026-09-25T13:50:21.824392Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 18,
-  "pass": 16,
-  "daVerificare": 2,
+  "pass": 17,
+  "daVerificare": 1,
   "recalls": [
+    {
+      "id": "calamaro-patagonico-pulito-aperto-vaschetta",
+      "marca": "Maxi Fish s.r.l.",
+      "prodotto": "Calamaro patagonico pulito aperto vaschetta",
+      "lotto": "26-250PACOA; 26-254PACOA",
+      "tmc": "28/02/2029",
+      "produttore": "ITP4\\/38 CE",
+      "motivo": "PRESENZA DI CADMIO OLTRE",
+      "dataPubblicazione": "25 settembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/calamaro-patagonico-pulito-aperto-vaschetta",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/1.%20CARTELLO%20RICHIAMO%20Calamaro%20pulito%20aperto%20vaschetta_1790337727.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/calamaro-patagonico-pulito-aperto-vaschetta-24c1e8a286.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "OCR",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
+    {
+      "id": "calamaro-patagonico-pulito-aperto",
+      "marca": "Maxi Fish s.r.l.",
+      "prodotto": "Calamaro patagonico pulito aperto",
+      "lotto": "26-250PACOA, 26-251 PACOA,",
+      "tmc": "/28/02/2029",
+      "produttore": "TP4V38 CE",
+      "motivo": "PRESENZA DI CADMIO OLTRE",
+      "dataPubblicazione": "25 settembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/calamaro-patagonico-pulito-aperto",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/2.%20CARTELLO%20RICHIAMO%20Calamaro%20pulito%20aperto%20IQF_1790337730.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/calamaro-patagonico-pulito-aperto-2d23f38ce1.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "OCR",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
+    {
+      "id": "calamaro-patagonico-pulito-butterfly-decongelato",
+      "marca": "Maxi Fish s.r.l.",
+      "prodotto": "Calamaro patagonico pulito butterfly decongelato",
+      "lotto": "\\ome del produttore: Maxi Fish s.r.l.",
+      "tmc": "11/09/2026, 12/09/2026; 13/09/2026; 14/09/2026",
+      "produttore": "TP4V38 CE",
+      "motivo": "PRESENZA DI CADMIO OLTRE",
+      "dataPubblicazione": "25 settembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/calamaro-patagonico-pulito-butterfly-decongelato",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/3.%20CARTELLO%20RICHIAMO%20Butterfly%20decongelato_1790337731.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/calamaro-patagonico-pulito-butterfly-decongelato-3cfc69eb6a.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "OCR",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
+    {
+      "id": "spiedino-di-calamaro-patagonico-e-gambero-argentino",
+      "marca": "Maxi Fish s.r.l.",
+      "prodotto": "Spiedino di calamaro patagonico e gambero argentino",
+      "lotto": "Marchio di identificazione dello stabilimento/del produttore: ITP4V38 CE",
+      "tmc": "04/03/2028, 07/03/2028, 09/03/2028 e 11/03/2028",
+      "produttore": "ITP4V38 CE",
+      "motivo": "PRESENZA DI CADMIO OLTRE",
+      "dataPubblicazione": "25 settembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/spiedino-di-calamaro-patagonico-e-gambero-argentino",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/4.%20CARTELLO%20RICHIAMO%20Spiedini_1790337733.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/spiedino-di-calamaro-patagonico-e-gambero-argentino-0b35d8e3fd.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "OCR",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
     {
       "id": "filetti-di-alici-olio",
       "marca": "COOP",
@@ -271,83 +347,6 @@
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
       "note": []
-    },
-    {
-      "id": "filone-di-tonno-pinne-gialle-decongelato-senza-pelle-sottovuoto",
-      "marca": "CORMEU SRL",
-      "prodotto": "FILONE DI TONNO A PINNE GIALLE DECONGELATO SENZA PELLE SOTTOVUOTO",
-      "lotto": "20261008399",
-      "tmc": "28/03/2026",
-      "produttore": "IT Y2N9V UE",
-      "motivo": "Istamina oltre i limiti di legge",
-      "dataPubblicazione": "15 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/filone-di-tonno-pinne-gialle-decongelato-senza-pelle-sottovuoto",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/COROMEU%20SRL%20_REVOCA%20DEL%20RICHIAMO%20DEL%2028.02.2026_1789483149.pdf",
-      "immagine": "",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "amaretti-gallini",
-      "marca": "Amaretti Gallina",
-      "prodotto": "Amaretti Gallini",
-      "lotto": "20/07/2027",
-      "tmc": "12 MESI",
-      "produttore": "AMARETTI GALLINA",
-      "motivo": "ETICHETTA NON CONFORME",
-      "dataPubblicazione": "15 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/amaretti-gallini",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20di%20richiamo%20750g_1789569572.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/amaretti-gallini-99f67dc43f.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare"
-      ]
-    },
-    {
-      "id": "amaretti-gallina",
-      "marca": "Amaretti Gallina",
-      "prodotto": "Amaretti Gallina",
-      "lotto": "23/01/2027-08/03/2027-21/06/2027-19/07/2027-20/07/2027",
-      "tmc": "12 MESI",
-      "produttore": "AMARETTI GALLINA",
-      "motivo": "ETICHETTA NON CONFORME",
-      "dataPubblicazione": "15 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/amaretti-gallina",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20di%20richiamo%20confezioni%20da%20500g%20e%20310g_1789569624.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/amaretti-gallina-c5d6175b09.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "pancetta-affumicata-sottovuoto-0",
-      "marca": "Salumificio Campidanese Su Sartizzu",
-      "prodotto": "Pancetta affumicata (sottovuoto)",
-      "lotto": "040626",
-      "tmc": "28.12.2026",
-      "produttore": "IT 9-3701 /L",
-      "motivo": "Presenza listeria",
-      "dataPubblicazione": "15 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pancetta-affumicata-sottovuoto-0",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/modulo%20di%20richiamo%20pancetta%20affumicata%20sv%20su%20sartizzu_1789537248.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/pancetta-affumicata-sottovuoto-0-d15b8bf24f.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
-      ]
     }
   ]
 }
