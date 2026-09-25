@@ -285,6 +285,11 @@ jobs:
               const escaped =
                 label.replace(
                   /[.*+?^${}()|[\]\\]/g,
+                  "\\          function pageField(body, labels) {
+            for (const label of labels) {
+              const escaped =
+                label.replace(
+                  /[.*+?^${}()|[\]\\]/g,
                   "\\$&"
                 );
 
@@ -315,6 +320,130 @@ jobs:
               }
             }
 
+            return "";
+          }"
+                );
+
+              const regex =
+                new RegExp(
+                  escaped +
+                  "\\s*:?\\s*" +
+                  "([^\\n\\r]+)",
+                  "i"
+                );
+
+              const match =
+                body.match(regex);
+
+              if (
+                match &&
+                match[1]
+              ) {
+                const value =
+                  clean(match[1]);
+
+                if (
+                  value &&
+                  value.length < 500
+                ) {
+                  return value;
+                }
+              }
+            }
+
+            return "";
+          }
+
+          function pageMultilineField(body, labels, stopLabels) {
+            for (const label of labels) {
+              const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\          function pageField(body, labels) {
+            for (const label of labels) {
+              const escaped =
+                label.replace(
+                  /[.*+?^${}()|[\]\\]/g,
+                  "\\$&"
+                );
+
+              const regex =
+                new RegExp(
+                  escaped +
+                  "\\s*:?\\s*" +
+                  "([^\\n\\r]+)",
+                  "i"
+                );
+
+              const match =
+                body.match(regex);
+
+              if (
+                match &&
+                match[1]
+              ) {
+                const value =
+                  clean(match[1]);
+
+                if (
+                  value &&
+                  value.length < 500
+                ) {
+                  return value;
+                }
+              }
+            }
+
+            return "";
+          }");
+              const start = new RegExp(escaped + "\\s*:?\\s*", "i").exec(body);
+              if (!start) continue;
+
+              let value = body.slice(start.index + start[0].length);
+              let end = value.length;
+
+              for (const stop of stopLabels) {
+                const stopEscaped = stop.replace(/[.*+?^${}()|[\]\\]/g, "\\          function pageField(body, labels) {
+            for (const label of labels) {
+              const escaped =
+                label.replace(
+                  /[.*+?^${}()|[\]\\]/g,
+                  "\\$&"
+                );
+
+              const regex =
+                new RegExp(
+                  escaped +
+                  "\\s*:?\\s*" +
+                  "([^\\n\\r]+)",
+                  "i"
+                );
+
+              const match =
+                body.match(regex);
+
+              if (
+                match &&
+                match[1]
+              ) {
+                const value =
+                  clean(match[1]);
+
+                if (
+                  value &&
+                  value.length < 500
+                ) {
+                  return value;
+                }
+              }
+            }
+
+            return "";
+          }");
+                const m = new RegExp("(?:^|\\n)\\s*" + stopEscaped + "\\s*:?", "im").exec(value);
+                if (m && m.index < end) end = m.index;
+              }
+
+              value = clean(value.slice(0, end).replace(/[\\r\\n]+/g, " "));
+              if (value && value.length < 1500) return value;
+            }
             return "";
           }
 
@@ -572,10 +701,15 @@ jobs:
                 );
 
               result.motivo =
-                pageField(
+                pageMultilineField(
                   body,
+                  ["Motivo della segnalazione"],
                   [
-                    "Motivo della segnalazione"
+                    "Data pubblicazione",
+                    "Data di pubblicazione",
+                    "Allegati",
+                    "Documenti",
+                    "Modello di richiamo"
                   ]
                 );
 
