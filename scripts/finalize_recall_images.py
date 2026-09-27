@@ -113,13 +113,18 @@ def crop_photo_inside_form(image):
     if x <= edge_x or y <= edge_y or x + bw >= w - edge_x or y + bh >= h - edge_y:
         return None
 
+    # Manteniamo più respiro sotto il prodotto: il rilevamento dei contorni
+    # può fermarsi qualche pixel prima della base reale (confezioni chiare,
+    # ombre deboli, prodotto a filo del riquadro). Il margine inferiore è
+    # volutamente maggiore degli altri lati, ma resta limitato al riquadro.
     pad_x = max(8, int(bw * 0.06))
-    pad_y = max(8, int(bh * 0.06))
+    pad_top = max(8, int(bh * 0.06))
+    pad_bottom = max(14, int(bh * 0.14))
 
     x1 = max(0, x - pad_x)
-    y1 = max(0, y - pad_y)
+    y1 = max(0, y - pad_top)
     x2 = min(w, x + bw + pad_x)
-    y2 = min(h, y + bh + pad_y)
+    y2 = min(h, y + bh + pad_bottom)
 
     crop = img.crop((x1, y1, x2, y2)).convert('RGB')
 
