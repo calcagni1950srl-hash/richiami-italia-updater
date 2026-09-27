@@ -20,6 +20,7 @@
     "filetti-di-alici-olio",
     "filone-di-tonno-pinne-gialle-decongelato-senza-pelle-sottovuoto",
     "hamburger-di-bufalo-170g-skin",
+    "hamburger-di-scottona-200g-100x2-skin",
     "mais-italiano-pop-corn",
     "mais-italiano-pop-corn-0",
     "mais-pop-corn-2",
@@ -34,18 +35,17 @@
     "speck-e-brie-1",
     "spiedino-di-calamaro-patagonico-e-gambero-argentino",
     "tortellini-alla-carne-2-confezioni-da-250-g",
+    "uova-da-allevamento-terra-speciali-pasta-gialla",
     "uova-di-cat-di-vario-calibro-da-allevamento-terra",
     "uova-di-cat-medie-da-allevamento-terra-selex",
     "uova-di-cat-medie-da-allevamento-terra-selex-0",
     "uova-medie-di-cat-da-allevamento-terra-abf-despar"
   ],
-  "lastCheckedAt": "2026-09-25T18:13:51.636Z",
-  "lastNotificationAt": "2026-09-25T13:52:30.418969+00:00",
+  "lastCheckedAt": "2026-09-27T20:43:49.597Z",
+  "lastNotificationAt": "2026-09-27T20:52:26.650886+00:00",
   "lastNotificationIds": [
-    "calamaro-patagonico-pulito-aperto-vaschetta",
-    "calamaro-patagonico-pulito-aperto",
-    "calamaro-patagonico-pulito-butterfly-decongelato",
-    "spiedino-di-calamaro-patagonico-e-gambero-argentino"
+    "uova-da-allevamento-terra-speciali-pasta-gialla",
+    "hamburger-di-scottona-200g-100x2-skin"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/-3961436033708689827"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/478890635470981079"
 }
