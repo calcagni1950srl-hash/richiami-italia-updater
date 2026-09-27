@@ -13,11 +13,6 @@ on:
   schedule:
     - cron: "17 */2 * * *"
 
-  # Trigger temporaneo di test: verrà rimosso dopo il run forzato.
-  push:
-    branches: [main]
-    paths:
-      - ".force-full-test"
 
 permissions:
   contents: write
@@ -54,7 +49,7 @@ jobs:
       - name: Controlla se serve aggiornamento completo
         id: controllo_rss
         env:
-          FORCE_FULL: ${{ inputs.force_full || github.event_name == 'push' }}
+          FORCE_FULL: ${{ inputs.force_full || false }}
         run: |
           python - <<'PYEOF'
           import json
