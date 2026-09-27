@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-27T22:02:19.462308Z",
+  "generatedAt": "2026-09-27T22:19:27.835943Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
-  "totale": 18,
-  "pass": 17,
-  "daVerificare": 1,
+  "totale": 19,
+  "pass": 14,
+  "daVerificare": 5,
   "recalls": [
     {
       "id": "uova-da-allevamento-terra-speciali-pasta-gialla",
@@ -281,16 +281,16 @@
       "lotto": "L60183",
       "tmc": "18-06-2028",
       "produttore": "BMS S.R.L.",
-      "motivo": "PRESENZA DI ALCALOIDI TROPANICI IN CONCENTRAZIONE SUPERIORE AI LIMITI DI LEGGE",
+      "motivo": "Richiamo per rischio chimico Documentazione",
       "dataPubblicazione": "21 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mais-pop-corn-3",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/richiamoFiordiLoto2_1789992183.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/mais-pop-corn-3-fb665382ea.png",
       "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "OCR",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "",
       "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
+        "PDF non disponibile"
       ]
     },
     {
@@ -306,10 +306,10 @@
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Formaggio%20Brie_1789655650.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/brie-tour-de-marze-bf9fb1820e.png",
       "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "OCR",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "",
       "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
+        "PDF non disponibile"
       ]
     },
     {
@@ -325,10 +325,30 @@
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/CARTELLO%20DI%20RICHIAMO%20AMARETTI%20GALLINA%20310%20GR._1789569674.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/amaretti-gallina-0-2fa481dc36.png",
       "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "OCR",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "",
       "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
+        "PDF non disponibile"
+      ]
+    },
+    {
+      "id": "amaretti-gallina-1",
+      "marca": "",
+      "prodotto": "",
+      "lotto": "",
+      "tmc": "",
+      "produttore": "",
+      "motivo": "",
+      "dataPubblicazione": "",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/amaretti-gallina-1",
+      "pdfMinistero": "",
+      "immagine": "",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "",
+      "note": [
+        "PDF non disponibile",
+        "Foto prodotto non individuata nel PDF ufficiale"
       ]
     },
     {
