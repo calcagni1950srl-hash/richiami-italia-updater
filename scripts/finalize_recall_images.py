@@ -222,6 +222,18 @@ for recall in recalls:
     current_image = Image.open(current).convert('RGB')
     replacement = crop_photo_inside_form(current_image)
 
+    # Caso verificato sul richiamo uova: il rilevamento automatico del
+    # contenuto interno taglia la base della confezione. Per questo richiamo
+    # usiamo direttamente il riquadro fotografico completo del PDF ufficiale,
+    # che conserva l'intero prodotto; il controllo qualità successivo scarta
+    # comunque il candidato se contiene testo/modulo.
+    if recall_id == 'uova-da-allevamento-terra-speciali-pasta-gialla':
+        pdf = PDF_DIR / f'{recall_id}.pdf'
+        if pdf.exists():
+            full_slot = recover_standard_left_photo(pdf, recall_id)
+            if full_slot is not None:
+                replacement = full_slot
+
     # Se nella foto finale sono rimaste frasi tipiche del modulo,
     # significa che abbiamo incluso ancora parte del foglio.
     contaminated = (
