@@ -309,6 +309,16 @@ def select_best() -> None:
         if not old_quality["severe"] and new_quality["severe"]:
             choose_old = True
 
+        # Per il richiamo uova in verifica, il nuovo ritaglio nasce dallo
+        # stesso PDF ma conserva intenzionalmente più margine inferiore.
+        # Se supera i controlli anti-modulo deve sostituire la versione
+        # precedente anche quando il punteggio fotografico è simile.
+        elif (
+            rid == "uova-da-allevamento-terra-speciali-pasta-gialla"
+            and not new_quality["severe"]
+        ):
+            choose_old = False
+
         # Se entrambe sono pulite, cambiamo foto solo quando il nuovo
         # candidato ha un vantaggio reale. Questo evita oscillazioni casuali
         # della pipeline fra due ritagli equivalenti.
