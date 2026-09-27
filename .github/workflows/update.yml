@@ -282,72 +282,35 @@ jobs:
 
           function pageField(body, labels) {
             for (const label of labels) {
-              const escaped =
-                label.replace(
-                  /[.*+?^${}()|[\]\\]/g,
-                  "\\          function pageField(body, labels) {
-            for (const label of labels) {
-              const escaped =
-                label.replace(
-                  /[.*+?^${}()|[\]\\]/g,
-                  "\\$&"
-                );
+              const labelIndex = body
+                .toLowerCase()
+                .indexOf(label.toLowerCase());
 
-              const regex =
-                new RegExp(
-                  escaped +
-                  "\\s*:?\\s*" +
-                  "([^\\n\\r]+)",
-                  "i"
-                );
-
-              const match =
-                body.match(regex);
-
-              if (
-                match &&
-                match[1]
-              ) {
-                const value =
-                  clean(match[1]);
-
-                if (
-                  value &&
-                  value.length < 500
-                ) {
-                  return value;
-                }
+              if (labelIndex === -1) {
+                continue;
               }
-            }
 
-            return "";
-          }"
-                );
-
-              const regex =
-                new RegExp(
-                  escaped +
-                  "\\s*:?\\s*" +
-                  "([^\\n\\r]+)",
-                  "i"
-                );
-
-              const match =
-                body.match(regex);
-
-              if (
-                match &&
-                match[1]
+              let valueStart = labelIndex + label.length;
+              while (
+                valueStart < body.length &&
+                (body[valueStart] === ":" ||
+                 body[valueStart] === " " ||
+                 body[valueStart] === "\t")
               ) {
-                const value =
-                  clean(match[1]);
+                valueStart++;
+              }
 
-                if (
-                  value &&
-                  value.length < 500
-                ) {
-                  return value;
-                }
+              let valueEnd = body.indexOf("\n", valueStart);
+              if (valueEnd === -1) {
+                valueEnd = body.length;
+              }
+
+              const value = clean(
+                body.slice(valueStart, valueEnd)
+              );
+
+              if (value && value.length < 500) {
+                return value;
               }
             }
 
