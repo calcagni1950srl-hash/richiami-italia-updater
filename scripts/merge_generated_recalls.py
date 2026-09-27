@@ -100,6 +100,11 @@ def main() -> int:
                 "tmc": "",
                 "immagine": "",
             },
+            "uova-da-allevamento-terra-speciali-pasta-gialla": {
+                # Il PDF non contiene una foto prodotto valida: il ritaglio
+                # automatico mostra il modulo di richiamo, non la confezione.
+                "immagine": "",
+            },
             "brie-1-kg-60-neutre": {
                 "lotto": "BXCG1",
                 "tmc": "20/09/2026",
