@@ -48,6 +48,33 @@ def main() -> int:
             item.get("immagine", "") or ""
         ).strip()
 
+        # Il JSON generato e le immagini devono essere una coppia atomica.
+        # Se il run ha validato una foto versionata presente in
+        # .generated-images, quella URL ha priorità sul database remoto.
+        # Questo evita che un reset su origin/main ripristini una URL vecchia.
+        prefix = rid + "-"
+        candidates = sorted(
+            Path(".generated-images").glob(prefix + "*.png"),
+            key=lambda p: p.stat().st_mtime_ns,
+            reverse=True,
+        )
+        if candidates:
+            current_name = (
+                generated_image.rsplit("/", 1)[-1]
+                if generated_image
+                else ""
+            )
+            chosen = next(
+                (p for p in candidates if p.name == current_name),
+                candidates[0],
+            )
+            generated_image = (
+                "https://raw.githubusercontent.com/"
+                "calcagni1950srl-hash/richiami-italia-updater/"
+                "refs/heads/main/images/" + chosen.name
+            )
+            item["immagine"] = generated_image
+
         # Se il run appena completato ha già prodotto e validato una nuova
         # immagine, preserviamola. La foto precedente viene usata solo come
         # fallback quando il run corrente non ne ha una.
