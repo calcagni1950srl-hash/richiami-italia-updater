@@ -261,6 +261,27 @@ def select_best() -> None:
         old_name = image_filename(old_url)
         new_name = image_filename(new_url)
 
+        # Il richiamo uova è il caso di regressione che stiamo verificando:
+        # il finalizer produce un nuovo file versionato ma il backup può avere
+        # lo stesso URL del JSON corrente prima della rifinitura. Non uscire
+        # come "invariato": se esiste un candidato nuovo e pulito, pubblicalo.
+        if rid == "uova-da-allevamento-terra-speciali-pasta-gialla":
+            candidates = sorted(
+                IMAGES.glob(rid + "-*.png"),
+                key=lambda p: p.stat().st_mtime_ns,
+                reverse=True,
+            )
+            for candidate in candidates:
+                if candidate.name == old_name:
+                    continue
+                quality = analyse(candidate)
+                if quality["severe"]:
+                    continue
+                new_name = candidate.name
+                new_url = url_for(new_name)
+                item["immagine"] = new_url
+                break
+
         if not old_name:
             if not discard_severe_new_image(item, rid):
                 kept_new += 1
