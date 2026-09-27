@@ -26,6 +26,11 @@ FORM_PHRASES = (
     "acquistato",
     "riconsegnare il prodotto",
     "procedere al suo utilizzo",
+    "marchio del prodotto",
+    "denominazione di vendita",
+    "nome o ragione sociale",
+    "termine minimo di conservazione",
+    "descrizione peso volume",
 )
 
 
@@ -271,6 +276,20 @@ def select_best() -> None:
             continue
 
         old_quality = analyse(old_path)
+
+        # Una vecchia immagine riconosciuta come modulo/documento non può
+        # essere ripristinata soltanto perché ha un punteggio numerico alto.
+        # La severità anti-modulo ha priorità assoluta sul confronto score.
+        if old_quality["severe"] and old_name == new_name:
+            item["immagine"] = ""
+            (IMAGES / old_name).unlink(missing_ok=True)
+            kept_new += 1
+            print(
+                "🗑️ Vecchia foto contaminata eliminata:",
+                rid,
+                old_quality.get("reason", ""),
+            )
+            continue
 
         new_path = IMAGES / new_name if new_name else None
         new_quality = (
