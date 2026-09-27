@@ -355,45 +355,49 @@ jobs:
           }
 
           function pageMultilineField(body, labels, stopLabels) {
+            const lowerBody = body.toLowerCase();
+
             for (const label of labels) {
-              const escaped = label.replace(
-                /[.*+?^\${}()|[\]\\]/g,
-                "\\$&"
-              );
+              const marker = label.toLowerCase();
+              const start = lowerBody.indexOf(marker);
 
-              const startMatch = new RegExp(
-                escaped + "\\s*:?\\s*",
-                "i"
-              ).exec(body);
-
-              if (!startMatch) {
+              if (start === -1) {
                 continue;
               }
 
-              let value = body.slice(
-                startMatch.index + startMatch[0].length
-              );
-              let stopIndex = value.length;
+              let valueStart = start + label.length;
+
+              while (
+                valueStart < body.length &&
+                (body[valueStart] === ":" ||
+                 body[valueStart] === " " ||
+                 body[valueStart] === "\t" ||
+                 body[valueStart] === "\r" ||
+                 body[valueStart] === "\n")
+              ) {
+                valueStart++;
+              }
+
+              let stopIndex = body.length;
 
               for (const stopLabel of stopLabels) {
-                const stopEscaped = stopLabel.replace(
-                  /[.*+?^\${}()|[\]\\]/g,
-                  "\\$&"
+                const candidate = lowerBody.indexOf(
+                  stopLabel.toLowerCase(),
+                  valueStart
                 );
-                const stopMatch = new RegExp(
-                  "(?:^|\\n)\\s*" + stopEscaped + "\\s*:?",
-                  "im"
-                ).exec(value);
 
-                if (stopMatch && stopMatch.index < stopIndex) {
-                  stopIndex = stopMatch.index;
+                if (candidate !== -1 && candidate < stopIndex) {
+                  stopIndex = candidate;
                 }
               }
 
-              value = clean(
-                value
-                  .slice(0, stopIndex)
-                  .replace(/[\\r\\n]+/g, " ")
+              const value = clean(
+                body
+                  .slice(valueStart, stopIndex)
+                  .split("\r")
+                  .join(" ")
+                  .split("\n")
+                  .join(" ")
               );
 
               if (value && value.length < 1500) {
