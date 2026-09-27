@@ -3317,20 +3317,11 @@ jobs:
                       preserved += 1
                       continue
 
-              # Per un richiamo nuovo usiamo subito la foto estratta nello
-              # stesso run, quando il PDF è già disponibile nella sessione
-              # Ministero funzionante. Il controllo qualità successivo potrà
-              # migliorarla, ma il richiamo non resta senza immagine solo
-              # perché il secondo download del PDF viene bloccato.
-              source = source_images_dir / f'{rid}.png'
-              if source.exists() and source.stat().st_size >= 10_000:
-                  digest = hashlib.sha256(source.read_bytes()).hexdigest()[:10]
-                  filename = f'{rid}-{digest}.png'
-                  shutil.copy2(source, images_dir / filename)
-                  item['immagine'] = f'{raw_base}/{filename}'
-                  published_new += 1
-                  continue
-
+              # Le immagini dei richiami nuovi NON vengono pubblicate
+              # prima del controllo qualità. Il PDF può contenere il modulo
+              # stesso o un ritaglio testuale che sembra una fotografia.
+              # La fase "Valida immagini" qui sotto è l'unica autorizzata
+              # a valorizzare il campo immagine per un nuovo richiamo.
               item['immagine'] = ''
               awaiting_quality += 1
 
