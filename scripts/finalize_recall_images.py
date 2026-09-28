@@ -172,20 +172,15 @@ def recover_standard_left_photo(pdf, recall_id):
     # "Inserire immagine uno" per non trascinare testo del modulo.
     crop = page.crop((
         int(0.060 * w),
-        int(0.685 * h),
-        int(0.495 * w),
-        int(0.865 * h),
+        int(0.660 * h),
+        int(0.505 * w),
+        int(0.905 * h),
     )).convert('RGB')
 
-    # Togliamo solo pochi pixel di bordo del riquadro, senza toccare
-    # il prodotto vero e proprio.
-    cw, ch = crop.size
-    crop = crop.crop((
-        int(0.005 * cw),
-        int(0.005 * ch),
-        int(0.995 * cw),
-        int(0.995 * ch),
-    ))
+    # Non rifiliamo ulteriormente questo riquadro: serve come candidato
+    # conservativo quando il rilevamento dei contorni ha già tagliato una
+    # parte del prodotto. Il QA successivo rimuove comunque eventuale testo
+    # del modulo, quindi qui la priorità è non perdere la confezione.
 
     if crop.width < 220 or crop.height < 140:
         return None
