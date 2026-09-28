@@ -293,8 +293,28 @@ def select_best() -> None:
             continue
 
         if old_name == new_name and (IMAGES / new_name).exists():
-            unchanged += 1
-            continue
+            # Il finalizer può aver riscritto i byte della foto mantenendo
+            # temporaneamente lo stesso nome. Confrontiamo il contenuto col
+            # backup: se è cambiato, la nuova immagine deve essere
+            # ri-versionata PRIMA del confronto, altrimenti il guard la
+            # classifica erroneamente come invariata e l'app continua a
+            # ricevere l'URL/cache precedente.
+            if (IMAGES / new_name).read_bytes() == old_path.read_bytes():
+                unchanged += 1
+                continue
+
+            import hashlib
+            new_bytes = (IMAGES / new_name).read_bytes()
+            digest = hashlib.sha256(new_bytes).hexdigest()[:10]
+            versioned_name = f"{rid}-{digest}.png"
+            versioned_path = IMAGES / versioned_name
+            if versioned_name != new_name:
+                versioned_path.write_bytes(new_bytes)
+                (IMAGES / new_name).unlink(missing_ok=True)
+            new_name = versioned_name
+            new_url = url_for(new_name)
+            item["immagine"] = new_url
+            print("🔄 Foto modificata ri-versionata:", rid, "->", new_name)
 
         old_quality = analyse(old_path)
 
