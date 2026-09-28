@@ -174,7 +174,9 @@ def recover_standard_left_photo(pdf, recall_id):
         int(0.060 * w),
         int(0.660 * h),
         int(0.505 * w),
-        int(0.905 * h),
+        # La foto termina prima della didascalia "Inserire immagine uno".
+        # 0.905 includeva la prima riga di testo del modulo.
+        int(0.888 * h),
     )).convert('RGB')
 
     # Non rifiliamo ulteriormente questo riquadro: serve come candidato
