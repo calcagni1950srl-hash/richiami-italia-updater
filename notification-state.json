@@ -28,6 +28,7 @@
     "pancetta-affumicata-sottovuoto",
     "pancetta-affumicata-sottovuoto-0",
     "pomodoro-ciliegino",
+    "roccaverano-dop",
     "salame-stagionato-al-tartufo",
     "salame-stagionato-al-trtufo",
     "speck-e-brie",
@@ -41,11 +42,10 @@
     "uova-di-cat-medie-da-allevamento-terra-selex-0",
     "uova-medie-di-cat-da-allevamento-terra-abf-despar"
   ],
-  "lastCheckedAt": "2026-09-28T11:33:42.067Z",
-  "lastNotificationAt": "2026-09-27T20:52:26.650886+00:00",
+  "lastCheckedAt": "2026-09-28T11:43:49.484Z",
+  "lastNotificationAt": "2026-09-28T11:52:08.436509+00:00",
   "lastNotificationIds": [
-    "uova-da-allevamento-terra-speciali-pasta-gialla",
-    "hamburger-di-scottona-200g-100x2-skin"
+    "roccaverano-dop"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/478890635470981079"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/-2248064324565498332"
 }
