@@ -3376,8 +3376,14 @@ jobs:
 
           python scripts/clean_form_photo_boxes.py
           python scripts/finalize_recall_images.py
-          python scripts/restore_missing_recall_images.py
+
+          # IMPORTANTE: selezioniamo la foto migliore PRIMA del recupero
+          # dei file mancanti. Il vecchio ordine ripristinava dal backup
+          # una foto precedente proprio dopo aver creato il nuovo ritaglio,
+          # rendendo inutile la correzione e facendo apparire il candidato
+          # come invariato al controllo qualità.
           python scripts/image_quality_guard.py select
+          python scripts/restore_missing_recall_images.py
           python scripts/image_quality_guard.py validate
 
           echo "✅ Immagini validate nello stesso run dei PDF ufficiali."
