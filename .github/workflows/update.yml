@@ -640,6 +640,7 @@ jobs:
                     "Data di pubblicazione",
                     "Allegati",
                     "Documenti",
+                    "Documentazione",
                     "Modello di richiamo"
                   ]
                 );
@@ -2360,9 +2361,8 @@ jobs:
           def raw_recall_reason(text):
               """
               Estrae dal modello PDF ufficiale il motivo specifico del richiamo.
-              La pagina web del Ministero puo' riportare soltanto la categoria
-              generale (es. Rischio microbiologico), mentre nel PDF puo'
-              comparire la causa precisa (es. presenza di Salmonella).
+              Gestisce anche motivi su piu' righe e interrompe la lettura
+              quando inizia il campo successivo del modulo.
               """
               labels = [
                   "Motivo del richiamo",
@@ -2371,67 +2371,106 @@ jobs:
                   "Motivo"
               ]
 
-              value = after_label(
-                  text,
-                  labels,
-                  4
-              )
-
-              value = clean(value)
-
-              if not value:
-                  return ""
-
-              # Evita di catturare l'etichetta del campo successivo quando
-              # OCR/testo digitale non contengono un valore utilizzabile.
-              invalid = [
-                  "avvertenze",
-                  "avvertenza",
-                  "descrizione del rischio",
-                  "misure adottate",
-                  "foto del prodotto"
+              stop_labels = [
+                  "Avvertenze",
+                  "Avvertenza",
+                  "Descrizione del rischio",
+                  "Misure adottate",
+                  "Foto del prodotto",
+                  "Immagine del prodotto",
+                  "Inserire immagine",
+                  "Marchio del prodotto",
+                  "Denominazione di vendita",
+                  "Nome o ragione sociale",
+                  "Nome e sede del produttore",
+                  "Lotto di produzione",
+                  "Numero di lotto",
+                  "Data di scadenza",
+                  "Termine minimo di conservazione",
+                  "Descrizione peso",
               ]
 
-              low = value.lower()
+              lines = get_lines(text)
 
-              if any(
-                  low == item
-                  or low.startswith(item + ":")
-                  for item in invalid
-              ):
-                  return ""
+              for index, line in enumerate(lines):
+                  low_line = line.lower()
 
-              if len(value) > 350:
-                  return ""
+                  matched = None
+                  position = -1
+                  for label in labels:
+                      pos = low_line.find(label.lower())
+                      if pos >= 0:
+                          matched = label
+                          position = pos
+                          break
 
-              # Il motivo deve descrivere una causa/rischio, non il nome
-              # dell'operatore o del produttore catturato dalla riga vicina.
-              reason_keywords = [
-                  "listeria",
-                  "salmonella",
-                  "rischio",
-                  "presenza",
-                  "allergen",
-                  "istamina",
-                  "alcaloid",
-                  "contamin",
-                  "etichett",
-                  "non conforme",
-                  "scadenza",
-                  "microbiologic",
-                  "chimic",
-                  "fisic",
-                  "ritiro preventivo",
-                  "richiamo preventivo"
-              ]
+                  if matched is None:
+                      continue
 
-              if not any(
-                  keyword in low
-                  for keyword in reason_keywords
-              ):
-                  return ""
+                  pieces = []
+                  inline = clean(
+                      line[position + len(matched):]
+                  )
 
-              return value
+                  if inline:
+                      pieces.append(inline)
+
+                  # Il motivo nei modelli PDF puo' andare a capo. Leggiamo
+                  # alcune righe successive, ma mai oltre il campo seguente.
+                  for offset in range(1, 7):
+                      next_index = index + offset
+                      if next_index >= len(lines):
+                          break
+
+                      candidate = clean(lines[next_index])
+                      candidate_low = candidate.lower()
+
+                      if any(
+                          candidate_low == stop.lower()
+                          or candidate_low.startswith(stop.lower() + ":")
+                          for stop in stop_labels
+                      ):
+                          break
+
+                      if candidate:
+                          pieces.append(candidate)
+
+                  value = clean(" ".join(pieces))
+                  if not value:
+                      continue
+
+                  if len(value) > 500:
+                      value = value[:500].strip()
+
+                  low = value.lower()
+
+                  reason_keywords = [
+                      "listeria",
+                      "salmonella",
+                      "rischio",
+                      "presenza",
+                      "allergen",
+                      "latte",
+                      "istamina",
+                      "alcaloid",
+                      "contamin",
+                      "etichett",
+                      "non conforme",
+                      "scadenza",
+                      "microbiologic",
+                      "chimic",
+                      "fisic",
+                      "ritiro preventivo",
+                      "richiamo preventivo"
+                  ]
+
+                  if any(
+                      keyword in low
+                      for keyword in reason_keywords
+                  ):
+                      return value
+
+              return ""
 
 
           def normalize_lot(value):
