@@ -144,6 +144,13 @@ def main() -> int:
                     "19/07/2027-20/07/2027"
                 ),
             },
+            "snack-sticks-fuetchorizo-80g": {
+                "tmc": "25/12/2026 - 26/12/2026",
+                "motivo": (
+                    "Presenza di tracce di proteine del latte "
+                    "non dichiarate in etichetta"
+                ),
+            },
         }
 
         override = qa_overrides.get(rid)
