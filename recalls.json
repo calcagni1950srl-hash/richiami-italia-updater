@@ -1,12 +1,29 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-30T08:40:52.374510Z",
+  "generatedAt": "2026-09-30T16:33:05.815337Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
-  "totale": 18,
-  "pass": 17,
+  "totale": 19,
+  "pass": 18,
   "daVerificare": 1,
   "recalls": [
+    {
+      "id": "snack-sticks-fuetchorizo-80g",
+      "marca": "Sol&Mar",
+      "prodotto": "Snack Sticks (Fuet/Chorizo), 80g",
+      "lotto": "Lotto 260014 / 260015",
+      "tmc": "29/12/2026 - 26/12/2026",
+      "produttore": "ES 10.01699/GE UE",
+      "motivo": "Richiamo per rischio presenza di allergeni Documentazione",
+      "dataPubblicazione": "30 settembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/snack-sticks-fuetchorizo-80g",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20di%20Richiamo%20_4__1790779219.pdf",
+      "immagine": "",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "OCR",
+      "note": []
+    },
     {
       "id": "roccaverano-dop",
       "marca": "AGRILANGA",
