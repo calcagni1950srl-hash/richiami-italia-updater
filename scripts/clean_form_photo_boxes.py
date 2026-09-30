@@ -83,6 +83,50 @@ def plausible(image):
     return True
 
 
+FORM_MARKERS = (
+    'inserire immagine',
+    'motivo del richiamo',
+    'marchio del prodotto',
+    'denominazione di vendita',
+    'nome o ragione sociale',
+    'termine minimo di conservazione',
+    'descrizione peso volume',
+)
+
+
+def existing_clean_photo(path):
+    """True quando il rebuild ha gia' isolato una vera foto prodotto.
+
+    In quel caso NON dobbiamo sostituirla con un nuovo crop ricavato dal
+    modulo PDF: e' proprio questo passaggio che, su alcuni richiami, reinseriva
+    didascalie/riquadri del modulo e faceva poi scartare una foto valida dal QA.
+    """
+    if not path.exists():
+        return False
+
+    try:
+        image = Image.open(path).convert('RGB')
+    except Exception:
+        return False
+
+    if not plausible(image):
+        return False
+
+    stats = image_stats(image)
+
+    # Soglia volutamente prudente: preserviamo solo immagini chiaramente
+    # fotografiche, con poco fondo bianco e una componente cromatica reale.
+    if stats['white'] > 0.35 or stats['color'] < 0.10:
+        return False
+
+    words = ocr_words(path)
+    text = ' '.join(word[0] for word in words).lower()
+    if any(marker in text for marker in FORM_MARKERS):
+        return False
+
+    return True
+
+
 def caption_candidates(page_path):
     pil = Image.open(page_path).convert('RGB')
     arr = np.asarray(pil)
@@ -304,6 +348,17 @@ for recall in recalls:
     rid=str(recall.get('id','') or '').strip()
     if not rid:
         continue
+    key='immagine' if 'immagine' in recall or 'imageUrl' not in recall else 'imageUrl'
+    current_url=str(recall.get(key,'') or '').strip()
+    current_name=current_url.rsplit('/',1)[-1] if '/images/' in current_url else ''
+    current_path=IMAGES_DIR/current_name if current_name else None
+
+    # Se il rebuild ha gia' prodotto una foto pulita, mantienila. La fase
+    # corrente serve soltanto a recuperare foto ancora inglobate nel modulo.
+    if current_path is not None and existing_clean_photo(current_path):
+        print('✅ Foto prodotto già pulita preservata:',rid,current_name)
+        continue
+
     pdf=PDF_DIR/f'{rid}.pdf'
     if not pdf.exists():
         continue
