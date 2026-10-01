@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Richiami Italia · Pannello di controllo</title>
+<style>
+:root{
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:#152238;background:#f4f7fb;
+  --blue:#1266dc;--green:#128447;--red:#d72c40;--orange:#df7600;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#f4f7fb}
+button,input{font:inherit}
+.hidden{display:none!important}
+.shell{display:grid;grid-template-columns:230px minmax(0,1fr);min-height:100vh}
+aside{background:#fff;border-right:1px solid #e5ebf3;padding:22px 17px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:11px;font-weight:850;font-size:18px;margin-bottom:32px}
+.logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#0b8f4e 0 34%,#fff 34% 66%,#d43142 66%);box-shadow:0 7px 20px #18315318}
+.muted{font-size:12px;color:#6d788b;font-weight:500}
+.nav{display:grid;gap:7px}
+.nav div{padding:11px 13px;border-radius:11px;color:#46536a}
+.nav .active{background:#eaf3ff;color:#0d5fc9;font-weight:750}
+.sideNote{position:absolute;left:17px;right:17px;bottom:20px;padding:13px;border-radius:13px;background:#f1f6fb;color:#59677c;font-size:12px;line-height:1.45}
+main{padding:26px;min-width:0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:20px}
+.title{font-size:28px;font-weight:900;letter-spacing:-.02em}
+.subtitle{color:#6b768a;font-size:13px;margin-top:3px}
+.card{background:#fff;border:1px solid #e7edf5;border-radius:18px;box-shadow:0 10px 30px #1b35570a}
+.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:13px;margin-bottom:17px}
+.stat{padding:17px}
+.stat span{font-size:13px;color:#657187}
+.stat strong{display:block;font-size:27px;margin-top:6px}
+.green{color:var(--green)}.red{color:var(--red)}.orange{color:var(--orange)}.blue{color:var(--blue)}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:17px}
+.panel{padding:18px;min-width:0}
+.panel h2{margin:0 0 4px;font-size:20px}
+.toolbar{display:flex;gap:10px;justify-content:space-between;align-items:center;margin:15px 0}
+.search{width:300px;max-width:100%;padding:10px 12px;border:1px solid #d9e2ed;border-radius:11px;background:#fbfcfe;outline:none}
+.search:focus{border-color:#8db7f0;box-shadow:0 0 0 3px #dcecff}
+.btn{border:0;border-radius:10px;padding:9px 12px;cursor:pointer;font-weight:750}
+.btnBlue{background:#e7f0ff;color:#0958c5}
+.btnGreen{background:#ddf6e7;color:#08743a}
+.btnRed{background:#ffe3e7;color:#bd1730}
+.btnSolidBlue{background:var(--blue);color:white}
+.btnSolidGreen{background:#159447;color:white}
+.btnSolidRed{background:#e23d52;color:white}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;background:#f4f7fa;color:#5c687d;padding:11px 10px;white-space:nowrap}
+td{padding:12px 10px;border-bottom:1px solid #eef2f6;vertical-align:middle}
+tr.device{cursor:pointer}
+tr.device:hover{background:#f8fbff}
+.pill{display:inline-block;border-radius:999px;padding:6px 10px;font-size:11px;font-weight:850;white-space:nowrap}
+.PENDING{background:#e4f1ff;color:#0f5fc7}
+.ACTIVE{background:#dcf6e7;color:#08783d}
+.DISABLED{background:#ffe3e7;color:#bd1730}
+.EXPIRED{background:#fff0d8;color:#bd6500}
+.message{padding:11px 12px;border-radius:11px;background:#f2f6fa;color:#546176;font-size:13px;margin-top:10px;line-height:1.4}
+.detail label{display:block;color:#6b7689;font-size:12px;margin:13px 0 6px}
+.detail input{width:100%;padding:10px;border:1px solid #d9e2ed;border-radius:10px;background:#fff}
+.detail input:disabled{background:#f7f9fb;color:#5d687a}
+.trials{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.trials button{padding:10px;border:1px solid #d7e0eb;background:#fff;border-radius:10px;cursor:pointer}
+.big{width:100%;padding:11px;border:0;border-radius:11px;font-weight:850;cursor:pointer;margin-top:8px}
+.loginWrap{min-height:100vh;display:grid;place-items:center;padding:20px}
+.login{width:min(440px,100%);padding:28px}
+.login h1{margin:0;font-size:27px}
+.login p{color:#657187;line-height:1.5}
+.login input{width:100%;padding:12px;border:1px solid #d9e2ed;border-radius:11px;margin:7px 0}
+.login button{width:100%;padding:12px;border:0;border-radius:11px;background:var(--blue);color:#fff;font-weight:850;margin-top:7px;cursor:pointer}
+.statusDot{width:9px;height:9px;border-radius:50%;display:inline-block;background:#17a05a;margin-right:6px}
+@media(max-width:1050px){
+  .shell{grid-template-columns:1fr}aside{display:none}
+  .stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.detail{order:-1}
+}
+@media(max-width:680px){
+  main{padding:14px}.top{align-items:flex-start;flex-direction:column}.stats{grid-template-columns:1fr}
+  .toolbar{align-items:stretch;flex-direction:column}.search{width:100%}
+  table{font-size:12px}th:nth-child(2),td:nth-child(2),th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5){display:none}
+}
+</style>
+</head>
+<body>
+<div id="loginView" class="loginWrap">
+  <div class="card login">
+    <div class="brand" style="margin-bottom:18px"><div class="logo"></div><div>Richiami Italia<div class="muted">Pannello amministratore</div></div></div>
+    <h1>Accesso pannello</h1>
+    <p>Inserisci la password amministratore. Se apri il link privato completo, l'accesso avviene automaticamente.</p>
+    <input id="tokenInput" type="password" placeholder="Password amministratore" autocomplete="current-password">
+    <button id="loginBtn">Accedi</button>
+    <div id="loginMsg" class="message hidden"></div>
+  </div>
+</div>
+
+<div id="appView" class="shell hidden">
+  <aside>
+    <div class="brand"><div class="logo"></div><div>Richiami Italia<div class="muted">Area admin</div></div></div>
+    <div class="nav"><div class="active">Dashboard</div><div>Dispositivi</div><div>Trial</div><div>Autorizzazioni</div></div>
+    <div class="sideNote"><b>Registrazione automatica</b><br>I nuovi telefoni compaiono qui automaticamente alla prima apertura dell'app.</div>
+  </aside>
+
+  <main>
+    <div class="top">
+      <div><div class="title">Pannello di controllo</div><div class="subtitle"><span class="statusDot"></span>Backend collegato a Richiami Italia</div></div>
+      <div><button id="refreshBtn" class="btn btnBlue">Aggiorna</button> <button id="logoutBtn" class="btn">Esci</button></div>
+    </div>
+
+    <section class="stats">
+      <div class="card stat"><span>Totale dispositivi</span><strong id="sTotal">0</strong></div>
+      <div class="card stat"><span>Attivi</span><strong class="green" id="sActive">0</strong></div>
+      <div class="card stat"><span>Da autorizzare</span><strong class="blue" id="sPending">0</strong></div>
+      <div class="card stat"><span>Scaduti</span><strong class="orange" id="sExpired">0</strong></div>
+      <div class="card stat"><span>Disattivati</span><strong class="red" id="sDisabled">0</strong></div>
+    </section>
+
+    <section class="grid">
+      <div class="card panel">
+        <h2>Gestione dispositivi</h2>
+        <div class="subtitle">Attiva/disattiva e trial funzionano separatamente.</div>
+        <div class="toolbar">
+          <input id="search" class="search" placeholder="Cerca nome o modello...">
+        </div>
+        <div style="overflow:auto">
+          <table>
+            <thead><tr><th>Nome</th><th>Dispositivo</th><th>Stato</th><th>Trial</th><th>Ultimo accesso</th><th>Azioni</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+        <div id="listMsg" class="message hidden"></div>
+      </div>
+
+      <div class="card panel detail">
+        <h2>Dettaglio dispositivo</h2>
+        <div id="emptyDetail" class="message">Seleziona un dispositivo dalla lista.</div>
+        <div id="detailBody" class="hidden">
+          <label>Nome dispositivo</label><input id="dLabel" placeholder="Es. Mario">
+          <label>Modello</label><input id="dModel" disabled>
+          <label>Stato</label><div id="dStatus"></div>
+          <label>Trial</label>
+          <div class="trials">
+            <button data-days="7">7 giorni</button>
+            <button data-days="15">15 giorni</button>
+            <button data-days="30">30 giorni</button>
+            <button data-days="60">60 giorni</button>
+            <button id="noExpiryBtn" style="grid-column:1/-1">Nessuna scadenza</button>
+          </div>
+          <label>Scadenza</label><input id="dExpiry" disabled>
+          <button id="activateBtn" class="big btnSolidGreen">ATTIVA</button>
+          <button id="deactivateBtn" class="big btnSolidRed">DISATTIVA</button>
+          <button id="saveLabelBtn" class="big btnSolidBlue">SALVA NOME</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+const API="https://bbvxhepsyuejltglojtf.supabase.co/functions/v1/device-admin";
+let token=sessionStorage.getItem("ri_admin_token")||"";
+let devices=[],selected=null;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+const fmt=d=>d?new Date(d).toLocaleDateString("it-IT"):"—";
+const fmtDT=d=>d?new Date(d).toLocaleString("it-IT"):"—";
+
+(function readPrivateLink(){
+  const m=location.hash.match(/(?:^#|[&#])token=([^&]+)/);
+  if(m){
+    token=decodeURIComponent(m[1]);
+    sessionStorage.setItem("ri_admin_token",token);
+    history.replaceState(null,"",location.pathname+location.search);
+  }
+})();
+
+function deviceState(d){
+  if(!d.approved_at)return "PENDING";
+  if(!d.active)return "DISABLED";
+  if(d.trial_ends_at&&new Date(d.trial_ends_at)<=new Date())return "EXPIRED";
+  return "ACTIVE";
+}
+function pill(s){
+  const names={PENDING:"DA AUTORIZZARE",ACTIVE:"ATTIVA",DISABLED:"DISATTIVATA",EXPIRED:"SCADUTA"};
+  return '<span class="pill '+esc(s)+'">'+esc(names[s]||s)+'</span>';
+}
+async function api(action,payload={}){
+  const r=await fetch(API,{
+    method:"POST",
+    headers:{"content-type":"application/json","x-admin-token":token},
+    body:JSON.stringify(Object.assign({action},payload))
+  });
+  const t=await r.text();
+  if(!r.ok)throw new Error(t||("HTTP "+r.status));
+  return t?JSON.parse(t):{};
+}
+async function authenticate(){
+  if(!token){showLogin();return}
+  try{
+    const x=await api("list");
+    devices=x.devices||[];
+    $("loginView").classList.add("hidden");
+    $("appView").classList.remove("hidden");
+    renderAll();
+  }catch(e){
+    sessionStorage.removeItem("ri_admin_token");
+    token="";
+    showLogin("Password non valida o servizio non raggiungibile.");
+  }
+}
+function showLogin(msg=""){
+  $("loginView").classList.remove("hidden");
+  $("appView").classList.add("hidden");
+  $("loginMsg").classList.toggle("hidden",!msg);
+  $("loginMsg").textContent=msg;
+}
+$("loginBtn").onclick=async()=>{
+  token=$("tokenInput").value.trim();
+  if(!token){showLogin("Inserisci la password amministratore.");return}
+  sessionStorage.setItem("ri_admin_token",token);
+  await authenticate();
+};
+$("tokenInput").addEventListener("keydown",e=>{if(e.key==="Enter")$("loginBtn").click()});
+$("logoutBtn").onclick=()=>{
+  token="";sessionStorage.removeItem("ri_admin_token");selected=null;showLogin();
+};
+async function loadDevices(){
+  try{
+    const x=await api("list");
+    devices=x.devices||[];
+    if(selected)selected=devices.find(d=>d.id===selected.id)||null;
+    renderAll();
+    $("listMsg").classList.add("hidden");
+  }catch(e){
+    $("listMsg").textContent="Errore: "+e.message;
+    $("listMsg").classList.remove("hidden");
+  }
+}
+function renderAll(){renderStats();renderRows();renderDetail()}
+function renderStats(){
+  const count=s=>devices.filter(d=>deviceState(d)===s).length;
+  $("sTotal").textContent=devices.length;
+  $("sActive").textContent=count("ACTIVE");
+  $("sPending").textContent=count("PENDING");
+  $("sExpired").textContent=count("EXPIRED");
+  $("sDisabled").textContent=count("DISABLED");
+}
+function renderRows(){
+  const q=$("search").value.trim().toLowerCase();
+  const list=devices.filter(d=>!q||[d.label,d.manufacturer,d.model].join(" ").toLowerCase().includes(q));
+  let h="";
+  for(const d of list){
+    const s=deviceState(d);
+    const dev=[d.manufacturer,d.model].filter(Boolean).join(" ");
+    const action=s==="ACTIVE"
+      ?'<button class="btn btnRed" data-a="off" data-id="'+d.id+'">Disattiva</button>'
+      :'<button class="btn btnGreen" data-a="on" data-id="'+d.id+'">Attiva</button>';
+    h+='<tr class="device" data-id="'+d.id+'">'+
+      '<td><b>'+esc(d.label||"Nuovo dispositivo")+'</b></td>'+
+      '<td>'+esc(dev)+'</td>'+
+      '<td>'+pill(s)+'</td>'+
+      '<td>'+(d.trial_ends_at?esc(fmt(d.trial_ends_at)):"Nessuna scadenza")+'</td>'+
+      '<td>'+esc(fmtDT(d.last_seen_at))+'</td>'+
+      '<td>'+action+'</td></tr>';
+  }
+  $("rows").innerHTML=h;
+  document.querySelectorAll("tr.device").forEach(tr=>tr.onclick=e=>{
+    if(e.target.closest("button"))return;
+    selected=devices.find(d=>d.id===tr.dataset.id)||null;renderDetail();
+  });
+  document.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>setActive(b.dataset.id,b.dataset.a==="on"));
+}
+function renderDetail(){
+  $("emptyDetail").classList.toggle("hidden",!!selected);
+  $("detailBody").classList.toggle("hidden",!selected);
+  if(!selected)return;
+  $("dLabel").value=selected.label||"";
+  $("dModel").value=[selected.manufacturer,selected.model].filter(Boolean).join(" ");
+  $("dStatus").innerHTML=pill(deviceState(selected));
+  $("dExpiry").value=selected.trial_ends_at?fmtDT(selected.trial_ends_at):"Nessuna scadenza";
+}
+async function updateDevice(id,changes){
+  try{
+    await api("update",{id,changes});
+    await loadDevices();
+  }catch(e){alert("Errore: "+e.message)}
+}
+async function setActive(id,on){await updateDevice(id,{active:on,approve:true})}
+$("refreshBtn").onclick=loadDevices;
+$("search").oninput=renderRows;
+$("activateBtn").onclick=()=>selected&&updateDevice(selected.id,{active:true,approve:true});
+$("deactivateBtn").onclick=()=>selected&&updateDevice(selected.id,{active:false,approve:true});
+$("saveLabelBtn").onclick=()=>selected&&updateDevice(selected.id,{label:$("dLabel").value});
+document.querySelectorAll("[data-days]").forEach(b=>b.onclick=()=>selected&&updateDevice(selected.id,{trialDays:Number(b.dataset.days)}));
+$("noExpiryBtn").onclick=()=>selected&&updateDevice(selected.id,{clearTrial:true});
+authenticate();
+</script>
+</body>
+</html>
