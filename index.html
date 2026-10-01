@@ -100,8 +100,6 @@ tr.device:hover{background:#f8fbff}
 .login{width:min(440px,100%);padding:28px}
 .login h1{margin:0;font-size:27px}
 .login p{color:#657187;line-height:1.5}
-.login input{width:100%;padding:12px;border:1px solid #d9e2ed;border-radius:11px;margin:7px 0}
-.login button{width:100%;padding:12px;border:0;border-radius:11px;background:var(--blue);color:#fff;font-weight:850;margin-top:7px;cursor:pointer}
 .statusDot{width:9px;height:9px;border-radius:50%;display:inline-block;background:#17a05a;margin-right:6px}
 @media(max-width:1050px){
   .shell{grid-template-columns:1fr}aside{display:none}
@@ -119,10 +117,8 @@ tr.device:hover{background:#f8fbff}
   <div class="card login">
     <div class="brand" style="margin-bottom:18px"><div class="logo"></div><div>Richiami Italia<div class="muted">Pannello amministratore</div></div></div>
     <h1>Accesso pannello</h1>
-    <p>Inserisci la password amministratore. Se apri il link privato completo, l'accesso avviene automaticamente.</p>
-    <input id="tokenInput" type="password" placeholder="Password amministratore" autocomplete="current-password">
-    <button id="loginBtn">Accedi</button>
-    <div id="loginMsg" class="message hidden"></div>
+    <p>Per entrare usa il link privato del pannello. Dopo il primo accesso questo browser resterà autorizzato automaticamente.</p>
+    <div id="loginMsg" class="message">Link privato richiesto.</div>
   </div>
 </div>
 
@@ -190,7 +186,7 @@ tr.device:hover{background:#f8fbff}
 
 <script>
 const API="https://bbvxhepsyuejltglojtf.supabase.co/functions/v1/device-admin";
-let token=sessionStorage.getItem("ri_admin_token")||"";
+let token=localStorage.getItem("ri_admin_token")||"";
 let devices=[],selected=null;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
@@ -201,7 +197,7 @@ const fmtDT=d=>d?new Date(d).toLocaleString("it-IT"):"—";
   const m=location.hash.match(/(?:^#|[&#])token=([^&]+)/);
   if(m){
     token=decodeURIComponent(m[1]);
-    sessionStorage.setItem("ri_admin_token",token);
+    localStorage.setItem("ri_admin_token",token);
     history.replaceState(null,"",location.pathname+location.search);
   }
 })();
@@ -235,9 +231,9 @@ async function authenticate(){
     $("appView").classList.remove("hidden");
     renderAll();
   }catch(e){
-    sessionStorage.removeItem("ri_admin_token");
+    localStorage.removeItem("ri_admin_token");
     token="";
-    showLogin("Password non valida o servizio non raggiungibile.");
+    showLogin("Accesso non disponibile. Riapri il link privato del pannello.");
   }
 }
 function showLogin(msg=""){
@@ -246,15 +242,8 @@ function showLogin(msg=""){
   $("loginMsg").classList.toggle("hidden",!msg);
   $("loginMsg").textContent=msg;
 }
-$("loginBtn").onclick=async()=>{
-  token=$("tokenInput").value.trim();
-  if(!token){showLogin("Inserisci la password amministratore.");return}
-  sessionStorage.setItem("ri_admin_token",token);
-  await authenticate();
-};
-$("tokenInput").addEventListener("keydown",e=>{if(e.key==="Enter")$("loginBtn").click()});
 $("logoutBtn").onclick=()=>{
-  token="";sessionStorage.removeItem("ri_admin_token");selected=null;showLogin();
+  token="";localStorage.removeItem("ri_admin_token");selected=null;showLogin("Accesso chiuso. Per rientrare usa il link privato del pannello.");
 };
 async function loadDevices(){
   try{
