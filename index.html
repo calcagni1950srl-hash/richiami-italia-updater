@@ -61,8 +61,40 @@ tr.device:hover{background:#f8fbff}
 .detail label{display:block;color:#6b7689;font-size:12px;margin:13px 0 6px}
 .detail input{width:100%;padding:10px;border:1px solid #d9e2ed;border-radius:10px;background:#fff}
 .detail input:disabled{background:#f7f9fb;color:#5d687a}
-.trials{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.trials button{padding:10px;border:1px solid #d7e0eb;background:#fff;border-radius:10px;cursor:pointer}
+.trials{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.trials button{
+  padding:11px 10px;
+  border:1px solid #9fc2f1;
+  background:#eaf3ff;
+  color:#0d5fc9;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:800;
+  box-shadow:0 2px 6px #164a8a14;
+  transition:background .15s ease,color .15s ease,transform .08s ease,box-shadow .15s ease;
+}
+.trials button:hover{
+  background:#1266dc;
+  color:#fff;
+  border-color:#1266dc;
+  box-shadow:0 5px 12px #1266dc2a;
+  transform:translateY(-1px);
+}
+.trials button:active{
+  transform:translateY(1px);
+  box-shadow:none;
+}
+#noExpiryBtn{
+  background:#f4f7fb;
+  color:#45536a;
+  border-color:#cfd9e6;
+}
+#noExpiryBtn:hover{
+  background:#45536a;
+  color:#fff;
+  border-color:#45536a;
+}
+.trialHint{font-size:11px;color:#7a8699;font-weight:600;margin-left:5px}
 .big{width:100%;padding:11px;border:0;border-radius:11px;font-weight:850;cursor:pointer;margin-top:8px}
 .loginWrap{min-height:100vh;display:grid;place-items:center;padding:20px}
 .login{width:min(440px,100%);padding:28px}
@@ -138,7 +170,7 @@ tr.device:hover{background:#f8fbff}
           <label>Nome dispositivo</label><input id="dLabel" placeholder="Es. Mario">
           <label>Modello</label><input id="dModel" disabled>
           <label>Stato</label><div id="dStatus"></div>
-          <label>Trial</label>
+          <label>Trial <span class="trialHint">— premi un periodo per impostarlo</span></label>
           <div class="trials">
             <button data-days="7">7 giorni</button>
             <button data-days="15">15 giorni</button>
