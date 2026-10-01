@@ -54,7 +54,8 @@ tr.device{cursor:pointer}
 tr.device:hover{background:#f8fbff}
 .pill{display:inline-block;border-radius:999px;padding:6px 10px;font-size:11px;font-weight:850;white-space:nowrap}
 .PENDING{background:#e4f1ff;color:#0f5fc7}
-.ACTIVE{background:#dcf6e7;color:#08783d}
+.ACTIVE,.PAID{background:#dcf6e7;color:#08783d}
+.TRIAL{background:#e4f1ff;color:#0f5fc7}
 .DISABLED{background:#ffe3e7;color:#bd1730}
 .EXPIRED{background:#fff0d8;color:#bd6500}
 .message{padding:11px 12px;border-radius:11px;background:#f2f6fa;color:#546176;font-size:13px;margin-top:10px;line-height:1.4}
@@ -152,7 +153,7 @@ tr.device:hover{background:#f8fbff}
         </div>
         <div style="overflow:auto">
           <table>
-            <thead><tr><th>Nome</th><th>Dispositivo</th><th>Stato</th><th>Trial</th><th>Ultimo accesso</th><th>Azioni</th></tr></thead>
+            <thead><tr><th>Nome</th><th>Dispositivo</th><th>Stato</th><th>Licenza</th><th>Ultimo accesso</th><th>Azioni</th></tr></thead>
             <tbody id="rows"></tbody>
           </table>
         </div>
@@ -205,12 +206,29 @@ const fmtDT=d=>d?new Date(d).toLocaleString("it-IT"):"—";
 function deviceState(d){
   if(!d.approved_at)return "PENDING";
   if(!d.active)return "DISABLED";
-  if(d.trial_ends_at&&new Date(d.trial_ends_at)<=new Date())return "EXPIRED";
+  const ls=(d.license_status||"").toUpperCase();
+  if(ls==="PAID"){
+    return d.license_ends_at&&new Date(d.license_ends_at)>new Date()?"PAID":"EXPIRED";
+  }
+  if(ls==="TRIAL"){
+    return d.trial_ends_at&&new Date(d.trial_ends_at)>new Date()?"TRIAL":"EXPIRED";
+  }
+  if(ls==="EXPIRED")return "EXPIRED";
+  if(ls==="COMPLIMENTARY")return "ACTIVE";
+  if(d.trial_ends_at)return new Date(d.trial_ends_at)>new Date()?"TRIAL":"EXPIRED";
   return "ACTIVE";
 }
 function pill(s){
-  const names={PENDING:"DA AUTORIZZARE",ACTIVE:"ATTIVA",DISABLED:"DISATTIVATA",EXPIRED:"SCADUTA"};
+  const names={PENDING:"DA AUTORIZZARE",ACTIVE:"ATTIVA",PAID:"PAGATA",TRIAL:"IN PROVA",DISABLED:"DISATTIVATA",EXPIRED:"SCADUTA"};
   return '<span class="pill '+esc(s)+'">'+esc(names[s]||s)+'</span>';
+}
+function expiryText(d){
+  if((d.license_status||"").toUpperCase()==="PAID"&&d.license_ends_at)return "Pagata fino al "+fmt(d.license_ends_at);
+  if((d.license_status||"").toUpperCase()==="TRIAL"&&d.trial_ends_at)return "Prova fino al "+fmt(d.trial_ends_at);
+  if((d.license_status||"").toUpperCase()==="COMPLIMENTARY")return "Nessuna scadenza";
+  if(d.license_ends_at)return fmt(d.license_ends_at);
+  if(d.trial_ends_at)return fmt(d.trial_ends_at);
+  return "Nessuna scadenza";
 }
 async function api(action,payload={}){
   const r=await fetch(API,{
@@ -261,8 +279,8 @@ function renderAll(){renderStats();renderRows();renderDetail()}
 function renderStats(){
   const count=s=>devices.filter(d=>deviceState(d)===s).length;
   $("sTotal").textContent=devices.length;
-  $("sActive").textContent=count("ACTIVE");
-  $("sTrial").textContent=devices.filter(d=>deviceState(d)==="ACTIVE"&&d.trial_ends_at&&new Date(d.trial_ends_at)>new Date()).length;
+  $("sActive").textContent=devices.filter(d=>["ACTIVE","PAID","TRIAL"].includes(deviceState(d))).length;
+  $("sTrial").textContent=count("TRIAL");
   $("sExpired").textContent=count("EXPIRED");
   $("sDisabled").textContent=count("DISABLED");
 }
@@ -273,14 +291,14 @@ function renderRows(){
   for(const d of list){
     const s=deviceState(d);
     const dev=[d.manufacturer,d.model].filter(Boolean).join(" ");
-    const action=s==="ACTIVE"
+    const action=["ACTIVE","PAID","TRIAL"].includes(s)
       ?'<button class="btn btnRed" data-a="off" data-id="'+d.id+'">Disattiva</button>'
       :'<button class="btn btnGreen" data-a="on" data-id="'+d.id+'">Attiva</button>';
     h+='<tr class="device" data-id="'+d.id+'">'+
       '<td><b>'+esc(d.label||"Nuovo dispositivo")+'</b></td>'+
       '<td>'+esc(dev)+'</td>'+
       '<td>'+pill(s)+'</td>'+
-      '<td>'+(d.trial_ends_at?esc(fmt(d.trial_ends_at)):"Nessuna scadenza")+'</td>'+
+      '<td>'+esc(expiryText(d))+'</td>'+
       '<td>'+esc(fmtDT(d.last_seen_at))+'</td>'+
       '<td>'+action+'</td></tr>';
   }
@@ -298,7 +316,8 @@ function renderDetail(){
   $("dLabel").value=selected.label||"";
   $("dModel").value=[selected.manufacturer,selected.model].filter(Boolean).join(" ");
   $("dStatus").innerHTML=pill(deviceState(selected));
-  $("dExpiry").value=selected.trial_ends_at?fmtDT(selected.trial_ends_at):"Nessuna scadenza";
+  const exp=(selected.license_status||"").toUpperCase()==="PAID"?selected.license_ends_at:selected.trial_ends_at;
+  $("dExpiry").value=exp?fmtDT(exp):"Nessuna scadenza";
 }
 async function updateDevice(id,changes){
   try{
