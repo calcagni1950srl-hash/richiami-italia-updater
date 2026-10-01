@@ -97,7 +97,7 @@ tr.device:hover{background:#f8fbff}
 <div id="appView" class="shell hidden">
   <aside>
     <div class="brand"><div class="logo"></div><div>Richiami Italia<div class="muted">Area admin</div></div></div>
-    <div class="nav"><div class="active">Dashboard</div><div>Dispositivi</div><div>Trial</div><div>Autorizzazioni</div></div>
+    <div class="nav"><div class="active">Dashboard</div><div>Dispositivi</div><div>Trial</div><div>Attiva / Disattiva</div></div>
     <div class="sideNote"><b>Registrazione automatica</b><br>I nuovi telefoni compaiono qui automaticamente alla prima apertura dell'app.</div>
   </aside>
 
@@ -110,7 +110,7 @@ tr.device:hover{background:#f8fbff}
     <section class="stats">
       <div class="card stat"><span>Totale dispositivi</span><strong id="sTotal">0</strong></div>
       <div class="card stat"><span>Attivi</span><strong class="green" id="sActive">0</strong></div>
-      <div class="card stat"><span>Da autorizzare</span><strong class="blue" id="sPending">0</strong></div>
+      <div class="card stat"><span>In prova</span><strong class="blue" id="sTrial">0</strong></div>
       <div class="card stat"><span>Scaduti</span><strong class="orange" id="sExpired">0</strong></div>
       <div class="card stat"><span>Disattivati</span><strong class="red" id="sDisabled">0</strong></div>
     </section>
@@ -241,7 +241,7 @@ function renderStats(){
   const count=s=>devices.filter(d=>deviceState(d)===s).length;
   $("sTotal").textContent=devices.length;
   $("sActive").textContent=count("ACTIVE");
-  $("sPending").textContent=count("PENDING");
+  $("sTrial").textContent=devices.filter(d=>deviceState(d)==="ACTIVE"&&d.trial_ends_at&&new Date(d.trial_ends_at)>new Date()).length;
   $("sExpired").textContent=count("EXPIRED");
   $("sDisabled").textContent=count("DISABLED");
 }
