@@ -1,12 +1,31 @@
 {
   "version": 2,
-  "generatedAt": "2026-10-05T05:49:48.057665Z",
+  "generatedAt": "2026-10-05T13:49:45.760394Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 19,
   "pass": 16,
   "daVerificare": 3,
   "recalls": [
+    {
+      "id": "trofie-2x500g",
+      "marca": "Tre Mulini",
+      "prodotto": "Trofie 2x500g",
+      "lotto": "260901 e 260902",
+      "tmc": "30/11/2026 e 01/12/2026",
+      "produttore": "Nome del produttore: P.A.C. - Prodotti Agroalimentari Carbone",
+      "motivo": "Possibile presenza di Corpi Estranei metallici",
+      "dataPubblicazione": "5 ottobre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/trofie-2x500g",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/cartelloministerialeeurospintrofie_1791202096.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/trofie-2x500g-1be6be2f85.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
     {
       "id": "salamella-dolce-sottovuoto",
       "marca": "FRANCHI SALUMI",
@@ -115,7 +134,7 @@
       "dataPubblicazione": "26 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/uova-da-allevamento-terra-speciali-pasta-gialla",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/UOVA%20SPECIALI%20PASTA%20GIALLA_1790951945.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/uova-da-allevamento-terra-speciali-pasta-gialla-0-4e9ac4cb01.png",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/uova-da-allevamento-terra-speciali-pasta-gialla-c21aeb04ba.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
@@ -345,25 +364,6 @@
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mais-italiano-pop-corn",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/MODULORICHIAMOMAISPERPOPCORN400grmarchioPROBIOSLotto60183TMC30_04_2028_1789992179.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/mais-italiano-pop-corn-83e9e9cd40.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "mais-italiano-pop-corn-0",
-      "marca": "PROBIOS",
-      "prodotto": "MAIS ITALIANO PER POP CORN",
-      "lotto": "60183",
-      "tmc": "18/06/2028",
-      "produttore": "BMS S.R.L.",
-      "motivo": "PRESENZA DI ALCALOIDI TROPANICI IN CONCENTRAZIONE SUPERIORE AI LIMITI DI LEGGE",
-      "dataPubblicazione": "21 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mais-italiano-pop-corn-0",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/MODULORICHIAMOMAISPERPOPCORN400grmarchioPROBIOSLotto60183TMC18_06_2028_1789992181.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/mais-italiano-pop-corn-0-2dfe783fc8.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
