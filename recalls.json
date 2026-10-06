@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "generatedAt": "2026-10-06T11:50:14.524402Z",
+  "generatedAt": "2026-10-06T13:50:48.773603Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
-  "totale": 19,
-  "pass": 16,
+  "totale": 20,
+  "pass": 17,
   "daVerificare": 3,
   "recalls": [
     {
@@ -25,6 +25,40 @@
       "note": [
         "Motivo specifico estratto dal PDF ufficiale"
       ]
+    },
+    {
+      "id": "trancio-di-pesce-spada",
+      "marca": "Cedimar S.r.l.",
+      "prodotto": "Trancio di pesce spada",
+      "lotto": "280926",
+      "tmc": "07-10-2026",
+      "produttore": "CE IT P776Q",
+      "motivo": "Richiamo per rischio chimico",
+      "dataPubblicazione": "6 ottobre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/trancio-di-pesce-spada",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Richiamo%20trancio%20pesce%20spada%20280926_1791288145.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/trancio-di-pesce-spada-c629aec61c.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": []
+    },
+    {
+      "id": "trancio-pesce-spada",
+      "marca": "Cedimar S.r.l.",
+      "prodotto": "Trancio pesce spada",
+      "lotto": "300926",
+      "tmc": "09-10-2026",
+      "produttore": "CE IT P776Q",
+      "motivo": "Richiamo per rischio chimico",
+      "dataPubblicazione": "6 ottobre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/trancio-pesce-spada",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Richiamo%20trancio%20pesce%20spada%20300926_1791288147.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/trancio-pesce-spada-d43a40055b.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": []
     },
     {
       "id": "trofie-2x500g",
@@ -153,7 +187,7 @@
       "dataPubblicazione": "26 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/uova-da-allevamento-terra-speciali-pasta-gialla",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/UOVA%20SPECIALI%20PASTA%20GIALLA_1790951945.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/uova-da-allevamento-terra-speciali-pasta-gialla-c21aeb04ba.png",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/uova-da-allevamento-terra-speciali-pasta-gialla-0-4e9ac4cb01.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
@@ -345,25 +379,6 @@
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salame-stagionato-al-tartufo",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modulorichiamo1_1790078556.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salame-stagionato-al-tartufo-5b2f73561b.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "mais-pop-corn-2",
-      "marca": "FIOR DI LOTO",
-      "prodotto": "MAIS PER POP CORN",
-      "lotto": "60183",
-      "tmc": "27/03/2028",
-      "produttore": "BMS S.R.L.",
-      "motivo": "PRESENZA DI ALCALOIDI TROPANICI IN CONCENTRAZIONE SUPERIORE AI LIMITI DI LEGGE",
-      "dataPubblicazione": "21 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mais-pop-corn-2",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/MODULORICHIAMOMAISPERPOPCORN400grmarchioFIORDILOTOLotto60183TMC27_03_2028_1789992177.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/mais-pop-corn-2-674d2bfd06.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
