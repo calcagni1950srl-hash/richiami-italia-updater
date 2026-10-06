@@ -37,6 +37,7 @@
     "speck-e-brie",
     "speck-e-brie-0",
     "speck-e-brie-1",
+    "speck-e-brie-2",
     "spiedino-di-calamaro-patagonico-e-gambero-argentino",
     "tortellini-alla-carne-2-confezioni-da-250-g",
     "trofie-2x500g",
@@ -47,10 +48,10 @@
     "uova-di-cat-medie-da-allevamento-terra-selex-0",
     "uova-medie-di-cat-da-allevamento-terra-abf-despar"
   ],
-  "lastCheckedAt": "2026-10-06T11:33:51.759Z",
-  "lastNotificationAt": "2026-10-05T13:51:30.079690+00:00",
+  "lastCheckedAt": "2026-10-06T11:44:00.944Z",
+  "lastNotificationAt": "2026-10-06T11:52:00.159037+00:00",
   "lastNotificationIds": [
-    "trofie-2x500g"
+    "speck-e-brie-2"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/-1543431646295697802"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/-2441386271549952377"
 }
