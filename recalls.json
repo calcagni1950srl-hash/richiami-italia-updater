@@ -1,12 +1,31 @@
 {
   "version": 2,
-  "generatedAt": "2026-10-06T06:29:21.720634Z",
+  "generatedAt": "2026-10-06T11:50:14.524402Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 19,
   "pass": 16,
   "daVerificare": 3,
   "recalls": [
+    {
+      "id": "speck-e-brie-2",
+      "marca": "MIGROSS SPA",
+      "prodotto": "Speck e Brie",
+      "lotto": "F262190143",
+      "tmc": "26-09-2026",
+      "produttore": "IT N5U7E CE",
+      "motivo": "RICHIAMO PRODOTTO ESEGUITOdA FORNITORE BAYERLAND, RELATIVO AL BRIE PRODOTTO SASU PATURAGES COMTOIS PRESENZA DI LISTERIA MONOCYTOGENES",
+      "dataPubblicazione": "6 ottobre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/speck-e-brie-2",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Allegato_6_cartello_richiamo_prodotto_F262190143_mod10.09.26.%20_1__1791279334.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/speck-e-brie-2-b7e747dbcd.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "OCR",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
     {
       "id": "trofie-2x500g",
       "marca": "Tre Mulini",
@@ -134,7 +153,7 @@
       "dataPubblicazione": "26 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/uova-da-allevamento-terra-speciali-pasta-gialla",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/UOVA%20SPECIALI%20PASTA%20GIALLA_1790951945.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/uova-da-allevamento-terra-speciali-pasta-gialla-0-4e9ac4cb01.png",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/uova-da-allevamento-terra-speciali-pasta-gialla-c21aeb04ba.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
@@ -345,25 +364,6 @@
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mais-pop-corn-2",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/MODULORICHIAMOMAISPERPOPCORN400grmarchioFIORDILOTOLotto60183TMC27_03_2028_1789992177.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/mais-pop-corn-2-674d2bfd06.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "mais-italiano-pop-corn",
-      "marca": "PROBIOS",
-      "prodotto": "MAIS ITALIANO PER POP CORN",
-      "lotto": "60183",
-      "tmc": "30/04/2028",
-      "produttore": "BMS S.R.L.",
-      "motivo": "PRESENZA DI ALCALOIDI TROPANICI IN CONCENTRAZIONE SUPERIORE AI LIMITI DI LEGGE",
-      "dataPubblicazione": "21 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mais-italiano-pop-corn",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/MODULORICHIAMOMAISPERPOPCORN400grmarchioPROBIOSLotto60183TMC30_04_2028_1789992179.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/mais-italiano-pop-corn-83e9e9cd40.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
