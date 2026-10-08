@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-10-08T11:49:00.678470Z",
+  "generatedAt": "2026-10-08T16:20:02.690953Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
@@ -17,7 +17,7 @@
       "motivo": "Si comunica il richiamo precauzionale del prodotto ZUPPA TOSCANA 500 G a causa di un errore di etichettatura.Per una svista in fase di confezionamento, il prodotto MINESTRONE 600 G è stato confezionato con l'etichetta della ZUPPA TOSCANA. Di conseguenza, la presenza dell'allergene SEDANO non risulta indicata sull'etichetta apposta.",
       "dataPubblicazione": "8 ottobre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/zuppa-toscana-500-g",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20di%20Richiamo%20MINESTRONE%20TAGLIATO_1791452396.pdf",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20di%20Richiamo%20MINESTRONE%20TAGLIATO_1791470358.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/zuppa-toscana-500-g-a026a0e5d9.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "DA_VERIFICARE",
@@ -25,6 +25,25 @@
       "note": [
         "Motivo specifico estratto dal PDF ufficiale",
         "TMC da verificare"
+      ]
+    },
+    {
+      "id": "zuppa-toscana-500-g-0",
+      "marca": "Ortonatura S.A.C.A.R.L.",
+      "prodotto": "Zuppa Toscana 500 g.",
+      "lotto": "0510",
+      "tmc": "11/10/2026",
+      "produttore": "Nome del produttore: ORTONATURA S.A.C.A R.L.",
+      "motivo": "Si comunica il richiamo precauzionale del prodotto ZUPPA TOSCANA 500 G a causa di un errore di etichettatura.Per una svista in fase di confezionamento, il prodotto MINESTRONE 600 G è stato confezionato con l'etichetta della ZUPPA TOSCANA. Di conseguenza, la presenza dell'allergene SEDANO non risulta indicata sull'etichetta apposta.",
+      "dataPubblicazione": "8 ottobre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/zuppa-toscana-500-g-0",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20di%20Richiamo%20Zuppa%20Toscana%20Ortonatura_1791470402.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/zuppa-toscana-500-g-0-a026a0e5d9.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
       ]
     },
     {
@@ -207,7 +226,7 @@
       "dataPubblicazione": "26 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/uova-da-allevamento-terra-speciali-pasta-gialla",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/UOVA%20SPECIALI%20PASTA%20GIALLA_1790951945.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/uova-da-allevamento-terra-speciali-pasta-gialla-c21aeb04ba.png",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/uova-da-allevamento-terra-speciali-pasta-gialla-0-4e9ac4cb01.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
@@ -366,25 +385,6 @@
       "note": [
         "Motivo specifico estratto dal PDF ufficiale",
         "TMC da verificare"
-      ]
-    },
-    {
-      "id": "tortellini-alla-carne-2-confezioni-da-250-g",
-      "marca": "Agripasta SRL - Oggi cucino BIO",
-      "prodotto": "Tortellini alla carne 2 confezioni da 250 g",
-      "lotto": "026 -251",
-      "tmc": "07.12.2026",
-      "produttore": "AGRIPASTA SRL - OGGI CUCINO BIO",
-      "motivo": "INDICAZIONE DELL'OSA, LISTA INGREDIENTI E LISTA ALLERGENI ERRATA",
-      "dataPubblicazione": "23 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/tortellini-alla-carne-2-confezioni-da-250-g",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/MODULO%20RICHIAMO_1790183041.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/tortellini-alla-carne-2-confezioni-da-250-g-214b67040b.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
       ]
     }
   ]
