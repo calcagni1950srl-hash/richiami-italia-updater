@@ -2,6 +2,12 @@ name: Controlla qualità immagini richiami
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows:
+      - "Aggiorna Database Richiami Italia"
+    types: [completed]
+  schedule:
+    - cron: "41 */3 * * *"
   push:
     branches:
       - main
@@ -17,13 +23,16 @@ permissions:
   contents: write
 
 concurrency:
-  group: richiami-content-pipeline
+  # Le immagini non devono aspettare un'acquisizione lunga dei nuovi richiami.
+  # In pubblicazione il merge salva SEMPRE i nuovi richiami arrivati nel frattempo.
+  group: richiami-image-repair
   cancel-in-progress: false
 
 jobs:
   quality:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 22
 
     steps:
       - name: Checkout main
@@ -32,17 +41,47 @@ jobs:
           ref: main
           fetch-depth: 2
 
+      - name: Individua soltanto foto mancanti
+        id: check
+        run: |
+          python - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+          from urllib.parse import urlparse
+
+          data = json.loads(Path("recalls.json").read_text(encoding="utf-8"))
+          rows = data.get("recalls", [])
+          pending = []
+          for item in rows:
+              rid = str(item.get("id", "") or "").strip()
+              if not rid or not item.get("pdfMinistero"):
+                  continue
+              url = str(item.get("immagine", "") or "").strip()
+              filename = Path(urlparse(url).path).name if url else ""
+              if (not re.fullmatch(re.escape(rid) + r"-[a-f0-9]{10}\\.png", filename)
+                      or not (Path("images") / filename).is_file()):
+                  pending.append(rid)
+          print("Richiami totali:", len(rows))
+          print("Foto da riparare:", pending)
+          with open(__import__("os").environ["GITHUB_OUTPUT"], "a") as out:
+              out.write("repair=" + ("true" if pending else "false") + "\n")
+          PY
+
       - name: Setup Node
+        if: steps.check.outputs.repair == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: "24"
 
       - name: Setup Python
+        if: steps.check.outputs.repair == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
       - name: Installa strumenti immagini
+        if: steps.check.outputs.repair == 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -57,6 +96,7 @@ jobs:
           npx playwright install --with-deps chromium
 
       - name: Controlla sintassi script
+        if: steps.check.outputs.repair == 'true'
         run: |
           python -m py_compile scripts/rebuild_recall_images_v2.py
           python -m py_compile scripts/clean_form_photo_boxes.py
@@ -67,6 +107,7 @@ jobs:
           node --check scripts/download_recall_pdfs.mjs
 
       - name: Salva foto attualmente validate
+        if: steps.check.outputs.repair == 'true'
         run: |
           rm -rf .quality/pre-existing
           mkdir -p .quality/pre-existing/images
@@ -74,9 +115,11 @@ jobs:
           cp -a images/. .quality/pre-existing/images/ 2>/dev/null || true
 
       - name: Scarica PDF ufficiali
+        if: steps.check.outputs.repair == 'true'
         run: node scripts/download_recall_pdfs.mjs
 
       - name: Estrai e pulisci foto prodotto
+        if: steps.check.outputs.repair == 'true'
         run: |
           python scripts/rebuild_recall_images_v2.py
 
@@ -93,22 +136,49 @@ jobs:
           python scripts/image_quality_guard.py select
 
       - name: Verifica qualità, copertura e integrità
+        if: steps.check.outputs.repair == 'true'
         run: |
           python scripts/image_quality_guard.py validate
           python scripts/choose_best_recall_photo.py
           python scripts/image_quality_guard.py validate
 
-      - name: Salva foto prodotto
+      - name: Pubblica solo le immagini senza perdere i nuovi richiami
+        if: steps.check.outputs.repair == 'true'
         run: |
+          set -e
+          python scripts/merge_image_updates.py --self-test
+
+          # Il riparatore puo' essere partito PRIMA di nuovi richiami RSS.
+          # Salviamo solo foto/URL, NON il database da sovrascrivere.
+          mkdir -p .quality/ready-images
+          cp recalls.json .quality/repaired-recalls.json
+          cp -a images/. .quality/ready-images/
+
           git config user.name "Richiami Italia Image Bot"
           git config user.email "actions@github.com"
 
-          git add recalls.json images
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
 
-          if git diff --cached --quiet; then
-            echo "Nessuna modifica alle immagini."
-          else
-            git commit -m "Ripara foto richiami e URL immagini"
-            git pull --rebase origin main
-            git push
-          fi
+            python scripts/merge_image_updates.py \
+              .quality/pre-existing/recalls.json \
+              .quality/repaired-recalls.json \
+              recalls.json \
+              .quality/ready-images
+
+            git add recalls.json images
+            if git diff --cached --quiet; then
+              echo "Nessuna foto nuova: database corrente lasciato intatto."
+              exit 0
+            fi
+            git commit -m "Ripara solo immagini e preserva nuovi richiami"
+            if git push origin HEAD:main; then
+              echo "Immagini pubblicate senza alterare i nuovi richiami."
+              exit 0
+            fi
+            echo "Conflitto durante la pubblicazione: aggiorno il database remoto."
+          done
+
+          echo "Pubblicazione non riuscita dopo tre tentativi"
+          exit 1
