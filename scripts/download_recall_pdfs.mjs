@@ -6,9 +6,23 @@ const data = JSON.parse(
   fs.readFileSync("recalls.json", "utf8")
 );
 
-const recalls = Array.isArray(data.recalls)
+const allRecalls = Array.isArray(data.recalls)
   ? data.recalls
   : [];
+
+// Ripara soltanto le foto assenti o con file locale mancante.
+// I richiami futuri entrano automaticamente in questo filtro; quelli già
+// completi non sono riscaricati ad ogni esecuzione.
+const recalls = allRecalls.filter((item) => {
+  const url = clean(item.immagine || item.imageUrl);
+  if (!url || !url.includes("/images/")) return true;
+  let filename = "";
+  try { filename = path.posix.basename(new URL(url).pathname); }
+  catch { return true; }
+  return !filename || !fs.existsSync(path.join("images", filename));
+});
+console.log("Richiami complessivi:", allRecalls.length);
+console.log("PDF necessari per immagini mancanti:", recalls.length);
 
 const outDir = ".quality/pdf";
 fs.mkdirSync(outDir, { recursive: true });
@@ -18,8 +32,8 @@ function clean(value) {
 }
 
 async function challengeOk(page) {
-  for (let attempt = 0; attempt < 5; attempt++) {
-    await page.waitForTimeout(2500);
+  for (let attempt = 0; attempt < 3; attempt++) {
+    await page.waitForTimeout(900);
 
     const body = await page
       .locator("body")
@@ -36,7 +50,7 @@ async function challengeOk(page) {
 
     await page.reload({
       waitUntil: "domcontentloaded",
-      timeout: 90000,
+      timeout: 25000,
     });
   }
 
@@ -48,7 +62,7 @@ async function refreshSession(page) {
     "https://www.salute.gov.it/",
     {
       waitUntil: "domcontentloaded",
-      timeout: 90000,
+      timeout: 25000,
     }
   );
 
@@ -60,12 +74,12 @@ async function refreshSession(page) {
 async function downloadPdf(context, page, pdfUrl) {
   let lastError = null;
 
-  for (let attempt = 1; attempt <= 3; attempt++) {
+  for (let attempt = 1; attempt <= 2; attempt++) {
     try {
       const response = await context.request.get(
         pdfUrl,
         {
-          timeout: 90000,
+          timeout: 25000,
           failOnStatusCode: false,
         }
       );
@@ -91,7 +105,7 @@ async function downloadPdf(context, page, pdfUrl) {
       lastError = error;
     }
 
-    if (attempt < 3) {
+    if (attempt < 2) {
       await refreshSession(page);
       await page.waitForTimeout(1200 * attempt);
     }
