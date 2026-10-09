@@ -1,4 +1,5 @@
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -48,32 +49,25 @@ def main() -> int:
             item.get("immagine", "") or ""
         ).strip()
 
-        # Il JSON generato e le immagini devono essere una coppia atomica.
-        # Se il run ha validato una foto versionata presente in
-        # .generated-images, quella URL ha priorità sul database remoto.
-        # Questo evita che un reset su origin/main ripristini una URL vecchia.
-        prefix = rid + "-"
-        candidates = sorted(
-            Path(".generated-images").glob(prefix + "*.png"),
-            key=lambda p: p.stat().st_mtime_ns,
-            reverse=True,
-        )
-        if candidates:
-            current_name = (
-                generated_image.rsplit("/", 1)[-1]
-                if generated_image
-                else ""
+        # Una fotografia appartiene a questo richiamo soltanto se il file
+        # e' stato generato specificamente per il suo ID. Il controllo sul
+        # prefisso da solo NON basta: "prodotto" matcha anche "prodotto-1".
+        # Il formato prodotto da versioned_filename e' ID-hash10.png.
+        def owned_image(url: str) -> bool:
+            if not url or "/images/" not in url:
+                return False
+            name = url.rsplit("/", 1)[-1].split("?", 1)[0].strip()
+            exact_name = re.fullmatch(
+                re.escape(rid) + r"-[a-f0-9]{10}\\.png", name
             )
-            chosen = next(
-                (p for p in candidates if p.name == current_name),
-                candidates[0],
+            return bool(
+                exact_name and (Path(".generated-images") / name).is_file()
             )
-            generated_image = (
-                "https://raw.githubusercontent.com/"
-                "calcagni1950srl-hash/richiami-italia-updater/"
-                "refs/heads/main/images/" + chosen.name
-            )
-            item["immagine"] = generated_image
+
+        if generated_image and not owned_image(generated_image):
+            print("Foto non attribuibile in modo univoco:", rid, generated_image)
+            generated_image = ""
+        item["immagine"] = generated_image
 
         # Se il run appena completato ha già prodotto e validato una nuova
         # immagine, preserviamola. La foto precedente viene usata solo come
@@ -86,16 +80,15 @@ def main() -> int:
             latest_name = latest_image.rsplit("/", 1)[-1]
             generated_image_file = Path(".generated-images") / latest_name
 
-            # Conserviamo la vecchia foto soltanto se è ancora presente
-            # nel set finale già validato di questo run. Se il controllo
-            # qualità l'ha eliminata, NON dobbiamo resuscitare il vecchio
-            # URL: produrrebbe un riquadro bianco nell'app.
-            if generated_image_file.exists():
+            # Il fallback e' consentito solo per immagini dello stesso
+            # richiamo, validate e ancora presenti nel set corrente.
+            # Non riciclare fotografie di richiami con ID simili.
+            if generated_image_file.exists() and owned_image(latest_image):
                 item["immagine"] = latest_image
             else:
                 item["immagine"] = ""
                 print(
-                    "Foto precedente non più valida, URL non preservato:",
+                    "Foto precedente non valida o di un altro richiamo:",
                     rid,
                     latest_name,
                 )
