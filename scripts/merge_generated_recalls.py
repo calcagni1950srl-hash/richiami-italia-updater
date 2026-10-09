@@ -58,7 +58,7 @@ def main() -> int:
                 return False
             name = url.rsplit("/", 1)[-1].split("?", 1)[0].strip()
             exact_name = re.fullmatch(
-                re.escape(rid) + r"-[a-f0-9]{10}\\.png", name
+                re.escape(rid) + r"-[a-f0-9]{10}\.png", name
             )
             return bool(
                 exact_name and (Path(".generated-images") / name).is_file()
