@@ -7,6 +7,10 @@ on:
       - main
     paths:
       - ".github/workflows/image-quality.yml"
+      - "scripts/image_quality_guard.py"
+      - "scripts/rebuild_recall_images_v2.py"
+      - "scripts/clean_form_photo_boxes.py"
+      - "scripts/finalize_recall_images.py"
 
 permissions:
   contents: write
