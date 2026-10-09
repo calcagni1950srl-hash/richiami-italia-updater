@@ -18,7 +18,7 @@
       "dataPubblicazione": "9 ottobre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/valtellina-casera-dop",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/326945c7c7368d2c508954a4d57d37cb20b5489785b10d684ac66130aaa2_1791547366.pdf",
-      "immagine": "",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/valtellina-casera-dop-8538d4f986.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
@@ -37,7 +37,7 @@
       "dataPubblicazione": "9 ottobre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/valtellina-casera-dop-0",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/e7eed14a8cf802aab5ea80e9cd820f10af9dd701233ada92873e29290433_1791547369.pdf",
-      "immagine": "",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/valtellina-casera-dop-0-8538d4f986.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
@@ -302,12 +302,13 @@
       "dataPubblicazione": "26 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/uova-da-allevamento-terra-speciali-pasta-gialla",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/UOVA%20SPECIALI%20PASTA%20GIALLA_1790951945.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/uova-da-allevamento-terra-speciali-pasta-gialla-c21aeb04ba.png",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/uova-da-allevamento-terra-speciali-pasta-gialla-4e9ac4cb01.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
       "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
+        "Motivo specifico estratto dal PDF ufficiale",
+        "Foto rappresentativa dello stesso prodotto dal PDF ufficiale del richiamo uova-da-allevamento-terra-speciali-pasta-gialla-0; non prova la corrispondenza del lotto o del confezionamento."
       ]
     },
     {
