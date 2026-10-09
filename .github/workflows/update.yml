@@ -3425,6 +3425,12 @@ jobs:
           python scripts/restore_missing_recall_images.py
           python scripts/image_quality_guard.py validate
 
+          # Scegli una sola foto valida; se manca, usa la migliore foto
+          # di una scheda ufficiale dello stesso identico prodotto.
+          # L'immagine rappresentativa conserva ID e nota di provenienza.
+          python scripts/choose_best_recall_photo.py
+          python scripts/image_quality_guard.py validate
+
           echo "✅ Immagini validate nello stesso run dei PDF ufficiali."
 
       - name: Salva artifact
