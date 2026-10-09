@@ -11,6 +11,7 @@ on:
       - "scripts/rebuild_recall_images_v2.py"
       - "scripts/clean_form_photo_boxes.py"
       - "scripts/finalize_recall_images.py"
+      - "scripts/choose_best_recall_photo.py"
 
 permissions:
   contents: write
@@ -62,6 +63,7 @@ jobs:
           python -m py_compile scripts/finalize_recall_images.py
           python -m py_compile scripts/restore_missing_recall_images.py
           python -m py_compile scripts/image_quality_guard.py
+          python -m py_compile scripts/choose_best_recall_photo.py
           node --check scripts/download_recall_pdfs.mjs
 
       - name: Salva foto attualmente validate
@@ -92,6 +94,8 @@ jobs:
 
       - name: Verifica qualità, copertura e integrità
         run: |
+          python scripts/image_quality_guard.py validate
+          python scripts/choose_best_recall_photo.py
           python scripts/image_quality_guard.py validate
 
       - name: Salva foto prodotto
