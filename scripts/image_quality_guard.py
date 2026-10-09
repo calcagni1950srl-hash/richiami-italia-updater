@@ -1,3 +1,4 @@
+import hashlib
 import json
 import math
 import re
@@ -109,6 +110,18 @@ def analyse(path: Path) -> dict:
     form_hits = [phrase for phrase in FORM_PHRASES if phrase in text]
     ocr_words = re.findall(r"[a-zà-ÿ0-9]{3,}", text, flags=re.IGNORECASE)
 
+    # Un PDF del Ministero può contenere lo stemma della Repubblica:
+    # è un elemento istituzionale, NON una fotografia dell'alimento.
+    # La firma nota intercetta le due false immagini del 9/10/2026
+    # anche se l'OCR non riesce a leggere le lettere sul nastro curvo.
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()
+    known_ministry_emblem = digest.startswith("b7682c6239")
+    emblem_words = (
+        "repubblica" in text and "italiana" in text
+    ) or (
+        "repvbblica" in text and "italiana" in text
+    )
+
     # Firma tipica della pagina/modulo Ministero: molto spazio bianco
     # accompagnato da una fascia azzurra ampia. È esattamente il difetto
     # che aveva lasciato visibili i moduli dei due salami.
@@ -131,6 +144,8 @@ def analyse(path: Path) -> dict:
         severe_reasons.append("rapporto dimensioni anomalo")
     if white_ratio > 0.94:
         severe_reasons.append("immagine quasi vuota")
+    if known_ministry_emblem or emblem_words:
+        severe_reasons.append("stemma istituzionale, non foto del prodotto")
     if form_hits:
         severe_reasons.append("testo del modulo Ministero")
     if form_signature:
