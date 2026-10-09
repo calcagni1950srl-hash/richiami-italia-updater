@@ -1,1 +1,4 @@
-force snack photo reason fix v10
+FORCE_FULL_TEST=richiami-italia-image-validation
+TEST_DATE=2026-10-09
+TEST_SEQUENCE=casera-emblem-check-11
+NOTE=Riestrai foto dai PDF ufficiali; conferma che lo stemma non viene pubblicato.
