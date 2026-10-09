@@ -1,4 +1,4 @@
 FORCE_FULL_TEST=richiami-italia-image-validation
 TEST_DATE=2026-10-09
-TEST_SEQUENCE=casera-exact-image-ownership-12
-NOTE=Verifica dopo correzione del merge: nessuna foto di un altro ID di richiamo.
+TEST_SEQUENCE=verified-exact-image-mapping-13
+NOTE=Regressione finale con 18 immagini valide e due foto Casera da non associare erroneamente.
