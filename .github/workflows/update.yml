@@ -13,13 +13,6 @@ on:
   schedule:
     - cron: "17 */2 * * *"
 
-  # Trigger temporaneo per il test immediato; verrà rimosso solo dopo verifica finale.
-  push:
-    branches: [main]
-    paths:
-      - ".force-full-test"
-
-
 permissions:
   contents: write
   actions: write
@@ -163,6 +156,7 @@ jobs:
             "https://www.salute.gov.it/new/rss/RSS_avvisi_richiami_osa.xml";
 
           const MAX_RICHIAMI = 50;
+          const CONCURRENCY = 2;
 
           function clean(value) {
             return String(value || "")
@@ -381,11 +375,11 @@ jobs:
           async function superaChallenge(page) {
             for (
               let attempt = 0;
-              attempt < 5;
+              attempt < 3;
               attempt++
             ) {
               await page.waitForTimeout(
-                3500
+                900
               );
 
               const body =
@@ -405,7 +399,7 @@ jobs:
               await page.reload({
                 waitUntil:
                   "domcontentloaded",
-                timeout: 90000
+                timeout: 30000
               });
             }
 
@@ -430,7 +424,7 @@ jobs:
                 {
                   waitUntil:
                     "domcontentloaded",
-                  timeout: 90000
+                  timeout: 30000
                 }
               );
 
@@ -498,8 +492,7 @@ jobs:
                   await fetch(
                     url,
                     {
-                      credentials:
-                        "include"
+                      credentials: "include", signal: AbortSignal.timeout(30000)
                     }
                   );
 
@@ -593,7 +586,7 @@ jobs:
                 {
                   waitUntil:
                     "domcontentloaded",
-                  timeout: 90000
+                  timeout: 30000
                 }
               );
 
@@ -606,7 +599,7 @@ jobs:
               }
 
               await page.waitForTimeout(
-                2200
+                650
               );
 
               const body =
@@ -850,21 +843,20 @@ jobs:
 
             const results = [];
 
+            // Limitato a due accessi per non sovraccaricare il Ministero.
+            // Preserva l'ordine RSS e non perde gli errori delle singole schede.
             for (
               let index = 0;
               index < items.length;
-              index++
+              index += CONCURRENCY
             ) {
-              const result =
-                await leggiScheda(
-                  context,
-                  items[index],
-                  index + 1
-                );
-
-              results.push(
-                result
+              const batch = items.slice(index, index + CONCURRENCY);
+              const partial = await Promise.all(
+                batch.map((item, offset) =>
+                  leggiScheda(context, item, index + offset + 1)
+                )
               );
+              results.push(...partial);
             }
 
             fs.writeFileSync(
