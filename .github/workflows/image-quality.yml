@@ -59,7 +59,7 @@ jobs:
                   continue
               url = str(item.get("immagine", "") or "").strip()
               filename = Path(urlparse(url).path).name if url else ""
-              if (not re.fullmatch(re.escape(rid) + r"-[a-f0-9]{10}\\.png", filename)
+              if (not re.fullmatch(re.escape(rid) + r"-[a-f0-9]{10}\.png", filename)
                       or not (Path("images") / filename).is_file()):
                   pending.append(rid)
           print("Richiami totali:", len(rows))
