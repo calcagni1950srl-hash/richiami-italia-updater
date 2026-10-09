@@ -222,6 +222,29 @@ def save_temp_image(image, path):
     return path
 
 
+def accepted_photo_candidate(candidate):
+    """Reject institutional graphics before ranking photographs, not afterwards."""
+    img = candidate['image'].convert('RGB')
+    buf = io.BytesIO()
+    img.save(buf, format='PNG', optimize=True)
+    digest = hashlib.sha256(buf.getvalue()).hexdigest()
+    text = str(candidate.get('ocr_text', '') or '').lower()
+
+    # The two 9 October Casera PDFs embed this identical ministry emblem.
+    is_known_emblem = digest.startswith('b7682c6239')
+    is_emblem_text = (
+        ('repubblica' in text or 'repvbblica' in text)
+        and 'italiana' in text
+    )
+    is_institutional_header = (
+        'ministero' in text
+        and ('salute' in text or 'repubblica' in text)
+    )
+    if is_known_emblem or is_emblem_text or is_institutional_header:
+        return False
+    return plausible_photo(img, relaxed=True)
+
+
 def embedded_candidates(pdf, recall_id, wanted):
     folder=WORK_DIR/recall_id/'embedded'
     if folder.exists(): shutil.rmtree(folder)
@@ -255,7 +278,7 @@ def embedded_candidates(pdf, recall_id, wanted):
             - s['banding']*2.0
             + rel*1.5
         )
-        candidates.append({'image':image,'score':score,'stats':s,'source':'embedded','relevance':rel})
+        candidates.append({'image':image,'score':score,'stats':s,'source':'embedded','relevance':rel,'ocr_text':text})
     out=[]; seen=set()
     for item in sorted(candidates,key=lambda x:x['score'],reverse=True):
         d=normalized_digest(item['image'])
@@ -321,7 +344,7 @@ def page_candidates(page_path, wanted, relaxed=False):
             + min(s['contrast']/75.0,1.0) - s['white_ratio']*0.65
             - text_occ*1.5 + rel*1.5 + min(math.sqrt(s['area']/page_area),0.7)
         )
-        results.append({'image':crop,'score':score,'stats':s,'source':'page-relaxed' if relaxed else 'page','relevance':rel})
+        results.append({'image':crop,'score':score,'stats':s,'source':'page-relaxed' if relaxed else 'page','relevance':rel,'ocr_text':' '.join(local)})
     return results
 
 
@@ -359,28 +382,38 @@ def sliding_window_salvage(page_path, wanted):
                 rel=overlap_score(' '.join(local),wanted)
                 s=image_stats(crop)
                 score=visual + rel*1.5 - s['white_ratio']*0.35
-                candidates.append({'image':crop,'score':score,'stats':s,'source':'salvage','relevance':rel})
+                candidates.append({'image':crop,'score':score,'stats':s,'source':'salvage','relevance':rel,'ocr_text':' '.join(local)})
     return candidates
 
 
 def extract_best(pdf, recall_id, wanted):
+    # Rank every embedded image, rejecting crests and form elements first.
     direct=embedded_candidates(pdf,recall_id,wanted)
-    if direct:
-        return direct[0]['image'],'foto incorporata',direct[0]
+    accepted=[item for item in direct if accepted_photo_candidate(item)]
+    if accepted:
+        best=max(accepted, key=lambda x: x['score'])
+        return best['image'],'foto incorporata',best
+
+    # Search rendered pages when no genuine embedded photograph survived.
     pages=render_pages(pdf,recall_id)
     all_candidates=[]
     for p in pages:
         all_candidates.extend(page_candidates(p,wanted,relaxed=False))
-    if not all_candidates:
+    accepted=[item for item in all_candidates if accepted_photo_candidate(item)]
+    if not accepted:
+        all_candidates=[]
         for p in pages:
             all_candidates.extend(page_candidates(p,wanted,relaxed=True))
-    if not all_candidates:
+        accepted=[item for item in all_candidates if accepted_photo_candidate(item)]
+    if not accepted:
+        all_candidates=[]
         for p in pages:
             all_candidates.extend(sliding_window_salvage(p,wanted))
-    if not all_candidates:
+        accepted=[item for item in all_candidates if accepted_photo_candidate(item)]
+    if not accepted:
         return None,'',None
     unique=[]; seen=set()
-    for item in sorted(all_candidates,key=lambda x:x['score'],reverse=True):
+    for item in sorted(accepted,key=lambda x:x['score'],reverse=True):
         d=normalized_digest(item['image'])
         if d in seen: continue
         seen.add(d); unique.append(item)
