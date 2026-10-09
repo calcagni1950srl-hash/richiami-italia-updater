@@ -1,12 +1,88 @@
 {
   "version": 2,
-  "generatedAt": "2026-10-09T09:13:35.161607Z",
+  "generatedAt": "2026-10-09T13:49:58.622860Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
-  "pass": 16,
-  "daVerificare": 4,
+  "pass": 17,
+  "daVerificare": 3,
   "recalls": [
+    {
+      "id": "valtellina-casera-dop",
+      "marca": "No Brand",
+      "prodotto": "Valtellina Casera DOP",
+      "lotto": "220726",
+      "tmc": "12-10-2026",
+      "produttore": "IT P3T6V UE",
+      "motivo": "Presenza di Escherichia coli STEC",
+      "dataPubblicazione": "9 ottobre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/valtellina-casera-dop",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/326945c7c7368d2c508954a4d57d37cb20b5489785b10d684ac66130aaa2_1791547366.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/valtellina-casera-dop-b7682c6239.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
+    {
+      "id": "valtellina-casera-dop-0",
+      "marca": "No Brand",
+      "prodotto": "Valtellina Casera DOP",
+      "lotto": "220726",
+      "tmc": "24-07-2027",
+      "produttore": "IT P3T6V UE",
+      "motivo": "Presenza di Escherichia coli STEC",
+      "dataPubblicazione": "9 ottobre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/valtellina-casera-dop-0",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/e7eed14a8cf802aab5ea80e9cd820f10af9dd701233ada92873e29290433_1791547369.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/valtellina-casera-dop-0-b7682c6239.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
+    {
+      "id": "valtellina-casera-dop-1",
+      "marca": "No brand",
+      "prodotto": "Valtellina Casera DOP",
+      "lotto": "220726",
+      "tmc": "27/10/26, 04/11/26, 30/11/26, 07/12/26, 21/12/26",
+      "produttore": "IT 03 146 UE",
+      "motivo": "Presenza di Escherichia coli STEC",
+      "dataPubblicazione": "9 ottobre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/valtellina-casera-dop-1",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/08e6106474969d066ff3019a0eebe4e2ff7b18b1400ef3ee7ee4f094d38e_1791547370.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/valtellina-casera-dop-1-dedcf8fe21.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
+    {
+      "id": "pezzente-della-montagna-materana",
+      "marca": "SALUMI TIPICI LUCANI",
+      "prodotto": "PEZZENTE DELLA MONTAGNA MATERANA",
+      "lotto": "63/26",
+      "tmc": "o 28/03/2027 Descrizione peso/volume 300 G. CIRCA",
+      "produttore": "",
+      "motivo": "Richiamo per rischio microbiologico",
+      "dataPubblicazione": "9 ottobre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pezzente-della-montagna-materana",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/MODULO%20RICHIAMO%20Pezzente%20della%20Motagna%20Materana%20_1__1791547372.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/pezzente-della-montagna-materana-3a9433a06b.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Produttore non estratto - non usato per il match"
+      ]
+    },
     {
       "id": "zuppa-toscana-500-g",
       "marca": "Ortonatura S.A.C.A.R.L.",
@@ -226,7 +302,7 @@
       "dataPubblicazione": "26 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/uova-da-allevamento-terra-speciali-pasta-gialla",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/UOVA%20SPECIALI%20PASTA%20GIALLA_1790951945.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/uova-da-allevamento-terra-speciali-pasta-gialla-c21aeb04ba.png",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/uova-da-allevamento-terra-speciali-pasta-gialla-0-4e9ac4cb01.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
@@ -308,83 +384,6 @@
       "metodoEstrazione": "OCR",
       "note": [
         "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "hamburger-di-scottona-200g-100x2-skin",
-      "marca": "HAMBURGER DI SCOTTONA - GRAN SELEZIONE",
-      "prodotto": "HAMBURGER DI SCOTTONA - 200g (100X2) skin",
-      "lotto": "7726018994",
-      "tmc": "30/09/2026 - 02-03/10/2026",
-      "produttore": "IT 2874S UE",
-      "motivo": "Presenza di Salmonella spp.",
-      "dataPubblicazione": "25 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/hamburger-di-scottona-200g-100x2-skin",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/ALLEGATO_RICHIAMO_HAMBURGER_SCOTTONA_200g_1790355807.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/hamburger-di-scottona-200g-100x2-skin-26984e4f2b.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "filetti-di-alici-olio",
-      "marca": "COOP",
-      "prodotto": "FILETTI DI ALICI IN OLIO",
-      "lotto": "L VS157",
-      "tmc": "06/12/2027",
-      "produttore": "AL 28 PP",
-      "motivo": "POSSIBILE PRESENZA ISTAMINA",
-      "dataPubblicazione": "24 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/filetti-di-alici-olio",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/cartello%20richiamo%202_1790242398.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/filetti-di-alici-olio-f0252ae686.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "hamburger-di-bufalo-170g-skin",
-      "marca": "HAMBURGER DI BUFALO - GRAN SELEZIONE",
-      "prodotto": "HAMBURGER DI BUFALO - 170g skin",
-      "lotto": "7726019083",
-      "tmc": "27-28-29 /09/2026",
-      "produttore": "IT 2874S UE",
-      "motivo": "Presenza di Salmonella spp.",
-      "dataPubblicazione": "24 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/hamburger-di-bufalo-170g-skin",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/CARTELLODIRICHIAMO_HAMBURGERDIBUFALO170g1_1790260408.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/hamburger-di-bufalo-170g-skin-d9407cfaca.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "pomodoro-ciliegino",
-      "marca": "G. & V. Ortaggi",
-      "prodotto": "pomodoro ciliegino",
-      "lotto": "N. 210",
-      "tmc": "",
-      "produttore": "G & V ORTAGGI",
-      "motivo": "PRESENZA SALMONELLA SPP",
-      "dataPubblicazione": "23 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pomodoro-ciliegino",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/CdR%20pomodoro%20ciliegino_1790174029.pdf",
-      "immagine": "",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare"
       ]
     }
   ]
