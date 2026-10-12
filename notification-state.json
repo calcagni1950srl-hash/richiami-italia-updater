@@ -41,6 +41,7 @@
     "speck-e-brie-2",
     "spiedino-di-calamaro-patagonico-e-gambero-argentino",
     "tortellini-alla-carne-2-confezioni-da-250-g",
+    "tramezzino-coop-prosciutto-cotto-150g",
     "trancio-di-pesce-spada",
     "trancio-pesce-spada",
     "trofie-2x500g",
@@ -53,16 +54,15 @@
     "valtellina-casera-dop",
     "valtellina-casera-dop-0",
     "valtellina-casera-dop-1",
+    "vitello-tonnato-gr-180",
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-10-12T09:32:42.870Z",
-  "lastNotificationAt": "2026-10-09T13:51:32.936930+00:00",
+  "lastCheckedAt": "2026-10-12T19:17:11.225Z",
+  "lastNotificationAt": "2026-10-12T19:23:39.002660+00:00",
   "lastNotificationIds": [
-    "valtellina-casera-dop",
-    "valtellina-casera-dop-0",
-    "valtellina-casera-dop-1",
-    "pezzente-della-montagna-materana"
+    "tramezzino-coop-prosciutto-cotto-150g",
+    "vitello-tonnato-gr-180"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/7539462551970729105"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/-6281226523055922966"
 }
