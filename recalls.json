@@ -1,12 +1,50 @@
 {
   "version": 2,
-  "generatedAt": "2026-10-12T15:32:46.378078Z",
+  "generatedAt": "2026-10-12T19:21:25.202266Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
   "pass": 17,
   "daVerificare": 3,
   "recalls": [
+    {
+      "id": "tramezzino-coop-prosciutto-cotto-150g",
+      "marca": "COOP",
+      "prodotto": "TRAMEZZINO COOP PROSCIUTTO COTTO 150G",
+      "lotto": "A-269-F",
+      "tmc": "31/10/26",
+      "produttore": "UE IT D1T8V",
+      "motivo": "Errata etichettatura del prodotto. Il prodotto “Tramezzino COOP Gamberetti 140g” è stato erroneamente confezionato ed etichettato come “Tramezzino COOP Prosciutto cotto 150g”. Presenza allergene CROSTACEI.",
+      "dataPubblicazione": "12 ottobre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/tramezzino-coop-prosciutto-cotto-150g",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello_Richiam_Tramezzino_COOP_A_269_F_1791815635.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/tramezzino-coop-prosciutto-cotto-150g-1f48232ab3.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "OCR",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
+    {
+      "id": "vitello-tonnato-gr-180",
+      "marca": "PORTAMI VIA",
+      "prodotto": "VITELLO TONNATO gr. 180",
+      "lotto": "L260/26",
+      "tmc": "13-10-2026",
+      "produttore": "IT M2V1X UE",
+      "motivo": "presenza di Listeria monocytogenes",
+      "dataPubblicazione": "12 ottobre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/vitello-tonnato-gr-180",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modulo%20Richiamo%20Vitello%20tonnato%20gr.%20180%20Portamivia%20L260_26_1791815682.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/vitello-tonnato-gr-180-f73438486f.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
     {
       "id": "valtellina-casera-dop",
       "marca": "No Brand",
@@ -302,13 +340,12 @@
       "dataPubblicazione": "26 settembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/uova-da-allevamento-terra-speciali-pasta-gialla",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/UOVA%20SPECIALI%20PASTA%20GIALLA_1790951945.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/uova-da-allevamento-terra-speciali-pasta-gialla-4e9ac4cb01.png",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/uova-da-allevamento-terra-speciali-pasta-gialla-c21aeb04ba.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
       "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "Foto rappresentativa dello stesso prodotto dal PDF ufficiale del richiamo uova-da-allevamento-terra-speciali-pasta-gialla-0; non prova la corrispondenza del lotto o del confezionamento."
+        "Motivo specifico estratto dal PDF ufficiale"
       ]
     },
     {
@@ -342,44 +379,6 @@
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/calamaro-patagonico-pulito-aperto",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/2.%20CARTELLO%20RICHIAMO%20Calamaro%20pulito%20aperto%20IQF_1790337730.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/calamaro-patagonico-pulito-aperto-2d23f38ce1.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "calamaro-patagonico-pulito-butterfly-decongelato",
-      "marca": "Maxi Fish s.r.l.",
-      "prodotto": "Calamaro patagonico pulito butterfly decongelato",
-      "lotto": "\\ome del produttore: Maxi Fish s.r.l.",
-      "tmc": "11/09/2026, 12/09/2026; 13/09/2026; 14/09/2026",
-      "produttore": "TP4V38 CE",
-      "motivo": "PRESENZA DI CADMIO OLTRE LIMITI PREVISTI DALLA NORMATIVA VIGENTE",
-      "dataPubblicazione": "25 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/calamaro-patagonico-pulito-butterfly-decongelato",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/3.%20CARTELLO%20RICHIAMO%20Butterfly%20decongelato_1790337731.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/calamaro-patagonico-pulito-butterfly-decongelato-3cfc69eb6a.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "spiedino-di-calamaro-patagonico-e-gambero-argentino",
-      "marca": "Maxi Fish s.r.l.",
-      "prodotto": "Spiedino di calamaro patagonico e gambero argentino",
-      "lotto": "Marchio di identificazione dello stabilimento/del produttore: ITP4V38 CE",
-      "tmc": "04/03/2028, 07/03/2028, 09/03/2028 e 11/03/2028",
-      "produttore": "ITP4V38 CE",
-      "motivo": "PRESENZA DI CADMIO OLTRE LIMITI PREVISTI DALLA NORMATIVA VIGENTE",
-      "dataPubblicazione": "25 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/spiedino-di-calamaro-patagonico-e-gambero-argentino",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/4.%20CARTELLO%20RICHIAMO%20Spiedini_1790337733.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/spiedino-di-calamaro-patagonico-e-gambero-argentino-0b35d8e3fd.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "OCR",
