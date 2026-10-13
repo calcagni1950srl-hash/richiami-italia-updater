@@ -1,0 +1,66 @@
+name: Diagnosi mirata PDF richiami 13 ottobre
+
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/diagnose-recalls.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Installa lettori PDF e browser
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq poppler-utils tesseract-ocr tesseract-ocr-ita
+          npm init -y >/dev/null
+          npm install playwright --no-audit --no-fund >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Isola SOLO i due PDF per la diagnosi
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          db=json.loads(Path('recalls.json').read_text(encoding='utf-8'))
+          ids=['perfetto-moka-macinato-aromatizzato-al-caramello','cooperlat-soc-coop-agr']
+          db['recalls']=[dict(r,immagine='') for r in db['recalls'] if r['id'] in ids]
+          assert len(db['recalls'])==2
+          Path('recalls.json').write_text(json.dumps(db,ensure_ascii=False),encoding='utf-8')
+          PY
+          node scripts/download_recall_pdfs.mjs
+      - name: Leggi testo PDF e crea anteprime di diagnosi
+        run: |
+          mkdir -p .quality/diagnostics
+          for id in perfetto-moka-macinato-aromatizzato-al-caramello cooperlat-soc-coop-agr; do
+            pdf=".quality/pdf/${id}.pdf"
+            echo "::group::PDF ${id}"
+            if [ ! -s "$pdf" ]; then
+              echo "PDF non disponibile"
+              echo "::endgroup::"
+              continue
+            fi
+            pdfinfo "$pdf" | head -18
+            pdfimages -list "$pdf" | head -35
+            pdftotext -layout "$pdf" ".quality/diagnostics/${id}.txt"
+            echo "--- TESTO ORIGINALE PDF ---"
+            head -130 ".quality/diagnostics/${id}.txt"
+            pdftoppm -f 1 -l 1 -scale-to 1250 -singlefile -jpeg -jpegopt quality=80 "$pdf" ".quality/diagnostics/${id}" >/dev/null 2>&1 || true
+            echo "::endgroup::"
+          done
+      - name: Esporta PDF e anteprime solo come artifact temporaneo
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnosi-pdf-bialetti-cigno
+          path: |
+            .quality/pdf/*.pdf
+            .quality/diagnostics/*
+          retention-days: 2
