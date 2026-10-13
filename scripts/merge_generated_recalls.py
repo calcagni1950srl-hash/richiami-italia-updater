@@ -138,7 +138,7 @@ def main() -> int:
                 old_name = latest_image.rsplit("/", 1)[-1].split("?", 1)[0]
                 # Il file validato deve esistere nel checkout e appartenere
                 # esattamente al richiamo, non a un ID simile.
-                if (re.fullmatch(re.escape(rid) + r"-[a-f0-9]{10}\\.png", old_name)
+                if (re.fullmatch(re.escape(rid) + r"-[a-f0-9]{10}\.png", old_name)
                         and (Path("images") / old_name).is_file()):
                     item["immagine"] = latest_image
 
