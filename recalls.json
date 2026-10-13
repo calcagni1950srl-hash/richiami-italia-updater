@@ -14,33 +14,38 @@
       "lotto": "LC5 BD149T",
       "tmc": "29-05-2027",
       "produttore": "Bialetti",
-      "motivo": "Richiamo per rischio chimico",
+      "motivo": "Livelli di ocratossina A sopra i limiti consentiti",
       "dataPubblicazione": "13 ottobre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/perfetto-moka-macinato-aromatizzato-al-caramello",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/ALL.1%20cartello%20di%20richiamo_1791893295.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/perfetto-moka-macinato-aromatizzato-al-caramello-d6e724a3ea.png",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/perfetto-moka-macinato-aromatizzato-al-caramello-c5aa4991f7.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
-      "note": []
+      "note": [
+        "Motivo specifico verificato nel PDF ufficiale",
+        "Fotografia completa estratta dal PDF ufficiale"
+      ]
     },
     {
       "id": "cooperlat-soc-coop-agr",
       "marca": "Cigno",
-      "prodotto": "Cooperlat Soc. Coop: Agr.",
+      "prodotto": "Latte parzialmente scremato pastorizzato a temperatura elevata",
       "lotto": "14 OTT",
       "tmc": "14 OTT",
-      "produttore": "IT 11 6 CE",
-      "motivo": "Altro motivo di richiamo",
+      "produttore": "Cooperlat Soc. Coop. Agr.",
+      "motivo": "per sospetto deterioramento del prodotto",
       "dataPubblicazione": "13 ottobre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/cooperlat-soc-coop-agr",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/12.10.2026_Cartello_Richiamo_latte_Cigno_1791893297.pdf",
-      "immagine": "",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/cooperlat-soc-coop-agr-e5a8da2373.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "DA_VERIFICARE",
       "metodoEstrazione": "OCR",
       "note": [
-        "TMC da verificare"
+        "TMC da verificare",
+        "Motivo specifico verificato nel PDF ufficiale",
+        "Fotografia completa estratta dal PDF ufficiale"
       ]
     },
     {
