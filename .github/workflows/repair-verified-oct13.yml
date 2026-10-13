@@ -1,0 +1,94 @@
+name: Ripara due richiami verificati nei PDF ufficiali
+
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/repair-verified-oct13.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: richiami-verified-oct13-repair
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Installa strumenti PDF
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq poppler-utils tesseract-ocr tesseract-ocr-ita
+          python -m pip install pillow numpy opencv-python-headless
+          npm init -y >/dev/null
+          npm install playwright --no-audit --no-fund >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Scarica solo i due PDF ufficiali
+        run: |
+          set -e
+          python -m py_compile scripts/repair_verified_oct13.py
+          mkdir -p .quality/pdf
+          cp recalls.json .quality/database-originale.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('recalls.json')
+          data=json.loads(p.read_text(encoding='utf-8'))
+          ids={'perfetto-moka-macinato-aromatizzato-al-caramello','cooperlat-soc-coop-agr'}
+          data['recalls']=[dict(x,immagine='') for x in data['recalls'] if x.get('id') in ids]
+          assert len(data['recalls'])==2
+          p.write_text(json.dumps(data,ensure_ascii=False),encoding='utf-8')
+          PY
+          node scripts/download_recall_pdfs.mjs
+          cp .quality/database-originale.json recalls.json
+          test -s .quality/pdf/perfetto-moka-macinato-aromatizzato-al-caramello.pdf
+          test -s .quality/pdf/cooperlat-soc-coop-agr.pdf
+      - name: Verifica PDF immagini e motivi in isolamento
+        run: |
+          python scripts/repair_verified_oct13.py
+          python - <<'PY'
+          import json,re
+          from pathlib import Path
+          data=json.loads(Path('recalls.json').read_text(encoding='utf-8'))
+          by={row['id']:row for row in data['recalls']}
+          for rid in ('perfetto-moka-macinato-aromatizzato-al-caramello','cooperlat-soc-coop-agr'):
+              row=by[rid]; name=row['immagine'].split('/')[-1]
+              assert re.fullmatch(re.escape(rid)+r'-[a-f0-9]{10}\.png',name)
+              assert (Path('images')/name).is_file()
+              print('VERIFICATO:',rid,row['motivo'],name)
+          PY
+      - name: Pubblica solo le correzioni senza perdere nuovi richiami
+        run: |
+          set -e
+          git config user.name "Richiami Italia PDF Repair"
+          git config user.email "actions@github.com"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            python scripts/repair_verified_oct13.py
+            git add recalls.json images
+            if git diff --cached --quiet; then
+              echo "Dati già aggiornati, nessuna modifica necessaria"
+              exit 0
+            fi
+            git commit -m "Corregge foto e motivi Bialetti e latte Cigno da PDF originali"
+            if git push origin HEAD:main; then
+              echo "Correzioni pubblicate, notifiche intatte"
+              exit 0
+            fi
+            echo "Conflitto: recupero nuovi richiami prima di ritentare"
+          done
+          exit 1
