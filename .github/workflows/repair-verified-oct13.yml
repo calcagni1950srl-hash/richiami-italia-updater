@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   group: richiami-verified-oct13-repair
@@ -22,9 +23,6 @@ jobs:
         with:
           ref: main
           fetch-depth: 2
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -33,27 +31,16 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq poppler-utils tesseract-ocr tesseract-ocr-ita
           python -m pip install pillow numpy opencv-python-headless
-          npm init -y >/dev/null
-          npm install playwright --no-audit --no-fund >/dev/null
-          npx playwright install --with-deps chromium >/dev/null
-      - name: Scarica solo i due PDF ufficiali
+      - name: Riutilizza solo i due PDF ufficiali gia verificati
+        uses: actions/download-artifact@v4
+        with:
+          name: diagnosi-pdf-bialetti-cigno
+          run-id: 38428870778
+          github-token: ${{ github.token }}
+          path: .quality
+      - name: Verifica documenti e sintassi in isolamento
         run: |
-          set -e
           python -m py_compile scripts/repair_verified_oct13.py
-          mkdir -p .quality/pdf
-          cp recalls.json .quality/database-originale.json
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          p=Path('recalls.json')
-          data=json.loads(p.read_text(encoding='utf-8'))
-          ids={'perfetto-moka-macinato-aromatizzato-al-caramello','cooperlat-soc-coop-agr'}
-          data['recalls']=[dict(x,immagine='') for x in data['recalls'] if x.get('id') in ids]
-          assert len(data['recalls'])==2
-          p.write_text(json.dumps(data,ensure_ascii=False),encoding='utf-8')
-          PY
-          node scripts/download_recall_pdfs.mjs
-          cp .quality/database-originale.json recalls.json
           test -s .quality/pdf/perfetto-moka-macinato-aromatizzato-al-caramello.pdf
           test -s .quality/pdf/cooperlat-soc-coop-agr.pdf
       - name: Verifica PDF immagini e motivi in isolamento
