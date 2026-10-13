@@ -2434,32 +2434,10 @@ jobs:
                   if len(value) > 500:
                       value = value[:500].strip()
 
-                  low = value.lower()
-
-                  reason_keywords = [
-                      "listeria",
-                      "salmonella",
-                      "rischio",
-                      "presenza",
-                      "allergen",
-                      "latte",
-                      "istamina",
-                      "alcaloid",
-                      "contamin",
-                      "etichett",
-                      "non conforme",
-                      "scadenza",
-                      "microbiologic",
-                      "chimic",
-                      "fisic",
-                      "ritiro preventivo",
-                      "richiamo preventivo"
-                  ]
-
-                  if any(
-                      keyword in low
-                      for keyword in reason_keywords
-                  ):
+                  # Il PDF è la fonte primaria: il motivo può contenere
+                  # qualsiasi terminologia (es. ocratossina o deterioramento).
+                  # Non filtrarlo con un vocabolario fisso di parole chiave.
+                  if len(value) >= 8 and sum(ch.isalpha() for ch in value) >= 6:
                       return value
 
               return ""
