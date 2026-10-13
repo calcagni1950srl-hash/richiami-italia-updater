@@ -113,6 +113,43 @@ def main() -> int:
             if current_value and not generated_value:
                 item[key] = latest_item[key]
 
+        # Un dato verificato nel PDF originale prevale sui risultati
+        # degradati di una nuova scansione dello STESSO documento.
+        # Non trasferire mai queste correzioni a un PDF diverso.
+        old_notes = latest_item.get("note", []) or []
+        if not isinstance(old_notes, list):
+            old_notes = []
+        same_official_pdf = (
+            bool(str(latest_item.get("pdfMinistero", "") or "").strip())
+            and str(latest_item.get("pdfMinistero", "") or "").strip()
+                == str(item.get("pdfMinistero", "") or "").strip()
+        )
+        if same_official_pdf:
+            if ("Motivo specifico verificato nel PDF ufficiale" in old_notes
+                    and str(latest_item.get("motivo", "") or "").strip()):
+                item["motivo"] = latest_item["motivo"]
+                notes = item.get("note") or []
+                if not isinstance(notes, list):
+                    notes = []
+                item["note"] = list(dict.fromkeys(notes + old_notes))
+
+            if ("Fotografia completa estratta dal PDF ufficiale" in old_notes
+                    and latest_image and "/images/" in latest_image):
+                old_name = latest_image.rsplit("/", 1)[-1].split("?", 1)[0]
+                # Il file validato deve esistere nel checkout e appartenere
+                # esattamente al richiamo, non a un ID simile.
+                if (re.fullmatch(re.escape(rid) + r"-[a-f0-9]{10}\\.png", old_name)
+                        and (Path("images") / old_name).is_file()):
+                    item["immagine"] = latest_image
+
+            if rid == "cooperlat-soc-coop-agr" and (
+                "Motivo specifico verificato nel PDF ufficiale" in old_notes
+            ):
+                # Nome e produttore verificati sul modulo ufficiale.
+                for field in ("prodotto", "produttore"):
+                    if str(latest_item.get(field, "") or "").strip():
+                        item[field] = latest_item[field]
+
         # Correzioni QA confermate: un nuovo OCR non deve reintrodurre
         # valori notoriamente errati o una falsa immagine del modulo PDF.
         qa_overrides = {
