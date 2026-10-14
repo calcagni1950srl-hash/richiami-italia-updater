@@ -1,12 +1,31 @@
 {
   "version": 2,
-  "generatedAt": "2026-10-14T07:43:05.138216Z",
+  "generatedAt": "2026-10-14T14:45:41.000130Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
-  "pass": 16,
-  "daVerificare": 4,
+  "pass": 15,
+  "daVerificare": 5,
   "recalls": [
+    {
+      "id": "veggarella-preparazione-gastronomica-vegetale-base-di-soia-e",
+      "marca": "IO VEG",
+      "prodotto": "VEGGARELLA - Preparazione gastronomica vegetale a base di soia e mandorle",
+      "lotto": "27.11.2027 (prod. 2661235)",
+      "tmc": "27.11.2027",
+      "produttore": "CH 5767",
+      "motivo": "Errata indicazione in etichetta del termine minimo di conservazione (TMC): le confezioni riportano la data 27.11.2027.",
+      "dataPubblicazione": "14 ottobre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/veggarella-preparazione-gastronomica-vegetale-base-di-soia-e",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/07102026%20Modello_richiamo_Veggarella_compilato_1791979728.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/veggarella-preparazione-gastronomica-vegetale-base-di-soia-e-d3f69d0d09.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
     {
       "id": "perfetto-moka-macinato-aromatizzato-al-caramello",
       "marca": "Bialetti",
@@ -20,9 +39,10 @@
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/ALL.1%20cartello%20di%20richiamo_1791893295.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/perfetto-moka-macinato-aromatizzato-al-caramello-c5aa4991f7.png",
       "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "TESTO_DIGITALE",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "",
       "note": [
+        "PDF non disponibile",
         "Motivo specifico estratto dal PDF ufficiale",
         "Motivo specifico verificato nel PDF ufficiale",
         "Fotografia completa estratta dal PDF ufficiale"
@@ -373,25 +393,6 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "uova-da-allevamento-terra-speciali-pasta-gialla",
-      "marca": "AVICOLA ALBERTI TAMARA",
-      "prodotto": "UOVA DA ALLEVAMENTO A TERRA - SPECIALI PASTA GIALLA",
-      "lotto": "07 - 08 - 09 ottobre 2026",
-      "tmc": "7-8-9/10/26 28gg",
-      "produttore": "C.I. IT 035 027",
-      "motivo": "Prodotto non conforme prefentiimene entro ik 08-1 0-26 x fi Ù \\ ; w -f 3 ad, MNM Md 0 x SPEGIAÀi EMA Aa a SCIALIP. À Da e",
-      "dataPubblicazione": "26 settembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/uova-da-allevamento-terra-speciali-pasta-gialla",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/UOVA%20SPECIALI%20PASTA%20GIALLA_1790951945.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/uova-da-allevamento-terra-speciali-pasta-gialla-c21aeb04ba.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "OCR",
       "note": [
         "Motivo specifico estratto dal PDF ufficiale"
       ]
