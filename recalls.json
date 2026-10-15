@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "generatedAt": "2026-10-14T14:45:41.000130Z",
+  "generatedAt": "2026-10-15T17:05:47.829655Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
-  "pass": 15,
-  "daVerificare": 5,
+  "pass": 16,
+  "daVerificare": 4,
   "recalls": [
     {
       "id": "veggarella-preparazione-gastronomica-vegetale-base-di-soia-e",
@@ -39,11 +39,11 @@
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/ALL.1%20cartello%20di%20richiamo_1791893295.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/perfetto-moka-macinato-aromatizzato-al-caramello-c5aa4991f7.png",
       "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
       "note": [
-        "PDF non disponibile",
         "Motivo specifico estratto dal PDF ufficiale",
+        "PDF non disponibile",
         "Motivo specifico verificato nel PDF ufficiale",
         "Fotografia completa estratta dal PDF ufficiale"
       ]
