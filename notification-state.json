@@ -22,6 +22,7 @@
     "filone-di-tonno-pinne-gialle-decongelato-senza-pelle-sottovuoto",
     "hamburger-di-bufalo-170g-skin",
     "hamburger-di-scottona-200g-100x2-skin",
+    "hummus-di-ceci-biologico",
     "mais-italiano-pop-corn",
     "mais-italiano-pop-corn-0",
     "mais-pop-corn-2",
@@ -61,10 +62,10 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-10-16T07:23:15.187Z",
-  "lastNotificationAt": "2026-10-14T14:47:51.242150+00:00",
+  "lastCheckedAt": "2026-10-16T12:36:09.503Z",
+  "lastNotificationAt": "2026-10-16T12:41:16.484735+00:00",
   "lastNotificationIds": [
-    "veggarella-preparazione-gastronomica-vegetale-base-di-soia-e"
+    "hummus-di-ceci-biologico"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/-2545116029980423175"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/786046250988251414"
 }
