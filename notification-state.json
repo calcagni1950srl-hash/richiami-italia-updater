@@ -44,6 +44,7 @@
     "speck-e-brie-1",
     "speck-e-brie-2",
     "spiedino-di-calamaro-patagonico-e-gambero-argentino",
+    "tahina-arkan",
     "tortellini-alla-carne-2-confezioni-da-250-g",
     "tramezzino-coop-prosciutto-cotto-150g",
     "trancio-di-pesce-spada",
@@ -63,10 +64,10 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-10-16T16:55:24.873Z",
-  "lastNotificationAt": "2026-10-16T14:09:39.328553+00:00",
+  "lastCheckedAt": "2026-10-16T22:17:12.406Z",
+  "lastNotificationAt": "2026-10-16T22:23:30.776907+00:00",
   "lastNotificationIds": [
-    "albume-duovo-liquido-pastorizzato"
+    "tahina-arkan"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/4412492793491751573"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/-2202722899471853673"
 }
