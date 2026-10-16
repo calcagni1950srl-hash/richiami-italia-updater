@@ -1,0 +1,24 @@
+name: Recupera controllo richiami Albume
+
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/run-albume-notification-check.yml"]
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  trigger-existing-watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Avvia watcher ufficiale esistente senza cambiare il codice
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh workflow run notification-watch.yml --repo "$REPO" --ref main
+          echo "Avviato il normale watcher notifiche; ID dei richiami e deduplicazione gestiti dal watcher."
