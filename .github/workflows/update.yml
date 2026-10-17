@@ -897,7 +897,7 @@ jobs:
           from pathlib import Path
           schede=json.loads(Path("lavoro/schede.json").read_text(encoding="utf-8"))
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
-              out.write("novita=" + ("true" if schede else "false") + "\\n")
+              out.write("novita=" + ("true" if schede else "false") + "\n")
           print("Nuove schede realmente estratte:", len(schede))
           PY
 
