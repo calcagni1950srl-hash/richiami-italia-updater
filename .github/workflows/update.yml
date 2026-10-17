@@ -45,7 +45,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Controlla se serve aggiornamento completo
+      - name: Controlla se serve acquisire schede nuove o incompiute
         id: controllo_rss
         env:
           FORCE_FULL: ${{ inputs.force_full || github.event_name == 'push' }}
@@ -53,66 +53,32 @@ jobs:
           python - <<'PYEOF'
           import json
           import os
-          from datetime import datetime, timezone
           from pathlib import Path
 
+          force_check = os.environ.get("FORCE_FULL", "false").strip().lower() == "true"
           path = Path("recalls.json")
-          force_full = False
-          full_recheck = False
-          reason = ""
-          manual_force = (
-              os.environ.get("FORCE_FULL", "false")
-              .strip()
-              .lower()
-              == "true"
-          )
-
-          if manual_force:
-              force_full = True
-              reason = "nuovo richiamo: elaborazione incrementale prioritaria"
-          elif not path.exists():
-              force_full = True
-              reason = "recalls.json assente"
-          else:
+          provisional = []
+          if path.exists():
               data = json.loads(path.read_text(encoding="utf-8"))
               provisional = [
                   item
-                  for item in (data.get("recalls", []) or [])
+                  for item in data.get("recalls", [])
                   if (
-                      str(item.get("metodoEstrazione", "") or "").strip().upper() == "RSS"
-                      or str(item.get("criterioMatch", "") or "").strip().upper() == "RSS_MINISTERO"
+                      str(item.get("metodoEstrazione", "")).upper() == "RSS"
+                      or str(item.get("criterioMatch", "")).upper() == "RSS_MINISTERO"
                   )
               ]
 
-              if provisional:
-                  force_full = True
-                  reason = f"{len(provisional)} richiamo/i RSS da completare"
-              else:
-                  raw = str(data.get("generatedAt", "") or "").strip()
-                  try:
-                      generated = datetime.fromisoformat(raw.replace("Z", "+00:00"))
-                      if generated.tzinfo is None:
-                          generated = generated.replace(tzinfo=timezone.utc)
-                      age = datetime.now(timezone.utc) - generated.astimezone(timezone.utc)
-                      if age.total_seconds() >= 12 * 60 * 60:
-                          force_full = True
-                          full_recheck = True
-                          reason = "ricontrollo integrale di sicurezza dopo 12 ore"
-                      else:
-                          reason = (
-                              "nessun richiamo provvisorio: "
-                              "il controllo remoto è affidato al watcher ogni 30 minuti"
-                          )
-                  except Exception:
-                      force_full = True
-                      reason = "data ultimo aggiornamento non valida"
-
-          print("Decisione:", "AGGIORNA" if force_full else "STOP")
+          update = force_check or not path.exists() or bool(provisional)
+          reason = (
+              "Controllo RSS: elabora soltanto ID nuovi o richiami ancora incompleti"
+              if update
+              else "Nessuna scheda incompleta: vecchi PDF e fotografie non vengono riscaricati"
+          )
+          print("Decisione:", "CONTROLLA RSS" if update else "STOP")
           print("Motivo:", reason)
-
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
-              out.write(f"aggiorna={'true' if force_full else 'false'}\n")
-              out.write(f"ricontrolla={'true' if full_recheck else 'false'}\n")
+              out.write(f"aggiorna={'true' if update else 'false'}\n")
           PYEOF
 
       - name: Nessuna novità - termina controllo leggero
@@ -120,7 +86,7 @@ jobs:
         run: |
           echo "Nessun nuovo richiamo: il controllo termina senza accedere alle schede o ai PDF del Ministero."
 
-      - name: Setup Node per aggiornamento completo
+      - name: Setup Node per schede nuove
         if: steps.controllo_rss.outputs.aggiorna == 'true'
         uses: actions/setup-node@v4
         with:
@@ -837,8 +803,7 @@ jobs:
             const selected = selectPending(
               items,
               previous,
-              MAX_RICHIAMI,
-              process.env.RECHECK_ALL === "true"
+              MAX_RICHIAMI
             );
             fs.writeFileSync(
               "lavoro/feed-index.json",
@@ -887,8 +852,6 @@ jobs:
       - name: Acquisisci richiami
         id: acquisizione
         if: steps.controllo_rss.outputs.aggiorna == 'true'
-        env:
-          RECHECK_ALL: ${{ steps.controllo_rss.outputs.ricontrolla }}
         run: |
           node --check scripts/select_pending_recalls.mjs
           node acquisisci.mjs
