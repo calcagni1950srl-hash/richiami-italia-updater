@@ -1,0 +1,24 @@
+name: Test una tantum aggiornamento solo nuovi
+
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/test-incremental-live.yml"]
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Esegue il normale aggiornamento con filtro solo nuovi
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh workflow run update.yml --repo "$REPO" --ref main --field force_full=true
+          echo "Smoke test avviato: non attiva il servizio Firebase."
