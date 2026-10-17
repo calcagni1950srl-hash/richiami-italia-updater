@@ -8,6 +8,7 @@ on:
       - ".github/workflows/test-incremental-recalls.yml"
       - "scripts/select_pending_recalls.mjs"
       - "scripts/assemble_incremental_recalls.py"
+      - ".github/workflows/update.yml"
 
 permissions:
   contents: read
@@ -50,3 +51,29 @@ jobs:
           assert out['recalls'][0]['immagine']==sample[0]['immagine']
           print('PASS: righe e immagini reali preservate')
           PY
+      - name: Verifica sintassi ed estrazione degli script effettivi del workflow
+        run: |
+          python -m pip install PyYAML --quiet
+          python - <<'PY'
+          import pathlib, yaml
+          p=pathlib.Path(".github/workflows/update.yml")
+          s=p.read_text(encoding="utf-8")
+          yaml.safe_load(s)
+          needle="cat > acquisisci.mjs <<'EOF'\n"
+          assert s.count(needle)==1
+          part=s.split(needle,1)[1].split("\n          EOF",1)[0]
+          js="\n".join(line[10:] if line.startswith("          ") else line for line in part.splitlines())
+          pathlib.Path("/tmp/acquisisci.mjs").write_text(js,encoding="utf-8")
+          needle="cat > estrai.py <<'PYEOF'\n"
+          assert s.count(needle)==1
+          part=s.split(needle,1)[1].split("\n          PYEOF",1)[0]
+          py="\n".join(line[10:] if line.startswith("          ") else line for line in part.splitlines())
+          pathlib.Path("/tmp/estrai.py").write_text(py,encoding="utf-8")
+          assert "12 * 60 * 60" not in s and "RECHECK_ALL" not in s
+          assert "assemble_incremental_recalls.py" in s
+          assert "node acquisisci.mjs" in s
+          assert "scripts/merge_generated_recalls.py" in s
+          print("PASS: sintassi YAML e politica solo nuovi richiami")
+          PY
+          node --check /tmp/acquisisci.mjs
+          python -m py_compile /tmp/estrai.py
