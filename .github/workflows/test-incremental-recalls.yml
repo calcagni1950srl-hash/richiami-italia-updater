@@ -8,6 +8,7 @@ on:
       - ".github/workflows/test-incremental-recalls.yml"
       - "scripts/select_pending_recalls.mjs"
       - "scripts/assemble_incremental_recalls.py"
+      - "scripts/isolate_new_image_quality.py"
       - ".github/workflows/update.yml"
 
 permissions:
@@ -33,6 +34,8 @@ jobs:
         run: |
           python -m py_compile scripts/assemble_incremental_recalls.py
           python scripts/assemble_incremental_recalls.py --self-test
+          python -m py_compile scripts/isolate_new_image_quality.py
+          python scripts/isolate_new_image_quality.py --self-test
       - name: Simula feed corrente con DB reale senza toccarlo
         run: |
           python - <<'PY'
@@ -71,6 +74,8 @@ jobs:
           pathlib.Path("/tmp/estrai.py").write_text(py,encoding="utf-8")
           assert "12 * 60 * 60" not in s and "RECHECK_ALL" not in s
           assert "assemble_incremental_recalls.py" in s
+          assert "isolate_new_image_quality.py prepare" in s
+          assert "isolate_new_image_quality.py complete" in s
           assert "node acquisisci.mjs" in s
           assert "scripts/merge_generated_recalls.py" in s
           print("PASS: sintassi YAML e politica solo nuovi richiami")
