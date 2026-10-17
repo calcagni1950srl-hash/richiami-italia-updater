@@ -3349,6 +3349,11 @@ jobs:
           python -m py_compile scripts/finalize_recall_images.py
           python -m py_compile scripts/restore_missing_recall_images.py
           python -m py_compile scripts/image_quality_guard.py
+          python -m py_compile scripts/isolate_new_image_quality.py
+
+          # Isola temporaneamente solo gli ID nuovi. I vecchi dati e PNG
+          # rimangono nel backup e non entrano nei controlli fotografici.
+          python scripts/isolate_new_image_quality.py prepare
 
           rm -rf .quality
           mkdir -p .quality/pdf
@@ -3388,6 +3393,10 @@ jobs:
           # L'immagine rappresentativa conserva ID e nota di provenienza.
           python scripts/choose_best_recall_photo.py
           python scripts/image_quality_guard.py validate
+
+          # Ripristina tutte le vecchie schede e foto byte per byte,
+          # aggiornando esclusivamente i nuovi richiami validati.
+          python scripts/isolate_new_image_quality.py complete
 
           echo "✅ Immagini validate nello stesso run dei PDF ufficiali."
 
