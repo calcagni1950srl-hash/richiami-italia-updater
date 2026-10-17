@@ -58,6 +58,7 @@ jobs:
 
           path = Path("recalls.json")
           force_full = False
+          full_recheck = False
           reason = ""
           manual_force = (
               os.environ.get("FORCE_FULL", "false")
@@ -68,7 +69,7 @@ jobs:
 
           if manual_force:
               force_full = True
-              reason = "aggiornamento completo manuale richiesto"
+              reason = "nuovo richiamo: elaborazione incrementale prioritaria"
           elif not path.exists():
               force_full = True
               reason = "recalls.json assente"
@@ -95,7 +96,8 @@ jobs:
                       age = datetime.now(timezone.utc) - generated.astimezone(timezone.utc)
                       if age.total_seconds() >= 12 * 60 * 60:
                           force_full = True
-                          reason = "aggiornamento completo di sicurezza dopo 12 ore"
+                          full_recheck = True
+                          reason = "ricontrollo integrale di sicurezza dopo 12 ore"
                       else:
                           reason = (
                               "nessun richiamo provvisorio: "
@@ -110,6 +112,7 @@ jobs:
 
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
               out.write(f"aggiorna={'true' if force_full else 'false'}\n")
+              out.write(f"ricontrolla={'true' if full_recheck else 'false'}\n")
           PYEOF
 
       - name: Nessuna novità - termina controllo leggero
@@ -151,6 +154,7 @@ jobs:
           cat > acquisisci.mjs <<'EOF'
           import { chromium } from "playwright";
           import fs from "fs";
+          import { selectPending } from "./scripts/select_pending_recalls.mjs";
 
           const FEED_URL =
             "https://www.salute.gov.it/new/rss/RSS_avvisi_richiami_osa.xml";
@@ -825,21 +829,27 @@ jobs:
               );
             }
 
-            if (
-              items.length >
-              MAX_RICHIAMI
-            ) {
-              items =
-                items.slice(
-                  0,
-                  MAX_RICHIAMI
-                );
-            }
-
-            console.log(
-              "Richiami da elaborare:",
-              items.length
+            // Il nuovo richiamo ha priorità: gli ID già verificati sono
+            // ripresi dal database senza riscaricare le loro schede e PDF.
+            const previous = JSON.parse(
+              fs.readFileSync("recalls-precedenti.json", "utf8")
             );
+            const selected = selectPending(
+              items,
+              previous,
+              MAX_RICHIAMI,
+              process.env.RECHECK_ALL === "true"
+            );
+            fs.writeFileSync(
+              "lavoro/feed-index.json",
+              JSON.stringify(selected.feed.map(item => ({id:item.id})), null, 2),
+              "utf8"
+            );
+            items = selected.pending;
+
+            console.log("Avvisi ufficiali nell'RSS:", selected.feed.length);
+            console.log("Schede già complete riutilizzate:", selected.reused);
+            console.log("Nuovi / provvisori da elaborare:", items.length);
 
             const results = [];
 
@@ -875,11 +885,24 @@ jobs:
           EOF
 
       - name: Acquisisci richiami
+        id: acquisizione
         if: steps.controllo_rss.outputs.aggiorna == 'true'
-        run: node acquisisci.mjs
+        env:
+          RECHECK_ALL: ${{ steps.controllo_rss.outputs.ricontrolla }}
+        run: |
+          node --check scripts/select_pending_recalls.mjs
+          node acquisisci.mjs
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          schede=json.loads(Path("lavoro/schede.json").read_text(encoding="utf-8"))
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write("novita=" + ("true" if schede else "false") + "\\n")
+          print("Nuove schede realmente estratte:", len(schede))
+          PY
 
       - name: Crea estrattore
-        if: steps.controllo_rss.outputs.aggiorna == 'true'
+        if: steps.acquisizione.outputs.novita == 'true'
         run: |
           cat > estrai.py <<'PYEOF'
           import json
@@ -3233,15 +3256,15 @@ jobs:
           PYEOF
 
       - name: Controlla sintassi
-        if: steps.controllo_rss.outputs.aggiorna == 'true'
+        if: steps.acquisizione.outputs.novita == 'true'
         run: python -m py_compile estrai.py
 
       - name: Genera recalls.json
-        if: steps.controllo_rss.outputs.aggiorna == 'true'
+        if: steps.acquisizione.outputs.novita == 'true'
         run: python estrai.py
 
       - name: Controlla database
-        if: steps.controllo_rss.outputs.aggiorna == 'true'
+        if: steps.acquisizione.outputs.novita == 'true'
         run: |
           python - <<'PYEOF'
           import json
@@ -3279,9 +3302,11 @@ jobs:
           PYEOF
 
       - name: Copia database preservando foto validate
-        if: steps.controllo_rss.outputs.aggiorna == 'true'
+        if: steps.acquisizione.outputs.novita == 'true'
         run: |
           cp output/recalls.json recalls.json
+          python scripts/assemble_incremental_recalls.py \\
+            recalls-precedenti.json recalls.json lavoro/feed-index.json
 
           python - <<'PYMERGE'
           import hashlib
@@ -3352,7 +3377,7 @@ jobs:
           PYMERGE
 
       - name: Valida immagini nello stesso aggiornamento
-        if: steps.controllo_rss.outputs.aggiorna == 'true'
+        if: steps.acquisizione.outputs.novita == 'true'
         run: |
           set -e
 
@@ -3404,7 +3429,7 @@ jobs:
           echo "✅ Immagini validate nello stesso run dei PDF ufficiali."
 
       - name: Salva artifact
-        if: steps.controllo_rss.outputs.aggiorna == 'true'
+        if: steps.acquisizione.outputs.novita == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: recalls-json
@@ -3416,7 +3441,7 @@ jobs:
           retention-days: 1
 
       - name: Pubblica database e immagini in modo atomico
-        if: steps.controllo_rss.outputs.aggiorna == 'true'
+        if: steps.acquisizione.outputs.novita == 'true'
         run: |
           set -e
           git config user.name "Richiami Italia Bot"
@@ -3469,13 +3494,13 @@ jobs:
           exit 1
 
       - name: Notifiche gestite dal watcher indipendente
-        if: steps.controllo_rss.outputs.aggiorna == 'true'
+        if: steps.acquisizione.outputs.novita == 'true'
         run: |
           echo "Le notifiche Firebase sono gestite da notification-watch.yml."
           echo "Questo aggiornamento si occupa solo di database, PDF e immagini."
 
       - name: Mostra riepilogo finale
-        if: steps.controllo_rss.outputs.aggiorna == 'true'
+        if: steps.acquisizione.outputs.novita == 'true'
         run: |
           python - <<'PYEOF'
           import json
