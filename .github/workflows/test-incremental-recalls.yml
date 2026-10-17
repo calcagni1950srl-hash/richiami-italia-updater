@@ -1,0 +1,52 @@
+name: Test selezione e assemblaggio incrementale
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/test-incremental-recalls.yml"
+      - "scripts/select_pending_recalls.mjs"
+      - "scripts/assemble_incremental_recalls.py"
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compila ed esegui test selezione RSS
+        run: |
+          node --check scripts/select_pending_recalls.mjs
+          node scripts/select_pending_recalls.mjs --self-test
+      - name: Compila ed esegui test aggregazione sicura
+        run: |
+          python -m py_compile scripts/assemble_incremental_recalls.py
+          python scripts/assemble_incremental_recalls.py --self-test
+      - name: Simula feed corrente con DB reale senza toccarlo
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data=json.loads(Path('recalls.json').read_text(encoding='utf-8'))
+          assert len(data.get('recalls', []))>=10
+          sample=data['recalls'][:4]
+          assert sample[0]['immagine'] and sample[1]['motivo']
+          feed=[{'id':x['id']} for x in sample]
+          generated={**data, 'recalls':[]}
+          import subprocess
+          from scripts.assemble_incremental_recalls import assemble
+          out=assemble(data,generated,feed)
+          assert out['recalls']==sample
+          assert out['recalls'][0]['immagine']==sample[0]['immagine']
+          print('PASS: righe e immagini reali preservate')
+          PY
