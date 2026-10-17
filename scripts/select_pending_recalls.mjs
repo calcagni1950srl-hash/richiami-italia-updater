@@ -12,7 +12,7 @@ export function recallId(urlString) {
   }
 }
 
-export function selectPending(items, previousData, maxItems=50, fullRecheck=false) {
+export function selectPending(items, previousData, maxItems=50) {
   if (!Array.isArray(items) || items.length === 0) {
     throw new Error("Feed ufficiale senza richiami: nessuna sostituzione del database");
   }
@@ -36,7 +36,6 @@ export function selectPending(items, previousData, maxItems=50, fullRecheck=fals
   );
 
   const pending = unique.filter(item => {
-    if (fullRecheck) return true;
     const old = previous.get(item.id);
     if (!old) return true;
     const method = String(old.metodoEstrazione || "").toUpperCase();
@@ -64,11 +63,9 @@ if (process.argv.includes("--self-test")) {
   ensure(one.feed.length===3, "ordine/duplicati RSS");
   ensure(one.pending.map(x=>x.id).join(",")==="nuovo,provvisorio", "seleziona soltanto nuovo e incompleto");
   ensure(one.reused===1, "conteggio riutilizzati");
-  const all=selectPending(items,old,50,true);
-  ensure(all.pending.length===3, "controllo periodico completo");
   const done=selectPending(items,{recalls:[...old.recalls,{id:"nuovo",pdfMinistero:"https://salute.gov.it/new.pdf",metodoEstrazione:"TESTO_DIGITALE"}]});
   ensure(done.pending.length===1 && done.pending[0].id==="provvisorio", "nessuna ripetizione di notifiche");
   let rejected=false;try {selectPending([],old)} catch {rejected=true}
   ensure(rejected,"non sovrascrivere con RSS vuoto");
-  console.log("PASS selectPending: deduplica RSS, prioritizza nuovi, preserva completi, full recheck e feed vuoto");
+  console.log("PASS selectPending: deduplica RSS, prioritizza nuovi, preserva completi e feed vuoto");
 }
