@@ -85,7 +85,7 @@ jobs:
           idx=lines.index(cmd[0])
           combined=cmd[0].strip()[:-1]+" "+lines[idx+1].strip()
           tokens=shlex.split(combined)
-          assert len(tokens)==6 and tokens[-3:]==[
+          assert len(tokens)==5 and tokens[-3:]==[
               "recalls-precedenti.json","recalls.json","lavoro/feed-index.json"
           ], f"Argomenti incompleti: {tokens}"
           assert "isolate_new_image_quality.py prepare" in s
