@@ -3438,6 +3438,11 @@ jobs:
             mkdir -p images
             cp -a .generated-images/. images/
 
+            # Rimuove soltanto le foto dei richiami non piu presenti
+            # negli ultimi avvisi pubblicati; non tocca gli ID notificati.
+            # Dopo il merge si usano i riferimenti del database aggiornato.
+            python scripts/prune_unused_recall_images.py --apply
+
             git add recalls.json images
 
             if git diff --cached --quiet; then
