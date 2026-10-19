@@ -36,7 +36,7 @@ def plan_cleanup(database_path: Path, images_dir: Path):
             or parsed.hostname != "raw.githubusercontent.com"
             or "/richiami-italia-updater/" not in parsed.path
             or not parsed.path.endswith("/images/" + name)
-            or not re.fullmatch(r"[a-z0-9][a-z0-9_-]*-[0-9a-f]{10}\\.png", name)
+            or not re.fullmatch(r"[a-z0-9][a-z0-9_-]*-[0-9a-f]{10}\.png", name)
         ):
             raise ValueError(f"Foto fuori formato o repository per {row['id']}: {url}")
         protected.add(name)
