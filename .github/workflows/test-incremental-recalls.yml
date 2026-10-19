@@ -74,6 +74,20 @@ jobs:
           pathlib.Path("/tmp/estrai.py").write_text(py,encoding="utf-8")
           assert "12 * 60 * 60" not in s and "RECHECK_ALL" not in s
           assert "assemble_incremental_recalls.py" in s
+          # Verifica l'esatta continuazione di riga nella shell: due
+          # backslash provocano l'errore "Uso: ... PRECEDENTE GENERATO FEED_INDEX".
+          prefix="python scripts/assemble_incremental_recalls.py "
+          lines=s.splitlines(keepends=True)
+          cmd=[line for line in lines if line.lstrip().startswith(prefix)]
+          assert len(cmd)==1, "comando di assemblaggio unico richiesto"
+          assert cmd[0].rstrip("\\n").endswith(prefix + chr(92)), "serve una sola barra inversa finale"
+          import shlex
+          idx=lines.index(cmd[0])
+          combined=cmd[0].strip()[:-1]+" "+lines[idx+1].strip()
+          tokens=shlex.split(combined)
+          assert len(tokens)==6 and tokens[-3:]==[
+              "recalls-precedenti.json","recalls.json","lavoro/feed-index.json"
+          ], f"Argomenti incompleti: {tokens}"
           assert "isolate_new_image_quality.py prepare" in s
           assert "isolate_new_image_quality.py complete" in s
           assert "node acquisisci.mjs" in s
