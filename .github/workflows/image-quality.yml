@@ -167,6 +167,10 @@ jobs:
               recalls.json \
               .quality/ready-images
 
+            # Le foto sostituite non devono restare archiviate:
+            # proteggi sempre tutte quelle referenziate dall'ultimo database.
+            python scripts/prune_unused_recall_images.py --apply
+
             git add recalls.json images
             if git diff --cached --quiet; then
               echo "Nessuna foto nuova: database corrente lasciato intatto."
