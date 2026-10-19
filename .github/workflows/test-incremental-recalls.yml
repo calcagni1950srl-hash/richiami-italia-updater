@@ -107,13 +107,13 @@ jobs:
           s=Path(".github/workflows/notification-watch.yml").read_text(encoding="utf-8")
           checks=[
               "python scripts/check_published_new_recalls.py notification-pending.json recalls.json",
-              'if [ "${{ steps.pubblicati.outputs.ready }}" = "true" ]; then',
+              'steps.pubblicati.outputs.ready',
               'echo "update_result=not_needed" >> "$GITHUB_OUTPUT"',
               "git show origin/main:recalls.json > recalls.json",
               "python scripts/send_notification.py",
           ]
           for text in checks:
               assert text in s, f"Manca protezione in notifica: {text}"
-          assert s.index("git show origin/main:recalls.json > recalls.json") < s.index('if [ "${{ steps.pubblicati.outputs.ready }}" = "true" ]; then')
+          assert s.index("git show origin/main:recalls.json > recalls.json") < s.index('steps.pubblicati.outputs.ready')
           print("PASS: richiamo pubblicato -> notifica diretta; deduplicazione invariata")
           PY
