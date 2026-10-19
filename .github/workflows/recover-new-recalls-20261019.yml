@@ -1,0 +1,24 @@
+name: Recupero richiami 19 ottobre - esegui monitor esistente
+
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/recover-new-recalls-20261019.yml"]
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Avvia il normale controllo con deduplicazione
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh workflow run notification-watch.yml --repo "$REPO" --ref main
+          echo "Monitor esistente avviato; attendere pubblicazione, quindi notifiche deduplicate"
