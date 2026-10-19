@@ -80,7 +80,7 @@ jobs:
           lines=s.splitlines(keepends=True)
           cmd=[line for line in lines if line.lstrip().startswith(prefix)]
           assert len(cmd)==1, "comando di assemblaggio unico richiesto"
-          assert cmd[0].rstrip("\\n").endswith(prefix + chr(92)), "serve una sola barra inversa finale"
+          assert cmd[0].rstrip().endswith(prefix + chr(92)), "serve una sola barra inversa finale"
           import shlex
           idx=lines.index(cmd[0])
           combined=cmd[0].strip()[:-1]+" "+lines[idx+1].strip()
