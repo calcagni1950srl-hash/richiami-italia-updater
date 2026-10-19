@@ -9,6 +9,8 @@ on:
       - "scripts/select_pending_recalls.mjs"
       - "scripts/assemble_incremental_recalls.py"
       - "scripts/isolate_new_image_quality.py"
+      - "scripts/prune_unused_recall_images.py"
+      - ".github/workflows/image-quality.yml"
       - ".github/workflows/update.yml"
       - ".github/workflows/notification-watch.yml"
       - "scripts/check_published_new_recalls.py"
@@ -38,6 +40,9 @@ jobs:
           python scripts/assemble_incremental_recalls.py --self-test
           python -m py_compile scripts/isolate_new_image_quality.py
           python scripts/isolate_new_image_quality.py --self-test
+          python -m py_compile scripts/prune_unused_recall_images.py
+          python scripts/prune_unused_recall_images.py --self-test
+          python scripts/prune_unused_recall_images.py
           python -m py_compile scripts/check_published_new_recalls.py
           python scripts/check_published_new_recalls.py --self-test
       - name: Simula feed corrente con DB reale senza toccarlo
@@ -94,6 +99,9 @@ jobs:
           ], f"Argomenti incompleti: {tokens}"
           assert "isolate_new_image_quality.py prepare" in s
           assert "isolate_new_image_quality.py complete" in s
+          assert "python scripts/prune_unused_recall_images.py --apply" in s
+          q=pathlib.Path(".github/workflows/image-quality.yml").read_text(encoding="utf-8")
+          assert "python scripts/prune_unused_recall_images.py --apply" in q
           assert "node acquisisci.mjs" in s
           assert "scripts/merge_generated_recalls.py" in s
           print("PASS: sintassi YAML e politica solo nuovi richiami")
