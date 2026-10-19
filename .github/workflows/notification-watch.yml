@@ -66,6 +66,15 @@ jobs:
           done
           exit 1
 
+      - name: Controlla se i nuovi richiami sono gia pubblicati
+        id: pubblicati
+        run: |
+          # Lo snapshot iniziale puo essere vecchio mentre un updater
+          # indipendente pubblica i nuovi richiami: leggi SEMPRE main.
+          git fetch origin main
+          git show origin/main:recalls.json > recalls.json
+          python scripts/check_published_new_recalls.py notification-pending.json recalls.json
+
       - name: Completa il nuovo richiamo prima della notifica
         id: completa
         env:
@@ -83,6 +92,12 @@ jobs:
 
           if [ "$nuovi" -le 0 ]; then
             echo "Nessun nuovo richiamo: completamento non necessario."
+            echo "update_result=not_needed" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "${{ steps.pubblicati.outputs.ready }}" = "true" ]; then
+            echo "Richiami gia pubblicati con PDF e motivo: invio Firebase senza rilanciare updater."
             echo "update_result=not_needed" >> "$GITHUB_OUTPUT"
             exit 0
           fi
