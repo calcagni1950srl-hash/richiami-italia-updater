@@ -3268,7 +3268,7 @@ jobs:
         if: steps.acquisizione.outputs.novita == 'true'
         run: |
           cp output/recalls.json recalls.json
-          python scripts/assemble_incremental_recalls.py \\
+          python scripts/assemble_incremental_recalls.py \
             recalls-precedenti.json recalls.json lavoro/feed-index.json
 
           python - <<'PYMERGE'
