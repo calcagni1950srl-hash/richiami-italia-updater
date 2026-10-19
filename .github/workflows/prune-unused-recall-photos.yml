@@ -1,0 +1,55 @@
+name: Pulisci fotografie di richiami non piu presenti
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/prune-unused-recall-photos.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: richiami-photo-cleanup
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Test della pulizia senza modificare il database
+        run: |
+          python scripts/prune_unused_recall_images.py --self-test
+      - name: Elimina soltanto immagini non referenziate dagli ultimi richiami
+        run: |
+          set -euo pipefail
+          git config user.name "Richiami Italia Photo Cleanup"
+          git config user.email "actions@github.com"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            python scripts/prune_unused_recall_images.py
+            python scripts/prune_unused_recall_images.py --apply
+            git add -u -- images
+            if git diff --cached --quiet; then
+              echo "Nessun PNG inutilizzato. Database e notifiche invariati."
+              exit 0
+            fi
+            # Solo eliminazione dei PNG inutilizzati: mai stage di
+            # recalls.json o notification-state.json.
+            git diff --cached --name-status
+            git commit -m "Rimuove foto orfane degli avvisi usciti dagli ultimi 20"
+            if git push origin HEAD:main; then
+              echo "Pulizia pubblicata: foto attive preservate."
+              exit 0
+            fi
+            echo "Conflitto durante la pubblicazione: ricontrollo il database attuale."
+          done
+          echo "ERRORE: impossibile pubblicare la pulizia in sicurezza."
+          exit 1
