@@ -3,6 +3,7 @@
   "initializedFrom": "recalls.json",
   "initializedAt": "2026-09-18T13:09:57.769Z",
   "notifiedIds": [
+    "10-uova-fresche-italiane",
     "albume-duovo-liquido-pastorizzato",
     "amaretti-gallina",
     "amaretti-gallina-0",
@@ -42,6 +43,8 @@
     "salame-stagionato-al-trtufo",
     "salamella-dolce-sottovuoto",
     "salamella-dolce-sottovuoto-intera",
+    "salsa-tartufata",
+    "salsa-tartufata-0",
     "snack-sticks-fuetchorizo-80g",
     "speck-e-brie",
     "speck-e-brie-0",
@@ -56,6 +59,7 @@
     "trancio-di-pesce-spada",
     "trancio-pesce-spada",
     "trofie-2x500g",
+    "uova-biologiche-6",
     "uova-da-allevamento-terra-speciali-pasta-gialla",
     "uova-da-allevamento-terra-speciali-pasta-gialla-0",
     "uova-di-cat-di-vario-calibro-da-allevamento-terra",
@@ -74,10 +78,13 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-10-21T12:27:29.039Z",
-  "lastNotificationAt": "2026-10-21T12:29:12.155191+00:00",
+  "lastCheckedAt": "2026-10-21T17:26:57.450Z",
+  "lastNotificationAt": "2026-10-21T17:29:20.493601+00:00",
   "lastNotificationIds": [
-    "filetti-di-tonno-surgelat"
+    "uova-biologiche-6",
+    "salsa-tartufata",
+    "salsa-tartufata-0",
+    "10-uova-fresche-italiane"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/-8607855696597318152"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/9072557969780368816"
 }
