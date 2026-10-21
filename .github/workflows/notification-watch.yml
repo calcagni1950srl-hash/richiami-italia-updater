@@ -12,6 +12,13 @@ on:
 
   schedule:
     - cron: "7,17,27,37,47,57 * * * *"
+  # Percorso di riserva: il job programmato update.yml viene avviato
+  # indipendentemente, quindi aumenta la probabilita di controllo RSS
+  # quando GitHub ritarda o salta il cron del watcher.
+  workflow_run:
+    workflows:
+      - "Aggiorna Database Richiami Italia"
+    types: [completed]
 
 permissions:
   contents: write
@@ -23,6 +30,12 @@ concurrency:
 
 jobs:
   notify:
+    # Solo gli aggiornamenti nati dal cron: i workflow_dispatch avviati
+    # dal watcher NON devono far partire un'altra notifica ricorsiva.
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.event == 'schedule' &&
+       github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     timeout-minutes: 25
 
