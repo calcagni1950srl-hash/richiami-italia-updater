@@ -1,12 +1,31 @@
 {
   "version": 2,
-  "generatedAt": "2026-10-19T16:27:35.663724Z",
+  "generatedAt": "2026-10-21T12:28:47.608865Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
   "pass": 12,
   "daVerificare": 8,
   "recalls": [
+    {
+      "id": "filetti-di-tonno-surgelat",
+      "marca": "SELEZIONE PIÙ",
+      "prodotto": "FILETTI DI TONNO SURGELAT¿",
+      "lotto": "14714720726",
+      "tmc": "31/12/2027",
+      "produttore": "NL 6008 EU",
+      "motivo": "POSSIBILE PRESENZA DI ISTAMINA IN QUANTITÀ SUPERIORE RISPETTO A QUANTO CONSENTITO DAI TERMINI DI LEGGE.",
+      "dataPubblicazione": "21 ottobre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/filetti-di-tonno-surgelat",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20Richiamo%20Filetti%20di%20Tonno%20Surgelato_1792575197.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/filetti-di-tonno-surgelat-6d9dd68cea.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "OCR",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
     {
       "id": "vitello-tonnato-gr-180-0",
       "marca": "PORTAMI VIA",
@@ -374,25 +393,6 @@
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/valtellina-casera-dop-0",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/e7eed14a8cf802aab5ea80e9cd820f10af9dd701233ada92873e29290433_1791547369.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/valtellina-casera-dop-0-8538d4f986.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "valtellina-casera-dop-1",
-      "marca": "No brand",
-      "prodotto": "Valtellina Casera DOP",
-      "lotto": "220726",
-      "tmc": "27/10/26, 04/11/26, 30/11/26, 07/12/26, 21/12/26",
-      "produttore": "IT 03 146 UE",
-      "motivo": "Presenza di Escherichia coli STEC",
-      "dataPubblicazione": "9 ottobre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/valtellina-casera-dop-1",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/08e6106474969d066ff3019a0eebe4e2ff7b18b1400ef3ee7ee4f094d38e_1791547370.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/valtellina-casera-dop-1-dedcf8fe21.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
