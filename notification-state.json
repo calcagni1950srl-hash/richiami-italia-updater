@@ -21,6 +21,7 @@
     "cooperlat-soc-coop-agr",
     "duble-5",
     "filetti-di-alici-olio",
+    "filetti-di-tonno-surgelat",
     "filone-di-tonno-pinne-gialle-decongelato-senza-pelle-sottovuoto",
     "hamburger-di-bufalo-170g-skin",
     "hamburger-di-scottona-200g-100x2-skin",
@@ -73,18 +74,10 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-10-21T06:41:48.290Z",
-  "lastNotificationAt": "2026-10-19T16:41:12.815367+00:00",
+  "lastCheckedAt": "2026-10-21T12:27:29.039Z",
+  "lastNotificationAt": "2026-10-21T12:29:12.155191+00:00",
   "lastNotificationIds": [
-    "vitello-tonnato-gr-180-0",
-    "vitello-tonnato-300-g",
-    "vitello-tonnato-3",
-    "lonza-di-maiale",
-    "arrosto-di-tacchino-ai-funghi",
-    "tacchino-al-forno",
-    "tacchino-arrosto-al-limone-gr-170",
-    "pediavit-complesso-b",
-    "veggarella-preparazione-gastronomica-vegetale-base-di-soia-e-0"
+    "filetti-di-tonno-surgelat"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/-11309708255613258"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/-8607855696597318152"
 }
