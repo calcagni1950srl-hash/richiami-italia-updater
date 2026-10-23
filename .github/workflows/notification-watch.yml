@@ -350,3 +350,16 @@ jobs:
 
           echo "ERRORE: impossibile salvare notification-state.json."
           exit 1
+
+      - name: Segnala chiaramente i richiami non notificati
+        # GitHub segnalava verde anche se updater falliva e la notifica era
+        # stata rinviata. Questa verifica finale rende visibile il guasto,
+        # senza inviare messaggi Firebase aggiuntivi.
+        if: >-
+          always() &&
+          (steps.completa.outputs.update_result == 'failure' ||
+           steps.completa.outputs.update_result == 'timeout' ||
+           steps.visibile.outputs.ok == 'false')
+        run: |
+          echo "::error::Richiami nuovi rilevati, ma pubblicazione o notifica non completata. Controllare update.yml e il database ufficiale."
+          exit 1
