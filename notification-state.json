@@ -47,6 +47,8 @@
     "mais-pop-corn-3",
     "pancetta-affumicata-sottovuoto",
     "pancetta-affumicata-sottovuoto-0",
+    "pasta-di-salame-con-finocchio-cod-497",
+    "pasta-di-salame-con-pepe-cod-771",
     "pediavit-complesso-b",
     "perfetto-moka-macinato-aromatizzato-al-caramello",
     "pezzente-della-montagna-materana",
@@ -58,6 +60,9 @@
     "salamella-dolce-sottovuoto-intera",
     "salsa-tartufata",
     "salsa-tartufata-0",
+    "salsicciotta-con-finocchio-cod-442",
+    "salsicciotta-con-finocchio-cod-5",
+    "salsicciotta-piccante-cod-7",
     "snack-sticks-fuetchorizo-80g",
     "speck-e-brie",
     "speck-e-brie-0",
@@ -93,24 +98,14 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-10-23T14:22:31.484Z",
-  "lastNotificationAt": "2026-10-23T07:05:44.314334+00:00",
+  "lastCheckedAt": "2026-10-23T18:25:53.954Z",
+  "lastNotificationAt": "2026-10-23T18:25:55.208693+00:00",
   "lastNotificationIds": [
-    "antipasto-di-verdure-sottolio",
-    "inverno-cavolfiori-sottolio",
-    "tiramisu-200g",
-    "cavolo-cappuccio-filetti-sottolio",
-    "funghi-misti-sottolio",
-    "funghi-misti-sottolio-0",
-    "asparagi-conditi-sottolio",
-    "carciofini-sottolio",
-    "fagiolini-sottolio",
-    "carciofini-sottolio-0",
-    "funghi-champignon-sottolio",
-    "carciofini-sottolio-1",
-    "funghi-champignon-sottolio-0",
-    "fagiolini-sottolio-0",
-    "vitello-tonnato-300g"
+    "salsicciotta-con-finocchio-cod-5",
+    "salsicciotta-piccante-cod-7",
+    "salsicciotta-con-finocchio-cod-442",
+    "pasta-di-salame-con-finocchio-cod-497",
+    "pasta-di-salame-con-pepe-cod-771"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/3114742348916649745"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/175898998130077771"
 }
