@@ -60,6 +60,18 @@ jobs:
           from scripts.assemble_incremental_recalls import assemble
           out=assemble(data,generated,feed)
           assert out['recalls']==sample
+          # Due avvisi ufficiali possono avere prodotto, lotto e PDF uguali,
+          # ma ID differenti: devono rimanere entrambi.
+          twins=[
+              {'id':'funghi-misti-sottolio','prodotto':'Funghi misti','lotto':'L1','pdfMinistero':'same'},
+              {'id':'funghi-misti-sottolio-0','prodotto':'Funghi misti','lotto':'L1','pdfMinistero':'same'},
+          ]
+          twin_feed=[{'id':row['id']} for row in twins]
+          twins_out=assemble({'recalls':[]},{'recalls':twins},twin_feed)
+          assert len(twins_out['recalls'])==2
+          assert [x['id'] for x in twins_out['recalls']]==[
+              'funghi-misti-sottolio','funghi-misti-sottolio-0'
+          ], "non fondere due avvisi ministeriali diversi"
           assert out['recalls'][0]['immagine']==sample[0]['immagine']
           print('PASS: righe e immagini reali preservate')
           PY
@@ -102,6 +114,9 @@ jobs:
           assert "python scripts/prune_unused_recall_images.py --apply" in s
           q=pathlib.Path(".github/workflows/image-quality.yml").read_text(encoding="utf-8")
           assert "python scripts/prune_unused_recall_images.py --apply" in q
+          assert "seen_notice_ids = set()" in s, "ogni ID ministeriale deve restare distinto"
+          assert "if same_recall(" not in s, "deduplica per prodotto vietata"
+          assert "deduplicated.append" not in s, "non eliminare avvisi ufficiali simili"
           assert "node acquisisci.mjs" in s
           assert "scripts/merge_generated_recalls.py" in s
           print("PASS: sintassi YAML e politica solo nuovi richiami")
