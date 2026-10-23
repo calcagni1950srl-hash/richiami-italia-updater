@@ -168,7 +168,14 @@ function loadState() {
   }
 }
 
-const browser = await chromium.launch({ headless: true });
+// I runner Ubuntu hanno Chrome gia installato: non serve scaricare
+// Chromium a ogni controllo. Su un runner privo di Chrome, il workflow
+// installa il browser Playwright e lascia CHANNEL non impostato.
+const launchOptions = { headless: true };
+if (process.env.RICHIAMI_CHROME_CHANNEL === "chrome") {
+  launchOptions.channel = "chrome";
+}
+const browser = await chromium.launch(launchOptions);
 
 try {
   const context = await browser.newContext({
