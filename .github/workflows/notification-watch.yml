@@ -55,9 +55,18 @@ jobs:
 
       - name: Installa dipendenze RSS
         run: |
+          set -euo pipefail
           npm init -y
           npm install playwright
-          npx playwright install --with-deps chromium
+          # Il runner ubuntu-latest include Chrome: evita download e
+          # installazioni apt ripetute. Il ripiego resta disponibile.
+          if command -v google-chrome >/dev/null 2>&1; then
+            google-chrome --version
+            echo "RICHIAMI_CHROME_CHANNEL=chrome" >> "$GITHUB_ENV"
+          else
+            echo "Chrome di sistema assente: installo Chromium Playwright."
+            npx playwright install --with-deps chromium
+          fi
 
       - name: Installa dipendenze Firebase
         run: |
