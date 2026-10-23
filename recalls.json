@@ -1,12 +1,111 @@
 {
   "version": 2,
-  "generatedAt": "2026-10-23T07:04:18.908105Z",
+  "generatedAt": "2026-10-23T18:24:16.870631Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
-  "pass": 18,
-  "daVerificare": 2,
+  "pass": 15,
+  "daVerificare": 5,
   "recalls": [
+    {
+      "id": "salsicciotta-con-finocchio-cod-5",
+      "marca": "SALUMI EMMEDUE SRL",
+      "prodotto": "Salsicciotta con finocchio ¿ COD 5",
+      "lotto": "49322",
+      "tmc": "TUTTE",
+      "produttore": "IT 2646S UE",
+      "motivo": "POSSIBILE PRESENZA DI SALMONELLA SPP SCADENZE: 28/10/26-29/10/26-30/10/26-31/10/26-01/11/26-02/11/26-04/11/26- 05/11/26-06/11/26",
+      "dataPubblicazione": "23 ottobre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsicciotta-con-finocchio-cod-5",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/5_%20Modello_richiamo_1792776110.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsicciotta-con-finocchio-cod-5-3699d4a8cd.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale",
+        "TMC da verificare"
+      ]
+    },
+    {
+      "id": "salsicciotta-piccante-cod-7",
+      "marca": "SALUMI EMMEDUE SRL",
+      "prodotto": "Salsicciotta piccante ¿ COD 7",
+      "lotto": "49322",
+      "tmc": "TUTTE",
+      "produttore": "IT 2646S UE",
+      "motivo": "POSSIBILE PRESENZA DI SALMONELLA SPP SCADENZE: 24/10/26-29/10/26-01/11/26-04/11/26-05/11/26",
+      "dataPubblicazione": "23 ottobre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsicciotta-piccante-cod-7",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/7_%20Modello_richiamo_1792776153.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsicciotta-piccante-cod-7-bc3b37c4e6.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale",
+        "TMC da verificare"
+      ]
+    },
+    {
+      "id": "salsicciotta-con-finocchio-cod-442",
+      "marca": "SALUMI EMMEDUE SRL",
+      "prodotto": "Salsicciotta con finocchio ¿ COD 442",
+      "lotto": "49322",
+      "tmc": "TUTTE",
+      "produttore": "IT 2646S UE",
+      "motivo": "POSSIBILE PRESENZA DI SALMONELLA SPP SCADENZE: 30/10/26-01/11/26-04/11/26-06/11/26-08/11/26",
+      "dataPubblicazione": "23 ottobre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsicciotta-con-finocchio-cod-442",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/442_%20Modello_richiamo_1792776192.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsicciotta-con-finocchio-cod-442-022aeb0cdd.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale",
+        "TMC da verificare"
+      ]
+    },
+    {
+      "id": "pasta-di-salame-con-finocchio-cod-497",
+      "marca": "SALUMI EMMEDUE SRL",
+      "prodotto": "Pasta di Salame con finocchio ¿ COD 497",
+      "lotto": "49322",
+      "tmc": "TUTTE",
+      "produttore": "IT 2646S UE",
+      "motivo": "POSSIBILE PRESENZA DI SALMONELLA SPP SCADENZE: 20/10/26-23/10/26-24/10/26-25/10/26-27/10/26-29/10/26",
+      "dataPubblicazione": "23 ottobre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pasta-di-salame-con-finocchio-cod-497",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/497_%20Modello_richiamo_1792776231.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/pasta-di-salame-con-finocchio-cod-497-d4f0b0c807.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale",
+        "TMC da verificare"
+      ]
+    },
+    {
+      "id": "pasta-di-salame-con-pepe-cod-771",
+      "marca": "SALUMI EMMEDUE SRL",
+      "prodotto": "Pasta di Salame con pepe ¿ COD 771",
+      "lotto": "49322",
+      "tmc": "26/10/26",
+      "produttore": "IT 2646S UE",
+      "motivo": "POSSIBILE PRESENZA DI SALMONELLA SPP",
+      "dataPubblicazione": "23 ottobre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pasta-di-salame-con-pepe-cod-771",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/771_%20Modello_richiamo_1792776267.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/pasta-di-salame-con-pepe-cod-771-8418176614.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
     {
       "id": "antipasto-di-verdure-sottolio",
       "marca": "Ferri S.a.s. - La Favola Antica",
@@ -291,102 +390,6 @@
       "metodoEstrazione": "TESTO_DIGITALE",
       "note": [
         "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "funghi-champignon-sottolio",
-      "marca": "Ferri S.a.s. di Ferri Piero",
-      "prodotto": "Funghi champignon sott'olio",
-      "lotto": "15/07/26",
-      "tmc": "28/01/28",
-      "produttore": "AA000657041PEIT",
-      "motivo": "ASSENZA IN ETICHETTA DELL'INDICAZIONE DELL'ALLERGENE \"SOLFITI\" CONTENUTI NELL'ACETO DI VINO, COME INVECE PREVISTO DAL REG. (CE) 1169/2011",
-      "dataPubblicazione": "21 ottobre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/funghi-champignon-sottolio",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/funghi%20champignon%20300%20g_1792603025.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/funghi-champignon-sottolio-52dca3322d.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "carciofini-sottolio-1",
-      "marca": "Ferri S.a.s. - La favola Antica",
-      "prodotto": "Carciofini sott'olio",
-      "lotto": "08/07/26",
-      "tmc": "28/01/28",
-      "produttore": "AA000657041PEIT",
-      "motivo": "ASSENZA IN ETICHETTA DELL'INDICAZIONE DELL'ALLERGENE \"SOLFITI\" CONTENUTI NELL'ACETO DI VINO, COME INVECE PREVISTO DAL REG. (CE) 1169/2011",
-      "dataPubblicazione": "21 ottobre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/carciofini-sottolio-1",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/carciofini_900_g_1792603098.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/carciofini-sottolio-1-a4136713fb.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "funghi-champignon-sottolio-0",
-      "marca": "Ferri S.a.s. - La favola Antica",
-      "prodotto": "Funghi champignon sott'olio",
-      "lotto": "15/07/26",
-      "tmc": "28/01/28",
-      "produttore": "AA000657041PEIT",
-      "motivo": "ASSENZA IN ETICHETTA DELL'INDICAZIONE DELL'ALLERGENE \"SOLFITI\" CONTENUTI NELL'ACETO DI VINO, COME INVECE PREVISTO DAL REG. (CE) 1169/2011",
-      "dataPubblicazione": "21 ottobre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/funghi-champignon-sottolio-0",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/funghi_champignon_300_g_1792603170.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/funghi-champignon-sottolio-0-52dca3322d.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "fagiolini-sottolio-0",
-      "marca": "Ferri S.a.s. - La favola Antica",
-      "prodotto": "Fagiolini sott'olio",
-      "lotto": "01/07/26",
-      "tmc": "28/01/28",
-      "produttore": "AA000657041PEIT",
-      "motivo": "ASSENZA IN ETICHETTA DELL'INDICAZIONE DELL'ALLERGENE \"SOLFITI\" CONTENUTI NELL'ACETO DI VINO, COME INVECE PREVISTO DAL REG. (CE) 1169/2011",
-      "dataPubblicazione": "21 ottobre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/fagiolini-sottolio-0",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/fagiolini%20250_1792603215.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/fagiolini-sottolio-0-d09c8555cc.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "vitello-tonnato-300g",
-      "marca": "A.M.M.53 PASTICCERIA-GASTRONOMIA",
-      "prodotto": "VITELLO TONNATO 300g",
-      "lotto": "tutti i lotti in distribuzione",
-      "tmc": "tutte",
-      "produttore": "IT M2V1X UE",
-      "motivo": "possibile presenza di Listeria monocytogenes Lotti: L259/26, 264/26, 267/26, 271/26, 273/26, 275/26 Scadenze dal: 16/10/2026 al 01/11/2026",
-      "dataPubblicazione": "21 ottobre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/vitello-tonnato-300g",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modulo%20richiamo%20_%20207203%20vitello%20tonnato%20300g%20_%20lotti%20multipli%20_1__1792603271.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/vitello-tonnato-300g-78c2d0b35a.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare"
       ]
     }
   ]
