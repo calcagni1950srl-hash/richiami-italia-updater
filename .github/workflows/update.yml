@@ -3073,36 +3073,20 @@ jobs:
               return True
 
 
-          deduplicated = []
-
+          # Ogni URL/ID pubblicato dal Ministero e' un avviso distinto.
+          # NON fondere avvisi che condividono nome, lotto o PDF: il
+          # selettore RSS ha gia' eliminato i duplicati dello stesso ID.
+          # La precedente deduplica per similitudine eliminava una scheda,
+          # causando il blocco dell'intera pubblicazione incrementale.
+          seen_notice_ids = set()
           for recall in recalls:
-              duplicate_of = next(
-                  (
-                      previous
-                      for previous in deduplicated
-                      if same_recall(
-                          previous,
-                          recall
-                      )
-                  ),
-                  None
-              )
+              notice_id = str(recall.get("id", "") or "").strip()
+              if not notice_id:
+                  raise ValueError("Avviso ufficiale senza ID")
+              if notice_id in seen_notice_ids:
+                  raise ValueError("ID RSS duplicato nell'estrazione: " + notice_id)
+              seen_notice_ids.add(notice_id)
 
-              if duplicate_of is not None:
-                  print(
-                      "♻️ Doppione Ministero ignorato:",
-                      recall.get("id"),
-                      "->",
-                      duplicate_of.get("id")
-                  )
-                  continue
-
-              deduplicated.append(
-                  recall
-              )
-
-
-          recalls = deduplicated
 
 
           pass_count = sum(
