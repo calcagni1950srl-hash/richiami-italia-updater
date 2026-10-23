@@ -69,7 +69,11 @@ jobs:
                   )
               ]
 
-          update = force_check or not path.exists() or bool(provisional)
+          # Anche il secondo workflow ha un controllo RSS autonomo:
+          # il controllo programmato non deve fermarsi basandosi solo
+          # sul database locale, che per definizione non sa dei nuovi avvisi.
+          scheduled_check = os.environ.get("GITHUB_EVENT_NAME") == "schedule"
+          update = force_check or scheduled_check or not path.exists() or bool(provisional)
           reason = (
               "Controllo RSS: elabora soltanto ID nuovi o richiami ancora incompleti"
               if update
