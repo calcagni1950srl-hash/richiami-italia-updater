@@ -357,8 +357,8 @@ jobs:
         # senza inviare messaggi Firebase aggiuntivi.
         if: >-
           always() &&
-          (steps.completa.outputs.update_result == 'failure' ||
-           steps.completa.outputs.update_result == 'timeout' ||
+          ((steps.completa.outputs.update_result != 'success' &&
+            steps.completa.outputs.update_result != 'not_needed') ||
            steps.visibile.outputs.ok == 'false')
         run: |
           echo "::error::Richiami nuovi rilevati, ma pubblicazione o notifica non completata. Controllare update.yml e il database ufficiale."
