@@ -25,6 +25,7 @@
     "carciofini-sottolio-1",
     "cavolo-cappuccio-filetti-sottolio",
     "cenestro",
+    "condiriso-e-condipasta-sottolio-250g",
     "cooperlat-soc-coop-agr",
     "duble-5",
     "fagiolini-sottolio",
@@ -32,6 +33,7 @@
     "filetti-di-alici-olio",
     "filetti-di-tonno-surgelat",
     "filone-di-tonno-pinne-gialle-decongelato-senza-pelle-sottovuoto",
+    "formaggio-pecorino-spadula",
     "formaggio-spadula",
     "funghi-champignon-sottolio",
     "funghi-champignon-sottolio-0",
@@ -41,6 +43,7 @@
     "hamburger-di-scottona-200g-100x2-skin",
     "hummus-di-ceci-biologico",
     "inverno-cavolfiori-sottolio",
+    "la-giardiniera-sottolio-250g",
     "lonza-di-maiale",
     "mais-italiano-pop-corn",
     "mais-italiano-pop-corn-0",
@@ -80,6 +83,7 @@
     "trancio-pesce-spada",
     "trofie-2x500g",
     "uova-biologiche-6",
+    "uova-biologiche-sfuse-e-confezione-da-4",
     "uova-da-allevamento-terra-speciali-pasta-gialla",
     "uova-da-allevamento-terra-speciali-pasta-gialla-0",
     "uova-di-cat-di-vario-calibro-da-allevamento-terra",
@@ -100,11 +104,13 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-10-26T15:13:57.152Z",
-  "lastNotificationAt": "2026-10-26T14:10:54.285468+00:00",
+  "lastCheckedAt": "2026-10-26T19:57:57.105Z",
+  "lastNotificationAt": "2026-10-26T19:59:40.230684+00:00",
   "lastNotificationIds": [
-    "uova-fresche-da-galline-allevate-terra-1",
-    "formaggio-spadula"
+    "uova-biologiche-sfuse-e-confezione-da-4",
+    "la-giardiniera-sottolio-250g",
+    "condiriso-e-condipasta-sottolio-250g",
+    "formaggio-pecorino-spadula"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/-4192908454082782228"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/4026237012228788097"
 }
