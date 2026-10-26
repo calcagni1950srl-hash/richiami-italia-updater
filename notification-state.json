@@ -32,6 +32,7 @@
     "filetti-di-alici-olio",
     "filetti-di-tonno-surgelat",
     "filone-di-tonno-pinne-gialle-decongelato-senza-pelle-sottovuoto",
+    "formaggio-spadula",
     "funghi-champignon-sottolio",
     "funghi-champignon-sottolio-0",
     "funghi-misti-sottolio",
@@ -84,6 +85,7 @@
     "uova-di-cat-di-vario-calibro-da-allevamento-terra",
     "uova-di-cat-medie-da-allevamento-terra-selex",
     "uova-di-cat-medie-da-allevamento-terra-selex-0",
+    "uova-fresche-da-galline-allevate-terra-1",
     "uova-medie-di-cat-da-allevamento-terra-abf-despar",
     "valtellina-casera-dop",
     "valtellina-casera-dop-0",
@@ -98,14 +100,11 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-10-26T07:02:40.562Z",
-  "lastNotificationAt": "2026-10-23T18:25:55.208693+00:00",
+  "lastCheckedAt": "2026-10-26T14:08:40.189Z",
+  "lastNotificationAt": "2026-10-26T14:10:54.285468+00:00",
   "lastNotificationIds": [
-    "salsicciotta-con-finocchio-cod-5",
-    "salsicciotta-piccante-cod-7",
-    "salsicciotta-con-finocchio-cod-442",
-    "pasta-di-salame-con-finocchio-cod-497",
-    "pasta-di-salame-con-pepe-cod-771"
+    "uova-fresche-da-galline-allevate-terra-1",
+    "formaggio-spadula"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/175898998130077771"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/-4192908454082782228"
 }
