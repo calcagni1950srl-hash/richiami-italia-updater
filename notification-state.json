@@ -4,6 +4,7 @@
   "initializedAt": "2026-09-18T13:09:57.769Z",
   "notifiedIds": [
     "10-uova-fresche-italiane",
+    "acqua-minerale-naturale",
     "albume-duovo-liquido-pastorizzato",
     "amaretti-gallina",
     "amaretti-gallina-0",
@@ -107,10 +108,10 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-10-27T14:43:00.500Z",
-  "lastNotificationAt": "2026-10-27T14:44:23.118402+00:00",
+  "lastCheckedAt": "2026-10-27T19:40:17.629Z",
+  "lastNotificationAt": "2026-10-27T19:41:30.020019+00:00",
   "lastNotificationIds": [
-    "salame-emiliano"
+    "acqua-minerale-naturale"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/176271296158200699"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/7925681100991456449"
 }
