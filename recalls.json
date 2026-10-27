@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "generatedAt": "2026-10-27T14:44:06.547725Z",
+  "generatedAt": "2026-10-27T19:41:14.901323Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
-  "pass": 11,
-  "daVerificare": 9,
+  "pass": 12,
+  "daVerificare": 8,
   "recalls": [
     {
       "id": "salame-emiliano",
@@ -19,6 +19,25 @@
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salame-emiliano",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/2026_10_21_verbale%20di%20richiamo_1793108308.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salame-emiliano-0065c863bc.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
+    {
+      "id": "acqua-minerale-naturale",
+      "marca": "San Zaccaria - Fonti Terme di Brennero S.r.l.",
+      "prodotto": "Acqua minerale naturale",
+      "lotto": "L26239221100",
+      "tmc": "27.08.2028",
+      "produttore": "FONTI TERME DI BRENNERO S.r.l.",
+      "motivo": "RISCHIO MICROBIOLOGICO PER POTENZIALE PRESENZA DI PSEUDOMONAS AERUGINOSA AVVERTENZE : SI RACCOMANDA DI NON CONSUMARE TALE PRODOTTO E DI RIPORTARLO AL PROPRIO NEGOZIANTE CHE PROVVEDERA` A SOSTITUIRLO O RIMBORSARLO OLTRE CHE A CHIARIRE EVENTUALI DUBBI LOTTO",
+      "dataPubblicazione": "27 ottobre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/acqua-minerale-naturale",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/CartellodiRichiamoSanZaccaria_1793118834.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/acqua-minerale-naturale-ebe96b96d2.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
@@ -374,26 +393,6 @@
       "metodoEstrazione": "OCR",
       "note": [
         "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "uova-biologiche-6",
-      "marca": "Olivero Claudio",
-      "prodotto": "Uova Biologiche",
-      "lotto": "vedi avvertenze",
-      "tmc": "vedi avvertenze",
-      "produttore": "128CN019",
-      "motivo": "possibile rischio biologico presenza salmonella typhimurium",
-      "dataPubblicazione": "21 ottobre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/uova-biologiche-6",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Richiamo_Uova_BIO_1792584193.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/uova-biologiche-6-2be5289031.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare"
       ]
     }
   ]
