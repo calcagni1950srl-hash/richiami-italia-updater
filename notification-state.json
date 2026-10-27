@@ -59,6 +59,7 @@
     "pezzente-della-montagna-materana",
     "pomodoro-ciliegino",
     "roccaverano-dop",
+    "salame-emiliano",
     "salame-stagionato-al-tartufo",
     "salame-stagionato-al-trtufo",
     "salamella-dolce-sottovuoto",
@@ -106,11 +107,10 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-10-27T14:34:19.521Z",
-  "lastNotificationAt": "2026-10-26T23:47:32.994151+00:00",
+  "lastCheckedAt": "2026-10-27T14:43:00.500Z",
+  "lastNotificationAt": "2026-10-27T14:44:23.118402+00:00",
   "lastNotificationIds": [
-    "salsicciotta-con-finocchio-cod-5-0",
-    "pasta-di-salame-con-pepe-cod-771-0"
+    "salame-emiliano"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/-4276701074985687312"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/176271296158200699"
 }
