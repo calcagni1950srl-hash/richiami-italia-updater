@@ -1,12 +1,50 @@
 {
   "version": 2,
-  "generatedAt": "2026-10-27T19:41:14.901323Z",
+  "generatedAt": "2026-10-28T14:29:23.726395Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
   "pass": 12,
   "daVerificare": 8,
   "recalls": [
+    {
+      "id": "salsiccia-piccante-0",
+      "marca": "SALUMERIA DEL CORSO",
+      "prodotto": "SALSICCIA PICCANTE",
+      "lotto": "26383",
+      "tmc": "13.12.26 - 20.12.26 - 21.12.26",
+      "produttore": "IT UE 2361 P",
+      "motivo": "Possibile presenza di Escherichia coli STEC produttori di Shiga tossine.",
+      "dataPubblicazione": "28 ottobre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsiccia-piccante-0",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20richiamo%20salsiccia%20piccante%20lotto%2026383_1793192550.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsiccia-piccante-0-488ef31fb3.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
+    {
+      "id": "salsiccia-napoli-dolce",
+      "marca": "BOTTEGA DEL GUSTO",
+      "prodotto": "SALSICCIA NAPOLI DOLCE",
+      "lotto": "26383",
+      "tmc": "07.12.26-08.12.26",
+      "produttore": "IT UE 2361 P",
+      "motivo": "Presenza di Escherichia coli STEC produttori di Shiga tossine",
+      "dataPubblicazione": "28 ottobre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsiccia-napoli-dolce",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_o_revoca%20Ministero%20della%20salute%20salsiccia%20napoli%20dolce%2026383_1793192552.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsiccia-napoli-dolce-4c84b37a1b.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
     {
       "id": "salame-emiliano",
       "marca": "CLAI",
@@ -353,44 +391,6 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "cavolo-cappuccio-filetti-sottolio",
-      "marca": "Ferri S.a.s. - La Favola Antica",
-      "prodotto": "Cavolo cappuccio a filetti sott'olio",
-      "lotto": "05/05/26",
-      "tmc": "28/11/27",
-      "produttore": "AA000657041PEIT",
-      "motivo": "ASSENZA IN ETICHETTA DELL'INDICAZIONE DELL'ALLERGENE \"SOLFITI\" CONTENUTI NELL'ACETO DI VINO, COME INVECE PREVISTO DAL REG. (CE) 1169/2011",
-      "dataPubblicazione": "22 ottobre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/cavolo-cappuccio-filetti-sottolio",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/CAVOLO%20CAPPUCCIO%20A%20FILETTI%20300%20G_1792687691.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/cavolo-cappuccio-filetti-sottolio-476868eff2.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "filetti-di-tonno-surgelat",
-      "marca": "SELEZIONE PIÙ",
-      "prodotto": "FILETTI DI TONNO SURGELAT¿",
-      "lotto": "14714720726",
-      "tmc": "31/12/2027",
-      "produttore": "NL 6008 EU",
-      "motivo": "POSSIBILE PRESENZA DI ISTAMINA IN QUANTITÀ SUPERIORE RISPETTO A QUANTO CONSENTITO DAI TERMINI DI LEGGE.",
-      "dataPubblicazione": "21 ottobre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/filetti-di-tonno-surgelat",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20Richiamo%20Filetti%20di%20Tonno%20Surgelato_1792575197.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/filetti-di-tonno-surgelat-6d9dd68cea.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "OCR",
       "note": [
         "Motivo specifico estratto dal PDF ufficiale"
       ]
