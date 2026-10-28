@@ -381,79 +381,59 @@ jobs:
           }
 
           async function scaricaFeed(context) {
-            const page =
-              await context.newPage();
-
-            try {
-              console.log(
-                "Scarico feed ufficiale:"
-              );
-
-              console.log(
-                FEED_URL
-              );
-
-              await page.goto(
-                "https://www.salute.gov.it/",
-                {
-                  waitUntil:
-                    "domcontentloaded",
-                  timeout: 30000
+            // Redirect anti-bot del Ministero: evitare fetch legata a un contesto JS instabile.
+            let lastError;
+            for (let attempt = 1; attempt <= 4; attempt++) {
+              const page = await context.newPage();
+              try {
+                console.log("Scarico feed ufficiale:", FEED_URL, "tentativo", attempt);
+                await page.goto("https://www.salute.gov.it/", {
+                  waitUntil: "domcontentloaded",
+                  timeout: 45000
+                });
+                if (!(await superaChallenge(page))) {
+                  throw new Error("Challenge del Ministero non superata");
                 }
-              );
-
-              await superaChallenge(page);
-
-              const result =
-                await page.evaluate(
-                  async url => {
-                    const response =
-                      await fetch(
-                        url,
-                        {
-                          credentials:
-                            "include"
-                        }
-                      );
-
-                    return {
-                      ok:
-                        response.ok,
-
-                      status:
-                        response.status,
-
-                      text:
-                        await response.text()
-                    };
-                  },
-                  FEED_URL
-                );
-
-              if (
-                !result.ok ||
-                result.status !== 200
-              ) {
-                throw new Error(
-                  `Feed HTTP ${result.status}`
-                );
+                await page.waitForLoadState("domcontentloaded", { timeout: 15000 });
+          
+                // APIRequestContext condivide i cookie del browser e non viene
+                // distrutto dalla navigazione dell'eventuale pagina anti-bot.
+                const rssResponse = await context.request.get(FEED_URL, {
+                  timeout: 30000,
+                  headers: { Accept: "application/rss+xml, application/xml, text/xml" }
+                });
+                const xml = await rssResponse.text();
+                if (rssResponse.ok() && /<item\b/i.test(xml)) {
+                  return xml;
+                }
+                console.log("Feed tramite API non valido:", rssResponse.status());
+          
+                // Fallback: alcuni proxy richiedono la fetch dal browser.
+                const fallback = await page.evaluate(async url => {
+                  const response = await fetch(url, {
+                    credentials: "include",
+                    signal: AbortSignal.timeout(30000)
+                  });
+                  return { ok: response.ok, status: response.status,
+                    text: await response.text() };
+                }, FEED_URL);
+                if (fallback.ok && fallback.status === 200 &&
+                    /<item\b/i.test(fallback.text)) {
+                  return fallback.text;
+                }
+                throw new Error("Feed RSS non valido: HTTP " + fallback.status);
+              } catch (error) {
+                lastError = error;
+                console.log("Tentativo feed fallito:", attempt,
+                  String(error?.message || error));
+              } finally {
+                await page.close().catch(() => {});
               }
-
-              if (
-                !result.text.includes(
-                  "<item"
-                )
-              ) {
-                throw new Error(
-                  "Il feed non contiene elementi RSS"
-                );
+              if (attempt < 4) {
+                await new Promise(resolve => setTimeout(resolve, 1500 * attempt));
               }
-
-              return result.text;
-
-            } finally {
-              await page.close();
             }
+            throw lastError || new Error("Feed ufficiale non disponibile");
           }
 
           async function scaricaPdf(
