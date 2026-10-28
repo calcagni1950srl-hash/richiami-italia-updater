@@ -365,6 +365,17 @@ def select_best() -> None:
         if not old_quality["severe"] and new_quality["severe"]:
             choose_old = True
 
+        # Il PDF ufficiale dell'acqua San Zaccaria contiene tutta la bottiglia.
+        # La versione sotto e' incompleta: un nuovo crop dal medesimo PDF
+        # supera il vecchio score fotografico, se non contiene moduli/testo.
+        elif (
+            rid == "acqua-minerale-naturale"
+            and old_name == "acqua-minerale-naturale-ebe96b96d2.png"
+            and new_name != old_name
+            and not new_quality["severe"]
+        ):
+            choose_old = False
+
         # Per il richiamo uova in verifica, il nuovo ritaglio nasce dallo
         # stesso PDF ma conserva intenzionalmente più margine inferiore.
         # Se supera i controlli anti-modulo deve sostituire la versione
