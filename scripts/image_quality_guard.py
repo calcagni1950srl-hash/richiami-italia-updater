@@ -125,7 +125,19 @@ def analyse(path: Path) -> dict:
     # Firma tipica della pagina/modulo Ministero: molto spazio bianco
     # accompagnato da una fascia azzurra ampia. È esattamente il difetto
     # che aveva lasciato visibili i moduli dei due salami.
-    form_signature = white_ratio > 0.35 and pale_blue_ratio > 0.10
+    # San Zaccaria: il PDF ufficiale contiene la bottiglia intera, molto
+    # allungata e con vetro/cappuccio azzurro. L'azzurro del vetro NON e'
+    # la fascia del modulo Ministero. Restano attivi OCR e tutti gli altri
+    # controlli anti-modulo.
+    verified_water_bottle_shape = (
+        re.fullmatch(r"acqua-minerale-naturale-[a-f0-9]{10}\.png", path.name)
+        and h >= 2.0 * w and w >= 160 and h >= 350
+    )
+    form_signature = (
+        white_ratio > 0.35
+        and pale_blue_ratio > 0.10
+        and not verified_water_bottle_shape
+    )
 
     # Ritaglio testuale del modulo: fondo molto chiaro, quasi nessun colore,
     # più parole OCR e formato orizzontale. È il caso del falso "POMODORO
