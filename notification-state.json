@@ -107,14 +107,20 @@
     "vitello-tonnato-300g",
     "vitello-tonnato-gr-180",
     "vitello-tonnato-gr-180-0",
+    "zucca-filetti-piccanti-250g",
+    "zucca-filetti-piccanti-900g",
+    "zucca-grigliata-300g",
+    "zucca-grigliata-900g",
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-10-28T16:40:09.645Z",
-  "lastNotificationAt": "2026-10-28T14:30:47.799066+00:00",
+  "lastCheckedAt": "2026-10-28T20:32:03.125Z",
+  "lastNotificationAt": "2026-10-28T20:33:45.724754+00:00",
   "lastNotificationIds": [
-    "salsiccia-piccante-0",
-    "salsiccia-napoli-dolce"
+    "zucca-filetti-piccanti-900g",
+    "zucca-grigliata-300g",
+    "zucca-filetti-piccanti-250g",
+    "zucca-grigliata-900g"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/-6979094676874588266"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/-2934161779674748742"
 }
