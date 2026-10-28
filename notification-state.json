@@ -67,6 +67,8 @@
     "salamella-dolce-sottovuoto-intera",
     "salsa-tartufata",
     "salsa-tartufata-0",
+    "salsiccia-napoli-dolce",
+    "salsiccia-piccante-0",
     "salsicciotta-con-finocchio-cod-442",
     "salsicciotta-con-finocchio-cod-5",
     "salsicciotta-con-finocchio-cod-5-0",
@@ -108,10 +110,11 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-10-28T08:45:03.299Z",
-  "lastNotificationAt": "2026-10-27T19:41:30.020019+00:00",
+  "lastCheckedAt": "2026-10-28T14:27:32.511Z",
+  "lastNotificationAt": "2026-10-28T14:30:47.799066+00:00",
   "lastNotificationIds": [
-    "acqua-minerale-naturale"
+    "salsiccia-piccante-0",
+    "salsiccia-napoli-dolce"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/7925681100991456449"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/-6979094676874588266"
 }
