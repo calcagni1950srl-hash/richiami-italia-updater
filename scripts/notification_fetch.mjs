@@ -198,17 +198,53 @@ try {
     throw new Error("Protezione Ministero non superata");
   }
 
-  const result = await page.evaluate(async url => {
-    const response = await fetch(url, { credentials: "include" });
-    return {
-      ok: response.ok,
-      status: response.status,
-      text: await response.text()
-    };
-  }, FEED_URL);
+  // Anti-bot e redirect del portale possono invalidare page.evaluate.
+  // Il client HTTP del contesto condivide i cookie, senza dipendere dalla
+  // navigazione della pagina. Fallback browser e retry controllati.
+  let result = null;
+  let lastError = null;
+  for (let attempt = 1; attempt <= 4; attempt++) {
+    try {
+      const response = await context.request.get(FEED_URL, {
+        timeout: 30000,
+        headers: { Accept: "application/rss+xml, application/xml, text/xml" }
+      });
+      const xml = await response.text();
+      if (response.ok() && /<item\b/i.test(xml)) {
+        result = { ok: true, status: response.status(), text: xml };
+        break;
+      }
 
-  if (!result.ok || result.status !== 200 || !result.text.includes("<item")) {
-    throw new Error(`Feed RSS non valido: HTTP ${result.status}`);
+      await page.waitForLoadState("domcontentloaded", { timeout: 15000 });
+      const fallback = await page.evaluate(async url => {
+        const response = await fetch(url, {
+          credentials: "include",
+          signal: AbortSignal.timeout(30000)
+        });
+        return { ok: response.ok, status: response.status,
+          text: await response.text() };
+      }, FEED_URL);
+      if (fallback.ok && fallback.status === 200 &&
+          /<item\b/i.test(fallback.text)) {
+        result = fallback;
+        break;
+      }
+      throw new Error("RSS non valido: HTTP " + fallback.status);
+    } catch (error) {
+      lastError = error;
+      console.log("RSS notifica - tentativo", attempt, "fallito:",
+        String(error?.message || error));
+      if (attempt < 4) {
+        await page.goto("https://www.salute.gov.it/", {
+          waitUntil: "domcontentloaded", timeout: 45000
+        }).catch(() => {});
+        await superaChallenge(page).catch(() => {});
+        await page.waitForTimeout(1500 * attempt);
+      }
+    }
+  }
+  if (!result) {
+    throw lastError || new Error("Feed RSS non disponibile");
   }
 
   const items = parseRss(result.text);
