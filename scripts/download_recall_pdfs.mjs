@@ -15,6 +15,12 @@ const allRecalls = Array.isArray(data.recalls)
 // completi non sono riscaricati ad ogni esecuzione.
 const recalls = allRecalls.filter((item) => {
   const url = clean(item.immagine || item.imageUrl);
+  // Una sola riparazione mirata: la foto del 27/10/2026 perde parte
+  // della bottiglia San Zaccaria, sebbene il PDF ufficiale la mostri intera.
+  if (item.id === "acqua-minerale-naturale" &&
+      url.endsWith("/acqua-minerale-naturale-ebe96b96d2.png")) {
+    return true;
+  }
   if (!url || !url.includes("/images/")) return true;
   let filename = "";
   try { filename = path.posix.basename(new URL(url).pathname); }
