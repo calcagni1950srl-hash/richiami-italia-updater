@@ -159,6 +159,27 @@ def render_first_page(pdf, recall_id):
     return path
 
 
+
+def recover_full_san_zaccaria_bottle(pdf, recall_id):
+    """Preleva la bottiglia INTERA dalla fotografia sinistra del PDF del 27/10.
+
+    Coordinate riferite solo al modulo ufficiale San Zaccaria, verificato
+    visivamente: cappuccio e fondo sono presenti nell'immagine originale.
+    Evita il crop generico per contorni che ne puo' tagliare le estremita'.
+    """
+    page_path = render_first_page(pdf, recall_id)
+    if page_path is None:
+        return None
+    page = Image.open(page_path).convert('RGB')
+    w, h = page.size
+    crop = page.crop((
+        int(w * 0.171), int(h * 0.565),
+        int(w * 0.376), int(h * 0.927)
+    )).convert('RGB')
+    if crop.width < 160 or crop.height < 250:
+        return None
+    return crop
+
 def recover_standard_left_photo(pdf, recall_id):
     page_path = render_first_page(pdf, recall_id)
     if page_path is None:
@@ -230,6 +251,13 @@ for recall in recalls:
             full_slot = recover_standard_left_photo(pdf, recall_id)
             if full_slot is not None:
                 replacement = full_slot
+
+    if recall_id == 'acqua-minerale-naturale':
+        pdf = PDF_DIR / f'{recall_id}.pdf'
+        if pdf.exists():
+            full_bottle = recover_full_san_zaccaria_bottle(pdf, recall_id)
+            if full_bottle is not None:
+                replacement = full_bottle
 
     # Se nella foto finale sono rimaste frasi tipiche del modulo,
     # significa che abbiamo incluso ancora parte del foglio.
