@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "generatedAt": "2026-10-29T18:44:01.066837Z",
+  "generatedAt": "2026-10-29T19:39:53.258570Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
-  "pass": 13,
-  "daVerificare": 7,
+  "pass": 14,
+  "daVerificare": 6,
   "recalls": [
     {
       "id": "6-uova-fresche-da-allevamento-terra-m-categoria",
@@ -19,6 +19,25 @@
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/6-uova-fresche-da-allevamento-terra-m-categoria",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/MODELLO%20DI%20RICHIAMO_LATTERIA%20CHIURO_UOVA_1793288078.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/6-uova-fresche-da-allevamento-terra-m-categoria-c28a2834bd.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
+    {
+      "id": "confettura-extra-di-mirtilli",
+      "marca": "Cascina Balcarino",
+      "prodotto": "Confettura extra di mirtilli",
+      "lotto": "30/03/2026",
+      "tmc": "30/03/2029",
+      "produttore": "Cascina BALCARINO",
+      "motivo": "Presenza di Salmonella nella marmellata di mirtilli",
+      "dataPubblicazione": "29 ottobre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/confettura-extra-di-mirtilli",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Richiamo%20_%20Confettura%20Extra%20Mirtilli_1793300601.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/confettura-extra-di-mirtilli-d8d59b8c8f.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
@@ -366,26 +385,6 @@
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsicciotta-piccante-cod-7",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/7_%20Modello_richiamo_1792776153.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsicciotta-piccante-cod-7-bc3b37c4e6.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare"
-      ]
-    },
-    {
-      "id": "salsicciotta-con-finocchio-cod-442",
-      "marca": "SALUMI EMMEDUE SRL",
-      "prodotto": "Salsicciotta con finocchio ¿ COD 442",
-      "lotto": "49322",
-      "tmc": "TUTTE",
-      "produttore": "IT 2646S UE",
-      "motivo": "POSSIBILE PRESENZA DI SALMONELLA SPP SCADENZE: 30/10/26-01/11/26-04/11/26-06/11/26-08/11/26",
-      "dataPubblicazione": "23 ottobre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsicciotta-con-finocchio-cod-442",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/442_%20Modello_richiamo_1792776192.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsicciotta-con-finocchio-cod-442-022aeb0cdd.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "DA_VERIFICARE",
       "metodoEstrazione": "TESTO_DIGITALE",
