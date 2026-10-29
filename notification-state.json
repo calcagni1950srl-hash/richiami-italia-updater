@@ -4,6 +4,7 @@
   "initializedAt": "2026-09-18T13:09:57.769Z",
   "notifiedIds": [
     "10-uova-fresche-italiane",
+    "6-uova-fresche-da-allevamento-terra-m-categoria",
     "acqua-minerale-naturale",
     "albume-duovo-liquido-pastorizzato",
     "amaretti-gallina",
@@ -114,13 +115,10 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-10-29T13:05:13.610Z",
-  "lastNotificationAt": "2026-10-28T20:33:45.724754+00:00",
+  "lastCheckedAt": "2026-10-29T18:43:02.715Z",
+  "lastNotificationAt": "2026-10-29T18:44:26.022297+00:00",
   "lastNotificationIds": [
-    "zucca-filetti-piccanti-900g",
-    "zucca-grigliata-300g",
-    "zucca-filetti-piccanti-250g",
-    "zucca-grigliata-900g"
+    "6-uova-fresche-da-allevamento-terra-m-categoria"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/-2934161779674748742"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/6214323741218410650"
 }
