@@ -25,6 +25,7 @@
     "carciofini-sottolio",
     "carciofini-sottolio-0",
     "carciofini-sottolio-1",
+    "carciofini-sottolio-2",
     "cavolo-cappuccio-filetti-sottolio",
     "cenestro",
     "condiriso-e-condipasta-sottolio-250g",
@@ -113,13 +114,15 @@
     "zucca-filetti-piccanti-900g",
     "zucca-grigliata-300g",
     "zucca-grigliata-900g",
+    "zucchine-filetti-piccanti-sottolio",
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-10-30T15:29:29.616Z",
-  "lastNotificationAt": "2026-10-29T19:40:36.222253+00:00",
+  "lastCheckedAt": "2026-10-30T20:05:09.772Z",
+  "lastNotificationAt": "2026-10-30T20:17:30.924235+00:00",
   "lastNotificationIds": [
-    "confettura-extra-di-mirtilli"
+    "zucchine-filetti-piccanti-sottolio",
+    "carciofini-sottolio-2"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/-5105975297771773995"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/-8442985498733029027"
 }
