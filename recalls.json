@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-11-03T16:16:33.267014Z",
+  "generatedAt": "2026-11-03T21:51:15.589829Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
@@ -24,6 +24,27 @@
       "metodoEstrazione": "OCR",
       "note": [
         "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
+    {
+      "id": "mostarda-mostarda-di-fichi-mostarda-di-fichi-goccia-doro-mostarda",
+      "marca": "CASCINA BALCARINO",
+      "prodotto": "Mostarda-Mostarda di fichi-Mostarda di fichi goccia d'oro-Mostarda di mele campanine-Mostarda di mel",
+      "lotto": "TUTTI I LOTTI",
+      "tmc": "TUTTE LE SCADENZE",
+      "produttore": "CASCINA BALCARINO",
+      "motivo": "RITIRO PRECAUZIONALE DOVUTO A POSSIBILE CONTAMINAZIONE MICROBIOLOGICA",
+      "dataPubblicazione": "3 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/mostarda-mostarda-di-fichi-mostarda-di-fichi-goccia-doro-mostarda",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_Cascina_Balcarino_MOSTARDE_1793729364.pdf",
+      "immagine": "",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale",
+        "TMC da verificare",
+        "Foto prodotto non individuata nel PDF ufficiale"
       ]
     },
     {
@@ -369,26 +390,6 @@
       "metodoEstrazione": "TESTO_DIGITALE",
       "note": [
         "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "uova-fresche-da-galline-allevate-terra-1",
-      "marca": "LA QUERCIA SOCIETA' COOPERATIVA SOCIALE",
-      "prodotto": "UOVA FRESCHE DA GALLINE ALLEVATE A TERRA",
-      "lotto": "dal 23/10/2026 al 18/11/2026",
-      "tmc": "AVVERTENZE",
-      "produttore": "ITK034XUE",
-      "motivo": "PRESENZA DI SALMONELLA ENTERIDITIS",
-      "dataPubblicazione": "26 ottobre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/uova-fresche-da-galline-allevate-terra-1",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/CARTELLO%20RICHIAMO_1793013318.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/uova-fresche-da-galline-allevate-terra-1-8e233d9270.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare"
       ]
     }
   ]
