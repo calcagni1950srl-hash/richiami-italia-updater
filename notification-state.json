@@ -76,6 +76,7 @@
     "salsicciotta-con-finocchio-cod-5",
     "salsicciotta-con-finocchio-cod-5-0",
     "salsicciotta-piccante-cod-7",
+    "snack-salato-con-zucchero-ed-edulcoloranti-104g20",
     "snack-sticks-fuetchorizo-80g",
     "speck-e-brie",
     "speck-e-brie-0",
@@ -118,11 +119,10 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-11-03T08:30:30.305Z",
-  "lastNotificationAt": "2026-10-30T20:17:30.924235+00:00",
+  "lastCheckedAt": "2026-11-03T16:17:23.675Z",
+  "lastNotificationAt": "2026-11-03T16:17:25.316184+00:00",
   "lastNotificationIds": [
-    "zucchine-filetti-piccanti-sottolio",
-    "carciofini-sottolio-2"
+    "snack-salato-con-zucchero-ed-edulcoloranti-104g20"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/-8442985498733029027"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/-7078749134620477646"
 }
