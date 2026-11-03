@@ -53,6 +53,7 @@
     "mais-italiano-pop-corn-0",
     "mais-pop-corn-2",
     "mais-pop-corn-3",
+    "mostarda-mostarda-di-fichi-mostarda-di-fichi-goccia-doro-mostarda",
     "pancetta-affumicata-sottovuoto",
     "pancetta-affumicata-sottovuoto-0",
     "pasta-di-salame-con-finocchio-cod-497",
@@ -119,10 +120,10 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-11-03T16:28:41.351Z",
-  "lastNotificationAt": "2026-11-03T16:17:25.316184+00:00",
+  "lastCheckedAt": "2026-11-03T21:52:02.789Z",
+  "lastNotificationAt": "2026-11-03T21:52:04.923403+00:00",
   "lastNotificationIds": [
-    "snack-salato-con-zucchero-ed-edulcoloranti-104g20"
+    "mostarda-mostarda-di-fichi-mostarda-di-fichi-goccia-doro-mostarda"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/-7078749134620477646"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/-843207803491280071"
 }
