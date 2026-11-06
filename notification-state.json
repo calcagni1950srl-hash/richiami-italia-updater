@@ -36,6 +36,7 @@
     "fagiolini-sottolio-0",
     "filetti-di-alici-olio",
     "filetti-di-tonno-surgelat",
+    "filetti-di-tonno-surgelato",
     "filone-di-tonno-pinne-gialle-decongelato-senza-pelle-sottovuoto",
     "formaggio-pecorino-spadula",
     "formaggio-spadula",
@@ -120,10 +121,10 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-11-06T15:57:02.198Z",
-  "lastNotificationAt": "2026-11-03T21:52:04.923403+00:00",
+  "lastCheckedAt": "2026-11-06T17:37:12.494Z",
+  "lastNotificationAt": "2026-11-06T17:38:24.672435+00:00",
   "lastNotificationIds": [
-    "mostarda-mostarda-di-fichi-mostarda-di-fichi-goccia-doro-mostarda"
+    "filetti-di-tonno-surgelato"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/-843207803491280071"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/-5607914284496137144"
 }
