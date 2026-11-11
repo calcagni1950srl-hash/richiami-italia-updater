@@ -42,7 +42,10 @@ def plan_cleanup(database_path: Path, images_dir: Path):
         protected.add(name)
 
     if not protected:
-        raise ValueError("Nessuna foto referenziata: evito cancellazioni massive")
+        # Se il Ministero pubblica schede senza fotografie, non cancellare
+        # nessun PNG esistente. La mancanza di foto NON blocca i richiami.
+        print("AVVISO: nessuna foto referenziata; pulizia saltata per sicurezza")
+        return len(rows), 0, []
 
     actual = {p.name for p in images_dir.glob("*.png") if p.is_file()}
     missing = protected - actual
@@ -84,6 +87,11 @@ def self_test():
             assert "mancanti" in str(e)
         else:
             raise AssertionError("Una foto attiva assente deve bloccare la pulizia")
+        # Una nuova tranche senza foto e valida; conserva tutti i vecchi PNG.
+        (folder / keep_name).write_bytes(b"foto vecchia da preservare")
+        db.write_text(json.dumps({"recalls": [{"id": "nuovo", "immagine": ""}]}), encoding="utf-8")
+        assert plan_cleanup(db, folder) == (1, 0, [])
+        assert (folder / keep_name).exists(), "le foto precedenti non vanno eliminate"
         db.write_text(json.dumps({"recalls": []}), encoding="utf-8")
         try:
             plan_cleanup(db, folder)
