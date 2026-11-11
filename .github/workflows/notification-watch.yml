@@ -9,6 +9,7 @@ on:
       - "scripts/notification_fetch.mjs"
       - "scripts/send_notification.py"
       - "scripts/sync_pending_recalls.py"
+      - "scripts/prune_unused_recall_images.py"
 
   schedule:
     - cron: "7,17,27,37,47,57 * * * *"
