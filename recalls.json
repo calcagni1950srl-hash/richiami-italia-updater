@@ -1,12 +1,132 @@
 {
   "version": 2,
-  "generatedAt": "2026-11-11T17:44:57.799449Z",
+  "generatedAt": "2026-11-12T16:51:25.984182Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
   "pass": 1,
   "daVerificare": 19,
   "recalls": [
+    {
+      "id": "salsiccia-stagionata-calitrana-semipiccante",
+      "marca": "SALUMIFICIO TORNILLO SRL",
+      "prodotto": "SALSICCIA STAGIONATA CALITRANA SEMIPICCANTE",
+      "lotto": "29/A/26",
+      "tmc": "Aprile*2027",
+      "produttore": "Nome del produttore: alumificio Ternillo srl . ‘",
+      "motivo": "Possibili valori microbiologici non conformi",
+      "dataPubblicazione": "12 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsiccia-stagionata-calitrana-semipiccante",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/RICHIAMO%20LOTTO_29_A_26_1_1794488569.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsiccia-stagionata-calitrana-semipiccante-0bf4fa83b6.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "OCR",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale",
+        "TMC da verificare"
+      ]
+    },
+    {
+      "id": "salsiccia-stagionata-calitrana-dolce",
+      "marca": "SALUMIFICIO TORNILLO SRL",
+      "prodotto": "SALSICCIA STAGIONATA CALITRANA DOLCE",
+      "lotto": "29/AB/26 i",
+      "tmc": "ApriJe 2027 .",
+      "produttore": "ITV5Q2A .",
+      "motivo": "Possibili valori microbiologici non conformi ° , Avvertenze Si raccomanda di non consumare il prodotto che deve essere restituito al punto vendita. ut ; I. BE legati alla t (Finocchietto e Pepe). © sù e TARA: 5g. PRODOTTO DA VENDERE A PESO",
+      "dataPubblicazione": "12 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsiccia-stagionata-calitrana-dolce",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/RICHIAMO%20LOTTO_29_AB_26_2_1794488572.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsiccia-stagionata-calitrana-dolce-0a21b11281.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "OCR",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale",
+        "TMC da verificare"
+      ]
+    },
+    {
+      "id": "salsiccia-stagionata-calitrana-dolce-0",
+      "marca": "SALUMIFICIO TORNILLO SRL",
+      "prodotto": "SALSICCIA STAGIONATA CALITRANA DOLCE",
+      "lotto": "29/AB/26P .",
+      "tmc": "APRIEE 2027 °",
+      "produttore": "ITV5Q2A .",
+      "motivo": ". possibili valori microbiologici non conformi",
+      "dataPubblicazione": "12 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsiccia-stagionata-calitrana-dolce-0",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/RICHIAMO%20LOTTO_29_AB_26_P%20MACELLERIA%20G.%20NIETTA_3_1794488573.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsiccia-stagionata-calitrana-dolce-0-a7e7280e23.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "OCR",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale",
+        "TMC da verificare"
+      ]
+    },
+    {
+      "id": "salsiccia-stagionata-calitrana-catenella",
+      "marca": "SALUMIFICIO TORNILLO SRL",
+      "prodotto": "SALSICCIA STAGIONATA CALITRANA A CATENELLA",
+      "lotto": "29/AB/26P",
+      "tmc": "Aprile'2027 °",
+      "produttore": "ITV5Q2A",
+      "motivo": "Possibili valori microbiologici non conformi",
+      "dataPubblicazione": "12 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsiccia-stagionata-calitrana-catenella",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/RICHIAMO%20LOTTO_29_AB_26P_4_1794488575.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsiccia-stagionata-calitrana-catenella-30ac0dc13a.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "OCR",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale",
+        "TMC da verificare"
+      ]
+    },
+    {
+      "id": "salsiccia-stagionata-calitrana-con-peperoncino-dolce",
+      "marca": "SALUMIFICIO TORNILLO SRL",
+      "prodotto": "SALSICCIA STAGIONATA CALITRANA CON PEPERONCINO DOLCE",
+      "lotto": "29/ABP/26",
+      "tmc": "Aprile*2027",
+      "produttore": "ITV5Q2A",
+      "motivo": "Possibili valori microbiologici non conformi \\",
+      "dataPubblicazione": "12 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsiccia-stagionata-calitrana-con-peperoncino-dolce",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/RICHIAMO%20LOTTO_29_ABP_26_5_1794488576.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsiccia-stagionata-calitrana-con-peperoncino-dolce-a7d4f9949f.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "OCR",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale",
+        "TMC da verificare"
+      ]
+    },
+    {
+      "id": "salsiccia-stagionata-calitrana-piccante",
+      "marca": "SALUMIFICIO TORNILLO SRL",
+      "prodotto": "SALSICCIA STAGIONATA CALITRANA PICCANTE",
+      "lotto": "29/AP/26 °",
+      "tmc": "Aprike' 2027",
+      "produttore": "ITV5Q2A",
+      "motivo": "Possibili valori microbiologici non conformi",
+      "dataPubblicazione": "12 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsiccia-stagionata-calitrana-piccante",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/RICHIAMO%20LOTTO_29_AP_26_6_1794488578.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsiccia-stagionata-calitrana-piccante-0130712ea7.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "OCR",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale",
+        "TMC da verificare"
+      ]
+    },
     {
       "id": "zucchine-rondelle-600g",
       "marca": "Ferri - La Favola Antica",
@@ -289,132 +409,6 @@
       "dataPubblicazione": "9 novembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/carciofi-carciofi-al-rosmarino-carciofi-con-gambo-carciofi-con",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_Cascina_Balcarino_CARCIOFI_1794247800.pdf",
-      "immagine": "",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare",
-        "Foto prodotto non individuata nel PDF ufficiale"
-      ]
-    },
-    {
-      "id": "composta-destate-composta-estate-e-ibisco",
-      "marca": "CASCINA BALCARINO",
-      "prodotto": "Composta d'estate · Composta estate e ibisco",
-      "lotto": "TUTTI I LOTTI",
-      "tmc": "TUTTE LE SCADENZE",
-      "produttore": "CASCINA BALCARINO",
-      "motivo": "RITIRO PRECAUZIONALE DOVUTO A POSSIBILE CONTAMINAZIONE MICROBIOLOGICA",
-      "dataPubblicazione": "9 novembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/composta-destate-composta-estate-e-ibisco",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_Cascina_Balcarino_COMPOSTE_E_CONSERVE_DOLCI_1794247834.pdf",
-      "immagine": "",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare",
-        "Foto prodotto non individuata nel PDF ufficiale"
-      ]
-    },
-    {
-      "id": "amaretti-e-percocca-castagne-e-vaniglia-castagne-rum-e-cacao",
-      "marca": "CASCINA BALCARINO",
-      "prodotto": "Amaretti e percocca · Castagne e vaniglia · Castagne, rum e cacao · Confettura 100% frutta Fragoline",
-      "lotto": "TUTTI I LOTTI",
-      "tmc": "TUTTE LE SCADENZE",
-      "produttore": "CASCINA BALCARINO",
-      "motivo": "RITIRO PRECAUZIONALE DOVUTO A POSSIBILE CONTAMINAZIONE MICROBIOLOGICA",
-      "dataPubblicazione": "9 novembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/amaretti-e-percocca-castagne-e-vaniglia-castagne-rum-e-cacao",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_Cascina_Balcarino_CONFETTURE_1794247869.pdf",
-      "immagine": "",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare",
-        "Foto prodotto non individuata nel PDF ufficiale"
-      ]
-    },
-    {
-      "id": "cipolle-al-rosmarino-cipolle-alla-giuliana-cipolle-borettane-al",
-      "marca": "CASCINA BALCARINO",
-      "prodotto": "Cipolle al rosmarino · Cipolle alla Giuliana · Cipolle borettane al balsamico ·",
-      "lotto": "TUTTI I LOTTI",
-      "tmc": "TUTTE LE SCADENZE",
-      "produttore": "CASCINA BALCARINO",
-      "motivo": "RITIRO PRECAUZIONALE DOVUTO A POSSIBILE CONTAMINAZIONE MICROBIOLOGICA",
-      "dataPubblicazione": "9 novembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/cipolle-al-rosmarino-cipolle-alla-giuliana-cipolle-borettane-al",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_Cascina_Balcarino_CONSERVE_DI_CIPOLLE_1794247906.pdf",
-      "immagine": "",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare",
-        "Foto prodotto non individuata nel PDF ufficiale"
-      ]
-    },
-    {
-      "id": "cioccorenza-cotognata-crema-di-tighe",
-      "marca": "CASCINA BALCARINO",
-      "prodotto": "Cioccorenza · Cotognata · Crema di tighe",
-      "lotto": "TUTTI I LOTTI",
-      "tmc": "TUTTE LE SCADENZE",
-      "produttore": "CASCINA BALCARINO",
-      "motivo": "RITIRO PRECAUZIONALE DOVUTO A POSSIBILE CONTAMINAZIONE MICROBIOLOGICA",
-      "dataPubblicazione": "9 novembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/cioccorenza-cotognata-crema-di-tighe",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_Cascina_Balcarino_CREME_DOLCI_E_COTOGNATA_1794247941.pdf",
-      "immagine": "",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare",
-        "Foto prodotto non individuata nel PDF ufficiale"
-      ]
-    },
-    {
-      "id": "aglio-orsino-boccioli-di-tarassaco-borragine-erbe-aromatiche",
-      "marca": "CASCINA BALCARINO",
-      "prodotto": "Aglio orsino · Boccioli di tarassaco · Borragine · Erbe aromatiche · Germogli di luppolo selvatico",
-      "lotto": "TUTTI I LOTTI",
-      "tmc": "TUTTE LE SCADENZE",
-      "produttore": "CASCINA BALCARINO",
-      "motivo": "RITIRO PRECAUZIONALE DOVUTO A POSSIBILE CONTAMINAZIONE MICROBIOLOGICA",
-      "dataPubblicazione": "9 novembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/aglio-orsino-boccioli-di-tarassaco-borragine-erbe-aromatiche",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_Cascina_Balcarino_ERBE_SPONTANEE_E_RADICI_1794247975.pdf",
-      "immagine": "",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare",
-        "Foto prodotto non individuata nel PDF ufficiale"
-      ]
-    },
-    {
-      "id": "frutta-sciroppata-visciole",
-      "marca": "CASCINA BALCARINO",
-      "prodotto": "Frutta sciroppata - Visciole",
-      "lotto": "TUTTI I LOTTI",
-      "tmc": "TUTTE LE SCADENZE",
-      "produttore": "CASCINA BALCARINO",
-      "motivo": "RITIRO PRECAUZIONALE DOVUTO A POSSIBILE CONTAMINAZIONE MICROBIOLOGICA",
-      "dataPubblicazione": "9 novembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/frutta-sciroppata-visciole",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_Cascina_Balcarino_FRUTTA_SCIROPPATA_1794248009.pdf",
       "immagine": "",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "DA_VERIFICARE",
