@@ -1,12 +1,31 @@
 {
   "version": 2,
-  "generatedAt": "2026-11-12T16:51:25.984182Z",
+  "generatedAt": "2026-11-13T17:46:00.076788Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
-  "pass": 1,
-  "daVerificare": 19,
+  "pass": 2,
+  "daVerificare": 18,
   "recalls": [
+    {
+      "id": "kg1-pistacchsgusc-spel-mc",
+      "marca": "Metro Chef",
+      "prodotto": "KG1 PISTACCH.SGUSC SPEL MC",
+      "lotto": "2628605033; 2629905032",
+      "tmc": "13-10-2027",
+      "produttore": "Nome del produttore: IMPORTACO CASA PONS SAU",
+      "motivo": "Presenza di residui di Clothianidin",
+      "dataPubblicazione": "13 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/kg1-pistacchsgusc-spel-mc",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20di%20richiamo%20Pistacchi%20Metro%20Chef_1794574962.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/kg1-pistacchsgusc-spel-mc-1b7500235e.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
     {
       "id": "salsiccia-stagionata-calitrana-semipiccante",
       "marca": "SALUMIFICIO TORNILLO SRL",
@@ -388,27 +407,6 @@
       "dataPubblicazione": "9 novembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/aglio-al-peperoncino-aglio-alle-erbe-aglio-alle-erbe-aromatiche",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_Cascina_Balcarino_ALTRE_CONSERVE_VEGETALI_1794247765.pdf",
-      "immagine": "",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare",
-        "Foto prodotto non individuata nel PDF ufficiale"
-      ]
-    },
-    {
-      "id": "carciofi-carciofi-al-rosmarino-carciofi-con-gambo-carciofi-con",
-      "marca": "CASCINA BALCARINO",
-      "prodotto": "Carciofi · Carciofi al rosmarino · Carciofi con gambo · Carciofi con gambo alla romana",
-      "lotto": "TUTTI I LOTTI",
-      "tmc": "TUTTE LE SCADENZE",
-      "produttore": "CASCINA BALCARINO",
-      "motivo": "RITIRO PRECAUZIONALE DOVUTO A POSSIBILE CONTAMINAZIONE MICROBIOLOGICA",
-      "dataPubblicazione": "9 novembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/carciofi-carciofi-al-rosmarino-carciofi-con-gambo-carciofi-con",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_Cascina_Balcarino_CARCIOFI_1794247800.pdf",
       "immagine": "",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "DA_VERIFICARE",
