@@ -81,8 +81,10 @@
     "pasta-di-salame-con-pepe-cod-771",
     "pasta-di-salame-con-pepe-cod-771-0",
     "pediavit-complesso-b",
+    "perfetto-moka-aromatizzato-alla-nocciola-macinato-universale",
     "perfetto-moka-macinato-aromatizzato-al-caramello",
     "pezzente-della-montagna-materana",
+    "pistacchi-sgusciati-50-g",
     "pomodoro-ciliegino",
     "roccaverano-dop",
     "salame-emiliano",
@@ -148,10 +150,11 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-11-13T17:48:15.590Z",
-  "lastNotificationAt": "2026-11-13T17:47:32.187958+00:00",
+  "lastCheckedAt": "2026-11-13T22:54:45.792Z",
+  "lastNotificationAt": "2026-11-13T22:56:17.592395+00:00",
   "lastNotificationIds": [
-    "kg1-pistacchsgusc-spel-mc"
+    "pistacchi-sgusciati-50-g",
+    "perfetto-moka-aromatizzato-alla-nocciola-macinato-universale"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/-7363766237488411049"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/-3093752504737077025"
 }
