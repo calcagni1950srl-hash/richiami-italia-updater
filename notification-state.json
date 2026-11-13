@@ -65,6 +65,7 @@
     "hamburger-di-scottona-200g-100x2-skin",
     "hummus-di-ceci-biologico",
     "inverno-cavolfiori-sottolio",
+    "kg1-pistacchsgusc-spel-mc",
     "la-giardiniera-sottolio-250g",
     "lonza-di-maiale",
     "lorenzo-orlando-ortofrutticola-la-perla",
@@ -147,15 +148,10 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-11-13T10:11:35.677Z",
-  "lastNotificationAt": "2026-11-12T16:52:23.592736+00:00",
+  "lastCheckedAt": "2026-11-13T17:45:58.623Z",
+  "lastNotificationAt": "2026-11-13T17:47:32.187958+00:00",
   "lastNotificationIds": [
-    "salsiccia-stagionata-calitrana-semipiccante",
-    "salsiccia-stagionata-calitrana-dolce",
-    "salsiccia-stagionata-calitrana-dolce-0",
-    "salsiccia-stagionata-calitrana-catenella",
-    "salsiccia-stagionata-calitrana-con-peperoncino-dolce",
-    "salsiccia-stagionata-calitrana-piccante"
+    "kg1-pistacchsgusc-spel-mc"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/2722781586823399323"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/-7363766237488411049"
 }
