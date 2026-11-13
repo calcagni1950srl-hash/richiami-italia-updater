@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "generatedAt": "2026-11-13T17:47:10.275105Z",
+  "generatedAt": "2026-11-13T22:56:02.836227Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
-  "pass": 2,
-  "daVerificare": 18,
+  "pass": 4,
+  "daVerificare": 16,
   "recalls": [
     {
       "id": "kg1-pistacchsgusc-spel-mc",
@@ -19,6 +19,44 @@
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/kg1-pistacchsgusc-spel-mc",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20di%20richiamo%20Pistacchi%20Metro%20Chef_1794574962.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/kg1-pistacchsgusc-spel-mc-1b7500235e.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
+    {
+      "id": "pistacchi-sgusciati-50-g",
+      "marca": "Ellegi Frutta secca",
+      "prodotto": "Pistacchi sgusciati 50 g",
+      "lotto": "9.25.1",
+      "tmc": "05/02/2027",
+      "produttore": "-",
+      "motivo": "Notifica di superamento del limite di aflatossine B1",
+      "dataPubblicazione": "13 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pistacchi-sgusciati-50-g",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/cartello%20richiamo%20_%20Ellegi%20Frutta%20Secca%20sas%20_%20ROMA_1794593331.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/pistacchi-sgusciati-50-g-b57243c57b.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "OCR",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
+    {
+      "id": "perfetto-moka-aromatizzato-alla-nocciola-macinato-universale",
+      "marca": "Bialetti",
+      "prodotto": "Perfetto Moka aromatizzato alla nocciola, Macinato Universale aromatizzato alla nocciola",
+      "lotto": "Perfetto Moka nocciola: LC5 BD161B",
+      "tmc": "Perfetto Moka nocciola: LC5 BD160B 09/06/2027",
+      "produttore": "Bialetti",
+      "motivo": "Livelli di ocratossina A sopra i limiti consentiti",
+      "dataPubblicazione": "13 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/perfetto-moka-aromatizzato-alla-nocciola-macinato-universale",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modulo%20richiamo%20Perfetto%20Moka%20e%20Macinato%20Universale%20nocciola_1794593365.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/perfetto-moka-aromatizzato-alla-nocciola-macinato-universale-712c2e897b.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
@@ -365,48 +403,6 @@
       "dataPubblicazione": "9 novembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/cipolle-maggioline-al-balsamico-peperoni-sigaretta-agrodolce-0",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_conto_lavorazione_TONINELLI_FRATELLI_SOCIETA_AGRICOLA_1794249314.pdf",
-      "immagine": "",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare",
-        "Foto prodotto non individuata nel PDF ufficiale"
-      ]
-    },
-    {
-      "id": "confettura-di-pesche-e-amaretti-confettura-extra-di-albicocche",
-      "marca": "VERONICA PADOVANI - AZ. AGR. DAL FIOR",
-      "prodotto": "Confettura di pesche e amaretti · Confettura extra di albicocche · Confettura extra di ciliegie...",
-      "lotto": "TUTTI I LOTTI",
-      "tmc": "TUTTE LE SCADENZE",
-      "produttore": "CASCINA BALCARINO",
-      "motivo": "RITIRO PRECAUZIONALE DOVUTO A POSSIBILE CONTAMINAZIONE MICROBIOLOGICA",
-      "dataPubblicazione": "9 novembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/confettura-di-pesche-e-amaretti-confettura-extra-di-albicocche",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_conto_lavorazione_VERONICA_PADOVANI_AZ_AGR_DAL_FIOR_1794249351.pdf",
-      "immagine": "",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare",
-        "Foto prodotto non individuata nel PDF ufficiale"
-      ]
-    },
-    {
-      "id": "aglio-al-peperoncino-aglio-alle-erbe-aglio-alle-erbe-aromatiche",
-      "marca": "CASCINA BALCARINO",
-      "prodotto": "Aglio al peperoncino · Aglio alle erbe · Aglio alle erbe aromatiche · Aglio erbe · Aglio erbe aromat",
-      "lotto": "TUTTI I LOTTI",
-      "tmc": "TUTTE LE SCADENZE",
-      "produttore": "CASCINA BALCARINO",
-      "motivo": "RITIRO PRECAUZIONALE DOVUTO A POSSIBILE CONTAMINAZIONE MICROBIOLOGICA",
-      "dataPubblicazione": "9 novembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/aglio-al-peperoncino-aglio-alle-erbe-aglio-alle-erbe-aromatiche",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_Cascina_Balcarino_ALTRE_CONSERVE_VEGETALI_1794247765.pdf",
       "immagine": "",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "DA_VERIFICARE",
