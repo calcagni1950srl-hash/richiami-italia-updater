@@ -1,12 +1,32 @@
 {
   "version": 2,
-  "generatedAt": "2026-11-13T22:56:02.836227Z",
+  "generatedAt": "2026-11-14T15:07:24.436298Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
   "pass": 4,
   "daVerificare": 16,
   "recalls": [
+    {
+      "id": "pomodoro-datterino",
+      "marca": "L'ORTOFRUTTICOLA F S.R.L. - 93015 - NISCEMI (CL)",
+      "prodotto": "POMODORO DATTERINO",
+      "lotto": "4406",
+      "tmc": "Descrizione peso/volume unità di vendita: [CONFEZIONE DA 500g",
+      "produttore": "IMEDITERRANEA SNC DI MILANESE R.&C.",
+      "motivo": "PRESENZA DI SALMONELLA SPP",
+      "dataPubblicazione": "14 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pomodoro-datterino",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_Pomodorino_1794652742.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/pomodoro-datterino-147e1cc5f3.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "OCR",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale",
+        "TMC da verificare"
+      ]
+    },
     {
       "id": "kg1-pistacchsgusc-spel-mc",
       "marca": "Metro Chef",
@@ -382,27 +402,6 @@
       "dataPubblicazione": "9 novembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/cipolle-maggioline-al-balsamico-peperoni-sigaretta-agrodolce-pesto",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_conto_lavorazione_SOCIETA_AGRICOLA_SCUDIERO_S_S_1794249277.pdf",
-      "immagine": "",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare",
-        "Foto prodotto non individuata nel PDF ufficiale"
-      ]
-    },
-    {
-      "id": "cipolle-maggioline-al-balsamico-peperoni-sigaretta-agrodolce-0",
-      "marca": "TONINELLI FRATELLI SOCIETA' AGRICOLA",
-      "prodotto": "Cipolle maggioline al balsamico · Peperoni sigaretta in agrodolce · Pesto di cavolo...",
-      "lotto": "TUTTI I LOTTI",
-      "tmc": "TUTTE LE SCADENZE",
-      "produttore": "CASCINA BALCARINO",
-      "motivo": "RITIRO PRECAUZIONALE DOVUTO A POSSIBILE CONTAMINAZIONE MICROBIOLOGICA",
-      "dataPubblicazione": "9 novembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/cipolle-maggioline-al-balsamico-peperoni-sigaretta-agrodolce-0",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_conto_lavorazione_TONINELLI_FRATELLI_SOCIETA_AGRICOLA_1794249314.pdf",
       "immagine": "",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "DA_VERIFICARE",
