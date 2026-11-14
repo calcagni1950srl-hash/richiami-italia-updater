@@ -86,6 +86,7 @@
     "pezzente-della-montagna-materana",
     "pistacchi-sgusciati-50-g",
     "pomodoro-ciliegino",
+    "pomodoro-datterino",
     "roccaverano-dop",
     "salame-emiliano",
     "salame-stagionato-al-tartufo",
@@ -150,11 +151,10 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-11-14T09:34:30.472Z",
-  "lastNotificationAt": "2026-11-13T22:56:17.592395+00:00",
+  "lastCheckedAt": "2026-11-14T15:08:04.922Z",
+  "lastNotificationAt": "2026-11-14T15:08:06.718778+00:00",
   "lastNotificationIds": [
-    "pistacchi-sgusciati-50-g",
-    "perfetto-moka-aromatizzato-alla-nocciola-macinato-universale"
+    "pomodoro-datterino"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/-3093752504737077025"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/8103821637165783337"
 }
