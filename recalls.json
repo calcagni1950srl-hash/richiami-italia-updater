@@ -1,12 +1,31 @@
 {
   "version": 2,
-  "generatedAt": "2026-11-14T15:07:24.436298Z",
+  "generatedAt": "2026-11-16T18:35:37.014748Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
-  "pass": 4,
-  "daVerificare": 16,
+  "pass": 5,
+  "daVerificare": 15,
   "recalls": [
+    {
+      "id": "salmone-scozzese-affumicato-0",
+      "marca": "SALMONE SCOZZESE AFFUMICATO",
+      "prodotto": "SALMONE SCOZZESE AFFUMICATO",
+      "lotto": "170794",
+      "tmc": "18-11-2026",
+      "produttore": "LT 72-01 EB",
+      "motivo": "POSSIBILE PRESENZA LISTERIA MONOCYTOGENES",
+      "dataPubblicazione": "16 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salmone-scozzese-affumicato-0",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Richiamo_salm%20scozz13112026_1794825190.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salmone-scozzese-affumicato-0-625a7a331d.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
     {
       "id": "pomodoro-datterino",
       "marca": "L'ORTOFRUTTICOLA F S.R.L. - 93015 - NISCEMI (CL)",
@@ -381,27 +400,6 @@
       "dataPubblicazione": "9 novembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/filetti-di-cipolle-rosse-al-miele-di-rosmarino-friarielli-e",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_conto_lavorazione_SOCIETA_AGRICOLA_PAGANI_BRUNO_E_LUIGI_S_S_1794249234.pdf",
-      "immagine": "",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare",
-        "Foto prodotto non individuata nel PDF ufficiale"
-      ]
-    },
-    {
-      "id": "cipolle-maggioline-al-balsamico-peperoni-sigaretta-agrodolce-pesto",
-      "marca": "SOCIETA' AGRICOLA SCUDIERO S.S.",
-      "prodotto": "Cipolle maggioline al balsamico · Peperoni sigaretta in agrodolce · Pesto di cavolo nero",
-      "lotto": "TUTTI I LOTTI",
-      "tmc": "TUTTE LE SCADENZE",
-      "produttore": "CASCINA BALCARINO",
-      "motivo": "RITIRO PRECAUZIONALE DOVUTO A POSSIBILE CONTAMINAZIONE MICROBIOLOGICA",
-      "dataPubblicazione": "9 novembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/cipolle-maggioline-al-balsamico-peperoni-sigaretta-agrodolce-pesto",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_conto_lavorazione_SOCIETA_AGRICOLA_SCUDIERO_S_S_1794249277.pdf",
       "immagine": "",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "DA_VERIFICARE",
