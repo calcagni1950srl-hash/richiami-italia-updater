@@ -99,12 +99,14 @@
     "salsa-tartufata-0",
     "salsiccia-napoli-dolce",
     "salsiccia-piccante-0",
+    "salsiccia-stagionata-6",
     "salsiccia-stagionata-calitrana-catenella",
     "salsiccia-stagionata-calitrana-con-peperoncino-dolce",
     "salsiccia-stagionata-calitrana-dolce",
     "salsiccia-stagionata-calitrana-dolce-0",
     "salsiccia-stagionata-calitrana-piccante",
     "salsiccia-stagionata-calitrana-semipiccante",
+    "salsiccia-stagionata-sv",
     "salsicciotta-con-finocchio-cod-442",
     "salsicciotta-con-finocchio-cod-5",
     "salsicciotta-con-finocchio-cod-5-0",
@@ -153,10 +155,11 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-11-18T17:17:55.053Z",
-  "lastNotificationAt": "2026-11-18T17:17:56.547646+00:00",
+  "lastCheckedAt": "2026-11-18T19:31:53.506Z",
+  "lastNotificationAt": "2026-11-18T19:41:48.249942+00:00",
   "lastNotificationIds": [
-    "revusco-salame-del-peccato"
+    "salsiccia-stagionata-6",
+    "salsiccia-stagionata-sv"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/8874480536437846758"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/7110404002206046617"
 }
