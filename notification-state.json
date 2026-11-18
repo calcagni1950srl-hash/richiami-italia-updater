@@ -87,6 +87,7 @@
     "pistacchi-sgusciati-50-g",
     "pomodoro-ciliegino",
     "pomodoro-datterino",
+    "revusco-salame-del-peccato",
     "roccaverano-dop",
     "salame-emiliano",
     "salame-stagionato-al-tartufo",
@@ -152,10 +153,10 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-11-18T11:29:39.868Z",
-  "lastNotificationAt": "2026-11-16T18:36:24.248719+00:00",
+  "lastCheckedAt": "2026-11-18T17:17:55.053Z",
+  "lastNotificationAt": "2026-11-18T17:17:56.547646+00:00",
   "lastNotificationIds": [
-    "salmone-scozzese-affumicato-0"
+    "revusco-salame-del-peccato"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/2131198889898355381"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/8874480536437846758"
 }
