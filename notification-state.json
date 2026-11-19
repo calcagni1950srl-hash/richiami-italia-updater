@@ -61,6 +61,8 @@
     "funghi-champignon-sottolio-0",
     "funghi-misti-sottolio",
     "funghi-misti-sottolio-0",
+    "gelatina-al-gusto-di-uva-verde-e-gusto-di-pesca",
+    "gelatina-alla-frutta-200g-x-24",
     "hamburger-di-bufalo-170g-skin",
     "hamburger-di-scottona-200g-100x2-skin",
     "hummus-di-ceci-biologico",
@@ -107,6 +109,7 @@
     "salsiccia-stagionata-calitrana-piccante",
     "salsiccia-stagionata-calitrana-semipiccante",
     "salsiccia-stagionata-sv",
+    "salsiccia-vene-x-4",
     "salsicciotta-con-finocchio-cod-442",
     "salsicciotta-con-finocchio-cod-5",
     "salsicciotta-con-finocchio-cod-5-0",
@@ -155,11 +158,12 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-11-19T10:24:43.618Z",
-  "lastNotificationAt": "2026-11-18T19:41:48.249942+00:00",
+  "lastCheckedAt": "2026-11-19T18:17:11.103Z",
+  "lastNotificationAt": "2026-11-19T18:23:01.168425+00:00",
   "lastNotificationIds": [
-    "salsiccia-stagionata-6",
-    "salsiccia-stagionata-sv"
+    "gelatina-al-gusto-di-uva-verde-e-gusto-di-pesca",
+    "salsiccia-vene-x-4",
+    "gelatina-alla-frutta-200g-x-24"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/7110404002206046617"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/-5542036246286521316"
 }
