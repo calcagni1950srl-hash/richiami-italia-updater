@@ -1,12 +1,71 @@
 {
   "version": 2,
-  "generatedAt": "2026-11-18T19:41:23.411898Z",
+  "generatedAt": "2026-11-19T18:22:24.046120Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
-  "pass": 7,
-  "daVerificare": 13,
+  "pass": 8,
+  "daVerificare": 12,
   "recalls": [
+    {
+      "id": "gelatina-al-gusto-di-uva-verde-e-gusto-di-pesca",
+      "marca": "YANJINPUZ",
+      "prodotto": "GELATINA AL GUSTO DI UVA VERDE E GUSTO DI PESCA",
+      "lotto": "di produzlone: EB2K43 / LEB2K42",
+      "tmc": "o termine minìmo di conservazionc: 78/1/27 19/7/27",
+      "produttore": "applicabile prodotto non di origine animale",
+      "motivo": "Presenza dell'additivo non autorizzato E425 nelle gelatine, Allerta iRASFF 887460, SARAM n. 267 del 18,11 .2026,origine Cina",
+      "dataPubblicazione": "19 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/gelatina-al-gusto-di-uva-verde-e-gusto-di-pesca",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/richiamo%20elite_1795102409.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/gelatina-al-gusto-di-uva-verde-e-gusto-di-pesca-8c38fbd910.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
+    {
+      "id": "salsiccia-vene-x-4",
+      "marca": "SALUMIFICIO SANT'ORSO SRL",
+      "prodotto": "SALSICCIA VENE¿¿ X 4",
+      "lotto": "32814M",
+      "tmc": "TUTTE LE DATE",
+      "produttore": "ITQOR79",
+      "motivo": "POSSIBILE PRESENZA DI SALMONELLA NEL PRODOTTO",
+      "dataPubblicazione": "19 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsiccia-vene-x-4",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20richiamo%20_2__1795102441.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsiccia-vene-x-4-e6a757541d.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "OCR",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale",
+        "TMC da verificare"
+      ]
+    },
+    {
+      "id": "gelatina-alla-frutta-200g-x-24",
+      "marca": "XI ZHI LANG",
+      "prodotto": "GELATINA ALLA FRUTTA 200g x 24",
+      "lotto": "CH dOLb6 9245",
+      "tmc": "25 AA | 026",
+      "produttore": "Nome del produttore: ESQUNTO Dda cgowende INTEENATIONAL Co. ; LuMren",
+      "motivo": "PRESENZA DEU! pento NON pueTouzzato © uas( VONsnC)",
+      "dataPubblicazione": "19 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/gelatina-alla-frutta-200g-x-24",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/cartello_richiamo%20_2__1795102476.pdf",
+      "immagine": "",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "OCR",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale",
+        "TMC da verificare"
+      ]
+    },
     {
       "id": "revusco-salame-del-peccato",
       "marca": "Salame Revusco",
@@ -332,69 +391,6 @@
       "dataPubblicazione": "9 novembre 2026",
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/confettura-extra-di-fragole-confettura-extra-di-pesche-giardiniera",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_conto_lavorazione_SOCIETA_AGRICOLA_BARISELLI_GIACOMO_E_MATTEO_S_S_1794248915.pdf",
-      "immagine": "",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare",
-        "Foto prodotto non individuata nel PDF ufficiale"
-      ]
-    },
-    {
-      "id": "confettura-extra-di-fragole-confettura-extra-di-pesche-0",
-      "marca": "SOCIETA' AGRICOLA BARISELLI GIACOMO E MATTEO S.S.",
-      "prodotto": "Confettura extra di fragole · Confettura extra di pesche · Giardiniera · Nettare di albicocca",
-      "lotto": "TUTTI I LOTTI",
-      "tmc": "TUTTE LE SCADENZE",
-      "produttore": "CASCINA BALCARINO",
-      "motivo": "RITIRO PRECAUZIONALE DOVUTO A POSSIBILE CONTAMINAZIONE MICROBIOLOGICA",
-      "dataPubblicazione": "9 novembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/confettura-extra-di-fragole-confettura-extra-di-pesche-0",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_conto_lavorazione_SOCIETA_AGRICOLA_BARISELLI_GIACOMO_E_MATTEO_S_S_1794248949.pdf",
-      "immagine": "",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare",
-        "Foto prodotto non individuata nel PDF ufficiale"
-      ]
-    },
-    {
-      "id": "passata-di-pomodoro",
-      "marca": "SOCIETA' AGRICOLA CAVALTA DI GHIDESI G. E C. S.S.",
-      "prodotto": "Passata di pomodoro",
-      "lotto": "TUTTI I LOTTI",
-      "tmc": "TUTTE LE SCADENZE",
-      "produttore": "CASCINA BALCARINO",
-      "motivo": "RITIRO PRECAUZIONALE DOVUTO A POSSIBILE CONTAMINAZIONE MICROBIOLOGICA",
-      "dataPubblicazione": "9 novembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/passata-di-pomodoro",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_conto_lavorazione_SOCIETA_AGRICOLA_CAVALTA_DI_GHIDESI_G_E_C_S_S_1794248985.pdf",
-      "immagine": "",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare",
-        "Foto prodotto non individuata nel PDF ufficiale"
-      ]
-    },
-    {
-      "id": "confettura-extra-di-mele-cotogne",
-      "marca": "SOCIETA' AGRICOLA GRUGNI",
-      "prodotto": "Confettura extra di mele cotogne",
-      "lotto": "TUTTI I LOTTI",
-      "tmc": "TUTTE LE SCADENZE",
-      "produttore": "CASCINA BALCARINO",
-      "motivo": "RITIRO PRECAUZIONALE DOVUTO A POSSIBILE CONTAMINAZIONE MICROBIOLOGICA",
-      "dataPubblicazione": "9 novembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/confettura-extra-di-mele-cotogne",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_conto_lavorazione_SOCIETA_AGRICOLA_GRUGNI_1794249020.pdf",
       "immagine": "",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "DA_VERIFICARE",
