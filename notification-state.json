@@ -87,8 +87,10 @@
     "perfetto-moka-macinato-aromatizzato-al-caramello",
     "pezzente-della-montagna-materana",
     "pistacchi-sgusciati-50-g",
+    "pomodorino-datterino",
     "pomodoro-ciliegino",
     "pomodoro-datterino",
+    "pomodoro-datterino-0",
     "revusco-salame-del-peccato",
     "roccaverano-dop",
     "salame-emiliano",
@@ -99,6 +101,7 @@
     "salmone-scozzese-affumicato-0",
     "salsa-tartufata",
     "salsa-tartufata-0",
+    "salsiccia-di-suino",
     "salsiccia-napoli-dolce",
     "salsiccia-piccante-0",
     "salsiccia-stagionata-6",
@@ -158,12 +161,12 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-11-20T16:25:09.020Z",
-  "lastNotificationAt": "2026-11-19T18:23:01.168425+00:00",
+  "lastCheckedAt": "2026-11-20T21:51:41.741Z",
+  "lastNotificationAt": "2026-11-20T21:51:43.180543+00:00",
   "lastNotificationIds": [
-    "gelatina-al-gusto-di-uva-verde-e-gusto-di-pesca",
-    "salsiccia-vene-x-4",
-    "gelatina-alla-frutta-200g-x-24"
+    "salsiccia-di-suino",
+    "pomodoro-datterino-0",
+    "pomodorino-datterino"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/-5542036246286521316"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/-4387523443896412040"
 }
