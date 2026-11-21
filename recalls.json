@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "generatedAt": "2026-11-20T21:50:45.932415Z",
+  "generatedAt": "2026-11-21T11:42:22.560462Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
-  "pass": 7,
-  "daVerificare": 13,
+  "pass": 8,
+  "daVerificare": 12,
   "recalls": [
     {
       "id": "salsiccia-di-suino",
@@ -65,6 +65,25 @@
       "note": [
         "Motivo specifico estratto dal PDF ufficiale",
         "TMC da verificare"
+      ]
+    },
+    {
+      "id": "insalata-di-mare",
+      "marca": "MAREVIVO",
+      "prodotto": "INSALATA DI MARE",
+      "lotto": "INSM11/11/26",
+      "tmc": "24-11-2026",
+      "produttore": "MAREVIVO",
+      "motivo": "Presenza di Listeria monocytogenes",
+      "dataPubblicazione": "20 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/insalata-di-mare",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Comunicazione%20Ministeriale_%20ritiro%20insalata%20di%20mare_1795242795.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/insalata-di-mare-80a97c8e75.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
       ]
     },
     {
@@ -372,26 +391,6 @@
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsiccia-stagionata-calitrana-con-peperoncino-dolce",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/RICHIAMO%20LOTTO_29_ABP_26_5_1794488576.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsiccia-stagionata-calitrana-con-peperoncino-dolce-a7d4f9949f.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare"
-      ]
-    },
-    {
-      "id": "salsiccia-stagionata-calitrana-piccante",
-      "marca": "SALUMIFICIO TORNILLO SRL",
-      "prodotto": "SALSICCIA STAGIONATA CALITRANA PICCANTE",
-      "lotto": "29/AP/26 °",
-      "tmc": "Aprike' 2027",
-      "produttore": "ITV5Q2A",
-      "motivo": "Possibili valori microbiologici non conformi",
-      "dataPubblicazione": "12 novembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsiccia-stagionata-calitrana-piccante",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/RICHIAMO%20LOTTO_29_AP_26_6_1794488578.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsiccia-stagionata-calitrana-piccante-0130712ea7.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "DA_VERIFICARE",
       "metodoEstrazione": "OCR",
