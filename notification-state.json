@@ -66,6 +66,7 @@
     "hamburger-di-bufalo-170g-skin",
     "hamburger-di-scottona-200g-100x2-skin",
     "hummus-di-ceci-biologico",
+    "insalata-di-mare",
     "inverno-cavolfiori-sottolio",
     "kg1-pistacchsgusc-spel-mc",
     "la-giardiniera-sottolio-250g",
@@ -161,12 +162,10 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-11-21T03:31:22.398Z",
-  "lastNotificationAt": "2026-11-20T21:51:43.180543+00:00",
+  "lastCheckedAt": "2026-11-21T11:41:06.890Z",
+  "lastNotificationAt": "2026-11-21T11:42:48.263474+00:00",
   "lastNotificationIds": [
-    "salsiccia-di-suino",
-    "pomodoro-datterino-0",
-    "pomodorino-datterino"
+    "insalata-di-mare"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/-4387523443896412040"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/6655103209965764607"
 }
