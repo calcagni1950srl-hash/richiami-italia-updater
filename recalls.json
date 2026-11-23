@@ -1,12 +1,31 @@
 {
   "version": 2,
-  "generatedAt": "2026-11-21T11:42:22.560462Z",
+  "generatedAt": "2026-11-23T15:04:44.289158Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
-  "pass": 8,
-  "daVerificare": 12,
+  "pass": 9,
+  "daVerificare": 11,
   "recalls": [
+    {
+      "id": "biscotti-frolle-saraceni-66-box",
+      "marca": "INGLESE GLUTENFREE",
+      "prodotto": "BISCOTTI FROLLE-SARACENI 6+6 BOX",
+      "lotto": "260415010 - 260512010 - 260402010",
+      "tmc": "04/2027 - 05/2027",
+      "produttore": "INGLESE GLUTENFREE",
+      "motivo": "IN FROLLE DEL NONNO CLASSICHE MONOPORZIONE L260513052 E' STATA RILEVATA LA PRESENZA DI ALLERGENE MANDORLA NON DICHIARATO IN ETICHETTA",
+      "dataPubblicazione": "23 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/biscotti-frolle-saraceni-66-box",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/RICHIAMO_INGFROSARBOX_1795438951.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/biscotti-frolle-saraceni-66-box-cc235811f7.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
     {
       "id": "salsiccia-di-suino",
       "marca": "Salsiccia di suino",
@@ -19,26 +38,6 @@
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsiccia-di-suino",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modulo%20di%20richiamo%20sals_1795188838.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsiccia-di-suino-eb7b5b7f5f.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare"
-      ]
-    },
-    {
-      "id": "pomodoro-datterino-0",
-      "marca": "L'ORTOFRUTTICOLA F S.R.L",
-      "prodotto": "POMODORO DATTERINO",
-      "lotto": "4406",
-      "tmc": "Descrizione peso/volume unità di vendita: (CONFEZIONE DA 500g",
-      "produttore": "IMEDITERRANEA SNC DI MILANESE R.&C.",
-      "motivo": "PRESENZA DI SALMONELLA SPP . 23 | Da N È 3 IARONECEMMIAZALI HDi 8 056590 100820 Inserire immagine uno: Inserire immagine due",
-      "dataPubblicazione": "20 novembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pomodoro-datterino-0",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_Revoca_richiamo_Pomodorino_Datterino__1795188871.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/pomodoro-datterino-0-031a5d55ee.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "DA_VERIFICARE",
       "metodoEstrazione": "OCR",
@@ -84,6 +83,26 @@
       "metodoEstrazione": "TESTO_DIGITALE",
       "note": [
         "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
+    {
+      "id": "pomodoro-datterino-0",
+      "marca": "L'ORTOFRUTTICOLA F S.R.L",
+      "prodotto": "POMODORO DATTERINO",
+      "lotto": "4406",
+      "tmc": "Descrizione peso/volume unità di vendita: (CONFEZIONE DA 500g",
+      "produttore": "IMEDITERRANEA SNC DI MILANESE R.&C.",
+      "motivo": "PRESENZA DI SALMONELLA SPP . 23 | Da N È 3 IARONECEMMIAZALI HDi 8 056590 100820 Inserire immagine uno: Inserire immagine due",
+      "dataPubblicazione": "20 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pomodoro-datterino-0",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_Revoca_richiamo_Pomodorino_Datterino__1795188871.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/pomodoro-datterino-0-031a5d55ee.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "OCR",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale",
+        "TMC da verificare"
       ]
     },
     {
@@ -371,26 +390,6 @@
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsiccia-stagionata-calitrana-catenella",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/RICHIAMO%20LOTTO_29_AB_26P_4_1794488575.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsiccia-stagionata-calitrana-catenella-30ac0dc13a.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare"
-      ]
-    },
-    {
-      "id": "salsiccia-stagionata-calitrana-con-peperoncino-dolce",
-      "marca": "SALUMIFICIO TORNILLO SRL",
-      "prodotto": "SALSICCIA STAGIONATA CALITRANA CON PEPERONCINO DOLCE",
-      "lotto": "29/ABP/26",
-      "tmc": "Aprile*2027",
-      "produttore": "ITV5Q2A",
-      "motivo": "Possibili valori microbiologici non conformi \\",
-      "dataPubblicazione": "12 novembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsiccia-stagionata-calitrana-con-peperoncino-dolce",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/RICHIAMO%20LOTTO_29_ABP_26_5_1794488576.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsiccia-stagionata-calitrana-con-peperoncino-dolce-a7d4f9949f.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "DA_VERIFICARE",
       "metodoEstrazione": "OCR",
