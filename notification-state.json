@@ -19,6 +19,7 @@
     "antipasto-di-verdure-sottolio",
     "arrosto-di-tacchino-ai-funghi",
     "asparagi-conditi-sottolio",
+    "biscotti-frolle-saraceni-66-box",
     "brie-1-kg-60-neutre",
     "brie-tour-de-marze",
     "caciotta-di-pecora-primo-sale",
@@ -162,10 +163,10 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-11-23T07:42:31.560Z",
-  "lastNotificationAt": "2026-11-21T11:42:48.263474+00:00",
+  "lastCheckedAt": "2026-11-23T15:02:25.836Z",
+  "lastNotificationAt": "2026-11-23T15:05:00.544978+00:00",
   "lastNotificationIds": [
-    "insalata-di-mare"
+    "biscotti-frolle-saraceni-66-box"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/6655103209965764607"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/1795992992414763880"
 }
