@@ -26,6 +26,8 @@
     "calamaro-patagonico-pulito-aperto",
     "calamaro-patagonico-pulito-aperto-vaschetta",
     "calamaro-patagonico-pulito-butterfly-decongelato",
+    "candy-poke",
+    "candyness-mix-450ml",
     "canestro",
     "carciofi-carciofi-al-rosmarino-carciofi-con-gambo-carciofi-con",
     "carciofini-sottolio",
@@ -163,10 +165,11 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-11-23T15:02:25.836Z",
-  "lastNotificationAt": "2026-11-23T15:05:00.544978+00:00",
+  "lastCheckedAt": "2026-11-23T20:17:24.826Z",
+  "lastNotificationAt": "2026-11-23T20:17:26.022094+00:00",
   "lastNotificationIds": [
-    "biscotti-frolle-saraceni-66-box"
+    "candyness-mix-450ml",
+    "candy-poke"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/1795992992414763880"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/7048094067141701580"
 }
