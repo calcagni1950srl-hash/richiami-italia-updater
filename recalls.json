@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-11-23T15:04:44.289158Z",
+  "generatedAt": "2026-11-23T20:16:33.653876Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
@@ -24,6 +24,46 @@
       "metodoEstrazione": "TESTO_DIGITALE",
       "note": [
         "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
+    {
+      "id": "candyness-mix-450ml",
+      "marca": "CANDYNESS SRL",
+      "prodotto": "CANDYNESS MIX 450ML",
+      "lotto": "LOTTI VARI - VEDI SOTTO",
+      "tmc": "VEDI SOTTO",
+      "produttore": "CANDYNESS",
+      "motivo": "ETICHETTA INGREDIENTI NON CONFORME IN QUANTO RIPORTANTE LA PRESENZA DEL COLORANTE E171 (NON PRESENTE) OLTRE CHE MANCANTE DELLA DICITURA DI AVVERTENZA INERENTE AI COLORANTI E102 ED E129 (PUO' INFLUIRE NEGATIVAMENTE SULL'ATTIVITA' E L'ATTENZIONE DEI BAMBINI).",
+      "dataPubblicazione": "23 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/candyness-mix-450ml",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_o_revoca%20CANDYNESS%20MIX%20450ML%20_2__1795448369.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/candyness-mix-450ml-eb2074f901.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale",
+        "TMC da verificare"
+      ]
+    },
+    {
+      "id": "candy-poke",
+      "marca": "CANDYNESS SRL",
+      "prodotto": "CANDY POKE",
+      "lotto": "LOTTI VARI - VEDI SOTTO",
+      "tmc": "VEDI SOTTO",
+      "produttore": "CANDYNESS",
+      "motivo": "ETICHETTA INGREDIENTI NON CONFORME IN QUANTO RIPORTANTE LA PRESENZA DEL COLORANTE E171 (NON PRESENTE) OLTRE CHE MANCANTE DELLA DICITURA DI AVVERTENZA INERENTE AI COLORANTI E102 ED E129 (PUO' INFLUIRE NEGATIVAMENTE SULL'ATTIVITA' E L'ATTENZIONE DEI BAMBINI).",
+      "dataPubblicazione": "23 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/candy-poke",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_richiamo_o_revoca%20POKE%20MIX%20_2__1795448407.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/candy-poke-4816e7aa22.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale",
+        "TMC da verificare"
       ]
     },
     {
@@ -350,46 +390,6 @@
       "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsiccia-stagionata-calitrana-dolce",
       "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/RICHIAMO%20LOTTO_29_AB_26_2_1794488572.pdf",
       "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsiccia-stagionata-calitrana-dolce-0a21b11281.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare"
-      ]
-    },
-    {
-      "id": "salsiccia-stagionata-calitrana-dolce-0",
-      "marca": "SALUMIFICIO TORNILLO SRL",
-      "prodotto": "SALSICCIA STAGIONATA CALITRANA DOLCE",
-      "lotto": "29/AB/26P .",
-      "tmc": "APRIEE 2027 °",
-      "produttore": "ITV5Q2A .",
-      "motivo": ". possibili valori microbiologici non conformi",
-      "dataPubblicazione": "12 novembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsiccia-stagionata-calitrana-dolce-0",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/RICHIAMO%20LOTTO_29_AB_26_P%20MACELLERIA%20G.%20NIETTA_3_1794488573.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsiccia-stagionata-calitrana-dolce-0-a7e7280e23.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare"
-      ]
-    },
-    {
-      "id": "salsiccia-stagionata-calitrana-catenella",
-      "marca": "SALUMIFICIO TORNILLO SRL",
-      "prodotto": "SALSICCIA STAGIONATA CALITRANA A CATENELLA",
-      "lotto": "29/AB/26P",
-      "tmc": "Aprile'2027 °",
-      "produttore": "ITV5Q2A",
-      "motivo": "Possibili valori microbiologici non conformi",
-      "dataPubblicazione": "12 novembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsiccia-stagionata-calitrana-catenella",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/RICHIAMO%20LOTTO_29_AB_26P_4_1794488575.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsiccia-stagionata-calitrana-catenella-30ac0dc13a.png",
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "DA_VERIFICARE",
       "metodoEstrazione": "OCR",
