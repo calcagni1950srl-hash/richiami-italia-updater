@@ -1,12 +1,50 @@
 {
   "version": 2,
-  "generatedAt": "2026-11-23T20:16:33.653876Z",
+  "generatedAt": "2026-11-24T17:49:04.012429Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
-  "pass": 9,
-  "daVerificare": 11,
+  "pass": 11,
+  "daVerificare": 9,
   "recalls": [
+    {
+      "id": "salame-magro-100g",
+      "marca": "Welles",
+      "prodotto": "Salame magro 100g",
+      "lotto": "V262871-019, -020, -021",
+      "tmc": "04-01-2027",
+      "produttore": "IT 9 3199 L UE",
+      "motivo": "Contaminazione microbiologica da Salmonella Spp",
+      "dataPubblicazione": "24 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salame-magro-100g",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20richiamo%20aggiornato%20Salame%20Magro%20Welless%20100g_1795525348.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salame-magro-100g-291e088a80.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
+    {
+      "id": "latteria-villa-pinta-iemoli-formaggio",
+      "marca": "IPERAL",
+      "prodotto": "LATTERIA VILLA PINTA IEMOLI FORMAGGIO",
+      "lotto": "616217 - 616318",
+      "tmc": "02 e 03/12/2026",
+      "produttore": "IT S3Y2S UE",
+      "motivo": "Presenza di Salmonella Spp",
+      "dataPubblicazione": "24 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/latteria-villa-pinta-iemoli-formaggio",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20di%20Richiamo%2023_11_1795534397.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/latteria-villa-pinta-iemoli-formaggio-064b5c500c.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "TESTO_DIGITALE",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
     {
       "id": "biscotti-frolle-saraceni-66-box",
       "marca": "INGLESE GLUTENFREE",
@@ -87,6 +125,26 @@
       ]
     },
     {
+      "id": "pomodoro-datterino-0",
+      "marca": "L'ORTOFRUTTICOLA F S.R.L",
+      "prodotto": "POMODORO DATTERINO",
+      "lotto": "4406",
+      "tmc": "Descrizione peso/volume unità di vendita: (CONFEZIONE DA 500g",
+      "produttore": "IMEDITERRANEA SNC DI MILANESE R.&C.",
+      "motivo": "PRESENZA DI SALMONELLA SPP . 23 | Da N È 3 IARONECEMMIAZALI HDi 8 056590 100820 Inserire immagine uno: Inserire immagine due",
+      "dataPubblicazione": "20 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pomodoro-datterino-0",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_Revoca_richiamo_Pomodorino_Datterino__1795188871.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/pomodoro-datterino-0-031a5d55ee.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "DA_VERIFICARE",
+      "metodoEstrazione": "OCR",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale",
+        "TMC da verificare"
+      ]
+    },
+    {
       "id": "pomodorino-datterino",
       "marca": "l'Ortofrutticola F SRL",
       "prodotto": "Pomodorino Datterino",
@@ -123,26 +181,6 @@
       "metodoEstrazione": "TESTO_DIGITALE",
       "note": [
         "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "pomodoro-datterino-0",
-      "marca": "L'ORTOFRUTTICOLA F S.R.L",
-      "prodotto": "POMODORO DATTERINO",
-      "lotto": "4406",
-      "tmc": "Descrizione peso/volume unità di vendita: (CONFEZIONE DA 500g",
-      "produttore": "IMEDITERRANEA SNC DI MILANESE R.&C.",
-      "motivo": "PRESENZA DI SALMONELLA SPP . 23 | Da N È 3 IARONECEMMIAZALI HDi 8 056590 100820 Inserire immagine uno: Inserire immagine due",
-      "dataPubblicazione": "20 novembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pomodoro-datterino-0",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Modello_Revoca_richiamo_Pomodorino_Datterino__1795188871.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/pomodoro-datterino-0-031a5d55ee.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare"
       ]
     },
     {
@@ -356,46 +394,6 @@
       "metodoEstrazione": "TESTO_DIGITALE",
       "note": [
         "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "salsiccia-stagionata-calitrana-semipiccante",
-      "marca": "SALUMIFICIO TORNILLO SRL",
-      "prodotto": "SALSICCIA STAGIONATA CALITRANA SEMIPICCANTE",
-      "lotto": "29/A/26",
-      "tmc": "Aprile*2027",
-      "produttore": "Nome del produttore: alumificio Ternillo srl . ‘",
-      "motivo": "Possibili valori microbiologici non conformi",
-      "dataPubblicazione": "12 novembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsiccia-stagionata-calitrana-semipiccante",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/RICHIAMO%20LOTTO_29_A_26_1_1794488569.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsiccia-stagionata-calitrana-semipiccante-0bf4fa83b6.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare"
-      ]
-    },
-    {
-      "id": "salsiccia-stagionata-calitrana-dolce",
-      "marca": "SALUMIFICIO TORNILLO SRL",
-      "prodotto": "SALSICCIA STAGIONATA CALITRANA DOLCE",
-      "lotto": "29/AB/26 i",
-      "tmc": "ApriJe 2027 .",
-      "produttore": "ITV5Q2A .",
-      "motivo": "Possibili valori microbiologici non conformi ° , Avvertenze Si raccomanda di non consumare il prodotto che deve essere restituito al punto vendita. ut ; I. BE legati alla t (Finocchietto e Pepe). © sù e TARA: 5g. PRODOTTO DA VENDERE A PESO",
-      "dataPubblicazione": "12 novembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/salsiccia-stagionata-calitrana-dolce",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/RICHIAMO%20LOTTO_29_AB_26_2_1794488572.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/salsiccia-stagionata-calitrana-dolce-0a21b11281.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "DA_VERIFICARE",
-      "metodoEstrazione": "OCR",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale",
-        "TMC da verificare"
       ]
     }
   ]
