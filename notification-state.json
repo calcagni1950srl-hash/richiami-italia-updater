@@ -73,6 +73,7 @@
     "inverno-cavolfiori-sottolio",
     "kg1-pistacchsgusc-spel-mc",
     "la-giardiniera-sottolio-250g",
+    "latteria-villa-pinta-iemoli-formaggio",
     "lonza-di-maiale",
     "lorenzo-orlando-ortofrutticola-la-perla",
     "mais-italiano-pop-corn",
@@ -98,6 +99,7 @@
     "revusco-salame-del-peccato",
     "roccaverano-dop",
     "salame-emiliano",
+    "salame-magro-100g",
     "salame-stagionato-al-tartufo",
     "salame-stagionato-al-trtufo",
     "salamella-dolce-sottovuoto",
@@ -165,11 +167,11 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-11-24T12:29:35.465Z",
-  "lastNotificationAt": "2026-11-23T20:17:26.022094+00:00",
+  "lastCheckedAt": "2026-11-24T17:50:03.728Z",
+  "lastNotificationAt": "2026-11-24T17:50:05.279785+00:00",
   "lastNotificationIds": [
-    "candyness-mix-450ml",
-    "candy-poke"
+    "salame-magro-100g",
+    "latteria-villa-pinta-iemoli-formaggio"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/7048094067141701580"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/-7616247202368040599"
 }
