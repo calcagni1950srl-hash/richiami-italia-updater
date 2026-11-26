@@ -52,6 +52,7 @@
     "duble-5",
     "fagiolini-sottolio",
     "fagiolini-sottolio-0",
+    "fichi-secchi-rinfusa-da-10-kg",
     "filetti-di-alici-olio",
     "filetti-di-cipolle-rosse-al-miele-di-rosmarino-friarielli-e",
     "filetti-di-tonno-surgelat",
@@ -168,10 +169,10 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-11-26T15:44:22.981Z",
-  "lastNotificationAt": "2026-11-25T14:26:33.450371+00:00",
+  "lastCheckedAt": "2026-11-26T21:36:00.541Z",
+  "lastNotificationAt": "2026-11-26T21:36:01.964221+00:00",
   "lastNotificationIds": [
-    "uova-fresche-da-galline-allevate-terra-2"
+    "fichi-secchi-rinfusa-da-10-kg"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/5935407992866549685"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/1950962493256464746"
 }
