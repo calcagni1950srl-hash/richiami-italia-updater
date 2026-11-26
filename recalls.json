@@ -1,12 +1,31 @@
 {
   "version": 2,
-  "generatedAt": "2026-11-25T14:25:19.360377Z",
+  "generatedAt": "2026-11-26T21:35:07.454944Z",
   "source": "Ministero della Salute",
   "feed": "RSS_avvisi_richiami_osa.xml",
   "totale": 20,
   "pass": 10,
   "daVerificare": 10,
   "recalls": [
+    {
+      "id": "fichi-secchi-rinfusa-da-10-kg",
+      "marca": "Stella del Sud srl",
+      "prodotto": "Fichi secchi rinfusa da 10 kg",
+      "lotto": "0300/26",
+      "tmc": "31-05-2027",
+      "produttore": "ISTELLA DEL SUD SRL",
+      "motivo": "PRESENZA AFLATOSSINA",
+      "dataPubblicazione": "26 novembre 2026",
+      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/fichi-secchi-rinfusa-da-10-kg",
+      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/Cartello%20di%20Richiamo_1795716169.pdf",
+      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/fichi-secchi-rinfusa-da-10-kg-ae6207a987.png",
+      "criterioMatch": "LOTTO_E_TMC",
+      "stato": "PASS",
+      "metodoEstrazione": "OCR",
+      "note": [
+        "Motivo specifico estratto dal PDF ufficiale"
+      ]
+    },
     {
       "id": "uova-fresche-da-galline-allevate-terra-2",
       "marca": "La Quercia società cooperativa",
@@ -374,25 +393,6 @@
       "criterioMatch": "LOTTO_E_TMC",
       "stato": "PASS",
       "metodoEstrazione": "TESTO_DIGITALE",
-      "note": [
-        "Motivo specifico estratto dal PDF ufficiale"
-      ]
-    },
-    {
-      "id": "pistacchi-sgusciati-50-g",
-      "marca": "Ellegi Frutta secca",
-      "prodotto": "Pistacchi sgusciati 50 g",
-      "lotto": "9.25.1",
-      "tmc": "05/02/2027",
-      "produttore": "-",
-      "motivo": "Notifica di superamento del limite di aflatossine B1",
-      "dataPubblicazione": "13 novembre 2026",
-      "urlMinistero": "https://www.salute.gov.it/new/it/ext-avviso-sicurezza-alimentare/pistacchi-sgusciati-50-g",
-      "pdfMinistero": "https://www.salute.gov.it/new/sites/default/files/external_data/avvisi_sicurezza_alimentare/cartello%20richiamo%20_%20Ellegi%20Frutta%20Secca%20sas%20_%20ROMA_1794593331.pdf",
-      "immagine": "https://raw.githubusercontent.com/calcagni1950srl-hash/richiami-italia-updater/refs/heads/main/images/pistacchi-sgusciati-50-g-b57243c57b.png",
-      "criterioMatch": "LOTTO_E_TMC",
-      "stato": "PASS",
-      "metodoEstrazione": "OCR",
       "note": [
         "Motivo specifico estratto dal PDF ufficiale"
       ]
