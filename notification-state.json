@@ -101,6 +101,7 @@
     "roccaverano-dop",
     "salame-emiliano",
     "salame-magro-100g",
+    "salame-pepe-nero-di-suino-dei-nebrodi",
     "salame-stagionato-al-tartufo",
     "salame-stagionato-al-trtufo",
     "salamella-dolce-sottovuoto",
@@ -169,10 +170,10 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-11-27T08:08:03.620Z",
-  "lastNotificationAt": "2026-11-26T21:36:01.964221+00:00",
+  "lastCheckedAt": "2026-11-27T13:59:37.507Z",
+  "lastNotificationAt": "2026-11-27T13:59:39.064861+00:00",
   "lastNotificationIds": [
-    "fichi-secchi-rinfusa-da-10-kg"
+    "salame-pepe-nero-di-suino-dei-nebrodi"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/1950962493256464746"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/2076741445024625207"
 }
