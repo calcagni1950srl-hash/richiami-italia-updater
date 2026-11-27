@@ -91,6 +91,7 @@
     "pediavit-complesso-b",
     "perfetto-moka-aromatizzato-alla-nocciola-macinato-universale",
     "perfetto-moka-macinato-aromatizzato-al-caramello",
+    "pesto-di-pistacchio",
     "pezzente-della-montagna-materana",
     "pistacchi-sgusciati-50-g",
     "pomodorino-datterino",
@@ -136,6 +137,7 @@
     "tacchino-arrosto-al-limone-gr-170",
     "tahina-arkan",
     "tiramisu-200g",
+    "torta-sole",
     "tortellini-alla-carne-2-confezioni-da-250-g",
     "tramezzino-coop-prosciutto-cotto-150g",
     "trancio-di-pesce-spada",
@@ -170,10 +172,11 @@
     "zuppa-toscana-500-g",
     "zuppa-toscana-500-g-0"
   ],
-  "lastCheckedAt": "2026-11-27T13:59:37.507Z",
-  "lastNotificationAt": "2026-11-27T13:59:39.064861+00:00",
+  "lastCheckedAt": "2026-11-27T18:11:59.267Z",
+  "lastNotificationAt": "2026-11-27T18:13:20.952986+00:00",
   "lastNotificationIds": [
-    "salame-pepe-nero-di-suino-dei-nebrodi"
+    "pesto-di-pistacchio",
+    "torta-sole"
   ],
-  "lastFirebaseMessageId": "projects/richiami-italia/messages/2076741445024625207"
+  "lastFirebaseMessageId": "projects/richiami-italia/messages/2437640053710831261"
 }
